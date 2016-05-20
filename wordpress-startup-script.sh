@@ -14,11 +14,6 @@ WANIP=$(dig +short myip.opendns.com @resolver1.opendns.com)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 STATIC="https://raw.githubusercontent.com/enoch85/wordpress-vm/master/static"
 LETS_ENC="https://raw.githubusercontent.com/enoch85/ownCloud-VM/master/lets-encrypt"
-IFCONFIG="/sbin/ifconfig"
-INTERFACES="/etc/network/interfaces"
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
-NETMASK=$($IFCONFIG | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2)
-GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
 
 # Check if root
 	if [ "$(whoami)" != "root" ]; then
