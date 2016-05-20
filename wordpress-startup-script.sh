@@ -14,6 +14,11 @@ WANIP=$(dig +short myip.opendns.com @resolver1.opendns.com)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 STATIC="https://raw.githubusercontent.com/enoch85/wordpress-vm/master/static"
 LETS_ENC="https://raw.githubusercontent.com/enoch85/ownCloud-VM/master/lets-encrypt"
+IFCONFIG="/sbin/ifconfig"
+INTERFACES="/etc/network/interfaces"
+ADDRESS=$(hostname -I | cut -d ' ' -f 1)
+NETMASK=$($IFCONFIG | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2)
+GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
 
 # Check if root
 	if [ "$(whoami)" != "root" ]; then
@@ -36,7 +41,49 @@ wget -q --spider http://github.com
 		echo "You could try to change network settings of this VM to 'Bridged Mode'".
 		echo "If that doesn't help, please try to un-check 'Replicate physical host' in"
 		echo "the network settings of the VM."
-	       	exit 1
+		echo 
+		echo "Trying one more time..."
+		echo
+					# Check if whiptail is installed, else install it
+					if [ $(dpkg-query -W -f='${Status}' whiptail 2>/dev/null | grep -c "ok installed") -eq 1 ];
+					then
+        				echo "whiptail is already installed!"
+					else
+					apt-get update
+					apt-get install whiptail -y
+					fi
+					# Make sure its not a dns error
+					cat /dev/null > /etc/resolvconf/resolv.conf.d/base
+					echo "nameserver 8.26.56.26" >> /etc/resolvconf/resolv.conf.d/base
+					echo "nameserver 8.20.247.20" >> /etc/resolvconf/resolv.conf.d/base
+					resolvconf -u
+					# Variable's for users input when unable to get a network connection
+					IFCONFIGA=$(ifconfig -a)
+					INPUTUSR=$(whiptail --title "Navigate with TAB to hit ok to enter input" --inputbox "What was the interface name?" 10 60)
+					whiptail --title "Navigate with TAB to hit ok" --msgbox "Next we will show you the interface you need to connect to, something like eth0, enp2s0... please write it down or copy it. Hit ok to continue..." 10 60)
+					INPUTUSR=$(whiptail --title "Navigate with TAB to hit ok to continue" --msgbox "$IFCONFIGA" 10 60)
+					# Send user input to interfaces file
+					cat <<-IPCONFIG > "$INTERFACES"
+        				auto lo $INPUTUSR
+        				iface lo inet loopback
+        				iface $INPUTUSR inet dhcp
+					pre-up /sbin/ethtool -K $IFACE tso off
+					pre-up /sbin/ethtool -K $IFACE gso off
+					IPCONFIG
+					ifdown -a
+					echo
+					ifup -a
+					echo
+					# Test connection for the last time
+					wget -q --spider http://github.com
+					if [ $? -eq 0 ]; then
+    					echo
+    					echo "Success, moving on!"
+					else
+					echo
+					echo "No luck this time either, please try a reboot: sudo reboot"
+					exit 1
+					fi
 	fi
 
 echo "Getting scripts from GitHub to be able to run the first setup..."
