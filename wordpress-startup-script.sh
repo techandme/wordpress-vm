@@ -62,9 +62,9 @@ echo "Getting scripts from GitHub to be able to run the first setup..."
         if [ -f $SCRIPTS/activate-ssl.sh ];
                 then
                 rm $SCRIPTS/activate-ssl.sh
-                wget -q $LETS_ENC/activate-ssl.sh -P $SCRIPTS
+                wget -q $LETS_ENC/activate-ssl-wp.sh -P $SCRIPTS
                 else
-        	wget -q $LETS_ENC/activate-ssl.sh -P $SCRIPTS
+        	wget -q $LETS_ENC/activate-ssl-wp.sh -P $SCRIPTS
 	fi
 # The update script
         if [ -f $SCRIPTS/wordpress_update.sh ];
