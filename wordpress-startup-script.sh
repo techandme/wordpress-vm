@@ -362,18 +362,20 @@ cat << ENTERNEW
 |    Please create a new user for Wordpress:	|
 +-----------------------------------------------+
 ENTERNEW
-
+new_wp_user() {
 echo "Enter FQDN (http://yourdomain.com):"
-read -r -p FQDN
+read -r FQDN
 echo
 echo "Enter username:"
-read -r -p USER
+read -r USER
 echo
 echo "Enter password:"
-read -r -p NEWWPADMINPASS
+read -r NEWWPADMINPASS
 echo
 echo "Enter email address:"
-read -r -p EMAIL
+read -r EMAIL
+}
+new_wp_user
 
 echo
 if [[ "no" == $(ask_yes_or_no "Is this correct?  FQDN: $FQDN User: $USER Password: $NEWWPADMINPASS Email: $EMAIL") ]]
@@ -388,18 +390,7 @@ cat << ENTERNEW2
 |    the script is based on what you enter	|
 +-----------------------------------------------+
 ENTERNEW2
-echo
-echo "Enter FQDN (http(s)://yourdomain.com):"
-read FQDN
-echo
-echo "Enter username:"
-read USER
-echo
-echo "Enter password:"
-read NEWWPADMINPASS
-echo
-echo "Enter email address:"
-read EMAIL
+new_wp_user
 fi
 clear
 
