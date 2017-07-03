@@ -138,9 +138,7 @@ cat << EOMSTART
 |    ################# Tech and Me - 2017 #################	|
 +---------------------------------------------------------------+
 EOMSTART
-echo -e "\e[32m"
-read -r -p "Press any key to start the script..." -n1 -s
-echo -e "\e[0m"
+any_key "Press any key to start the script..."
 clear
 
 # Set hostname and ServerName
