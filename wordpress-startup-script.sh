@@ -411,9 +411,7 @@ echo "WP PASS: $NEWWPADMINPASS"
 echo
 echo "This is the current administrator(s):"
 wp user list --role=administrator --path="$WPATH" --allow-root
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
+any_key "Press any key to continue..."
 clear
 
 # Fixes https://github.com/techandme/wordpress-vm/issues/58
