@@ -100,7 +100,7 @@ update-grub
 
 # Write to log
 touch /var/log/cronjobs_success.log
-echo "WORDPRESS UPDATE success-'$(date +%Y-%m-%d_%H:%M)'" >> /var/log/cronjobs_success.log
+echo "WORDPRESS UPDATE success-$(date +%Y-%m-%d_%H:%M)" >> /var/log/cronjobs_success.log
 
 # Un-hash this if you want the system to reboot
 # reboot
