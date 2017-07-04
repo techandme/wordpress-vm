@@ -259,12 +259,16 @@ define( 'WP_CACHE_KEY_SALT', 'wpredis_' );
 define( 'WP_REDIS_MAXTTL', 9600);
 define( 'WP_REDIS_SCHEME', 'unix' );
 define( 'WP_REDIS_PATH', '/var/run/redis/redis.sock' );
+define( 'WP_REDIS_PASSWORD', '$REDIS_PASS' );
 define( 'WP_AUTO_UPDATE_CORE', true );
 PHP
 {
 echo "Wordpress DB password:"
 echo "Wordpress DB: $WPDBPASS"
 } >> "$MYCNF"
+
+# Make sure the passwords are the same, this file will be deleted when Redis is run.
+echo "$REDIS_PASS" > /tmp/redis_pass.txt
 
 # Install Wordpress
 check_command wp core install --allow-root --url=http://"$ADDRESS"/ --title=Wordpress --admin_user=$WPADMINUSER --admin_password="$WPADMINPASS" --admin_email=no-reply@techandme.se --skip-email
