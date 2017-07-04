@@ -16,14 +16,14 @@ debug_mode
 # Check if root
 if ! is_root
 then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/phpmyadmin_install.sh\n" "$SCRIPTS"
+    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/fail2ban.sh\n" "$SCRIPTS"
     sleep 3
     exit 1
 fi
 
 ### Local variables ###
 # location of Nextcloud logs
-NCLOG="/var/ncdata/wordpress.log"
+AUTHLOG="/var/log/auth.log"
 # time to ban an IP that exceeded attempts
 BANTIME_=600000
 # cooldown time for incorrect passwords
@@ -37,29 +37,19 @@ apt update -q4 & spinner_loading
 check_command apt install fail2ban -y
 check_command update-rc.d fail2ban disable
 
-if [ ! -f $NCLOG ]
+# Install WP-Fail2ban and activate conf
+cd $WPATH
+wp plugin install --allow-root wp-fail2ban --activate
+curl https://plugins.svn.wordpress.org/wp-fail2ban/trunk/filters.d/wordpress-hard.conf > /etc/fail2ban/filter.d/wordpress.conf
+
+if [ ! -f $AUTHLOG ]
 then
-    echo "$NCLOG not found"
+    echo "$AUTHLOG not found"
     exit 1
-else
-    chown www-data:www-data $NCLOG
 fi
 
-# Set values in config.php
-sudo -u www-data php "$NCPATH/occ" config:system:set loglevel --value=2
-sudo -u www-data php "$NCPATH/occ" config:system:set log_type --value=file
-sudo -u www-data php "$NCPATH/occ" config:system:set logfile  --value="$NCLOG"
-sudo -u www-data php "$NCPATH/occ" config:system:set logtimezone  --value="$(cat /etc/timezone)"
-
-# Create wordpress.conf file
-cat << NCONF > /etc/fail2ban/filter.d/wordpress.conf
-[Definition]
-failregex = ^.*Login failed: '.*' \(Remote IP: '<HOST>'.*$
-ignoreregex =
-NCONF
-
 # Create jail.local file
-cat << FCONF > /etc/fail2ban/jail.local
+cat << FCONF > /etc/fail2ban/jail.d/wordpress.conf
 # The DEFAULT allows a global definition of the options. They can be overridden
 # in each jail afterwards.
 [DEFAULT]
@@ -68,14 +58,6 @@ cat << FCONF > /etc/fail2ban/jail.local
 # ban a host which matches an address in this list. Several addresses can be
 # defined using space separator.
 ignoreip = 127.0.0.1/8 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8
-
-# "bantime" is the number of seconds that a host is banned.
-bantime  = $BANTIME_
-
-# A host is banned if it has generated "maxretry" during the last "findtime"
-# seconds.
-findtime = $FINDTIME_
-maxretry = $MAXRETRY_
 
 #
 # ACTIONS
@@ -89,28 +71,17 @@ action_mwl = %(banaction)s[name=%(__name__)s, port="%(port)s", protocol="%(proto
 action = %(action_)s
 
 #
-# SSH
-#
-
-[ssh]
-
-enabled  = true
-port     = ssh
-filter   = sshd
-logpath  = /var/log/auth.log
-maxretry = $MAXRETRY_
-
-#
 # HTTP servers
 #
 
 [wordpress]
-
 enabled  = true
 port     = http,https
 filter   = wordpress
-logpath  = $NCLOG
+logpath  = $AUTHLOG
 maxretry = $MAXRETRY_
+findtime = $FINDTIME_
+bantime  = $BANTIME_
 FCONF
 
 # Update settings
