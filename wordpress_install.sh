@@ -247,13 +247,13 @@ cd "$WPATH"
 check_command wp core download --allow-root --force --debug --path="$WPATH"
 
 # Populate DB
-mysql -uroot -p$MARIADB_PASS <<MYSQL_SCRIPT
+mysql -uroot -p"$MARIADB_PASS" <<MYSQL_SCRIPT
 CREATE DATABASE $WPDBNAME;
 CREATE USER '$WPDBUSER'@'localhost' IDENTIFIED BY '$WPDBPASS';
 GRANT ALL PRIVILEGES ON $WPDBNAME.* TO '$WPDBUSER'@'localhost';
 FLUSH PRIVILEGES;
 MYSQL_SCRIPT
-wp core config --allow-root --dbname=$WPDBNAME --dbuser=$WPDBUSER --dbpass=$WPDBPASS --dbhost=localhost --extra-php <<PHP
+wp core config --allow-root --dbname=$WPDBNAME --dbuser=$WPDBUSER --dbpass="$WPDBPASS" --dbhost=localhost --extra-php <<PHP
 define( 'WP_DEBUG', false );
 define( 'WP_CACHE_KEY_SALT', 'wpredis_' );
 define( 'WP_REDIS_MAXTTL', 9600);
@@ -267,7 +267,7 @@ echo "Wordpress DB: $WPDBPASS"
 } >> "$MYCNF"
 
 # Install Wordpress
-check_command wp core install --allow-root --url=http://$ADDRESS/ --title=Wordpress --admin_user=$WPADMINUSER --admin_password=$WPADMINPASS --admin_email=no-reply@techandme.se --skip-email
+check_command wp core install --allow-root --url=http://"$ADDRESS"/ --title=Wordpress --admin_user=$WPADMINUSER --admin_password="$WPADMINPASS" --admin_email=no-reply@techandme.se --skip-email
 echo "WP PASS: $WPADMINPASS" > /var/adminpass.txt
 chown wordpress:wordpress /var/adminpass.txt
 
