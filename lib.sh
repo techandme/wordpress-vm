@@ -130,6 +130,14 @@ then
 fi
 }
 
+# Install_if_not program
+install_if_not () {
+if [[ "$(is_this_installed "${1}")" != "${1} is installed, it must be a clean server." ]]
+then
+    apt update -q4 & spinner_loading && apt install "${1}" -y
+fi
+}
+
 # Test RAM size 
 # Call it like this: ram_check [amount of min RAM in GB] [for which program]
 # Example: ram_check 2 Wordpress
