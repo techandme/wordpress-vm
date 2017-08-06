@@ -223,39 +223,7 @@ echo "Generating new MARIADB password..."
 if bash "$SCRIPTS/change_mysql_pass.sh" && wait
 then
    rm "$SCRIPTS/change_mysql_pass.sh"
-   {
-   echo
-   echo "[mysqld]"
-   echo "innodb_large_prefix=on"
-   echo "innodb_file_format=barracuda"
-   echo "innodb_flush_neighbors=0"
-   echo "innodb_adaptive_flushing=1"
-   echo "innodb_flush_method = O_DIRECT"
-   echo "innodb_doublewrite = 0"
-   echo "innodb_file_per_table = 1"
-   echo "innodb_flush_log_at_trx_commit=1"
-   echo "init-connect='SET NAMES utf8mb4'"
-   echo "collation_server=utf8mb4_unicode_ci"
-   echo "character_set_server=utf8mb4"
-   echo "skip-character-set-client-handshake"
-   
-   echo "[mariadb]"
-   echo "innodb_use_fallocate = 1"
-   echo "innodb_use_atomic_writes = 1"
-   echo "innodb_use_trim = 1"
-   } >> /root/.my.cnf
 fi
-
-# Enable UTF8mb4 (4-byte support)
-printf "\nEnabling UTF8mb4 support on $WPCONFIGDB....\n"
-echo "Please be patient, it may take a while."
-sudo /etc/init.d/mysql restart & spinner_loading
-RESULT="mysqlshow --user=root --password=$MARIADBMYCNFPASS $WPCONFIGDB| grep -v Wildcard | grep -o $WPCONFIGDB"
-if [ "$RESULT" == "$WPCONFIGDB" ]; then
-    check_command mysql -u root -e "ALTER DATABASE $WPCONFIGDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
-    wait
-fi
-clear
 
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
