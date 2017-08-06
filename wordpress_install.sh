@@ -135,33 +135,10 @@ fi
 apt update -q4 & spinner_loading
 
 # Write MARIADB pass to file and keep it safe
-cat << LOGIN > "$MYCNF"
-[client]
-password='$MARIADB_PASS'
-default-character-set = utf8mb4
-
-[mariadb]
-innodb_use_fallocate = 1
-innodb_use_atomic_writes = 1
-innodb_use_trim = 1
-
-[mysql]
-default-character-set = utf8mb4
-
-[mysqld]
-innodb_large_prefix=on
-innodb_file_format=barracuda
-innodb_flush_neighbors=0
-innodb_adaptive_flushing=1
-innodb_flush_method = O_DIRECT
-innodb_doublewrite = 0
-innodb_file_per_table = 1
-innodb_flush_log_at_trx_commit=1
-init-connect='SET NAMES utf8mb4'
-collation_server=utf8mb4_unicode_ci
-character_set_server=utf8mb4
-skip-character-set-client-handshake
-LOGIN
+{
+echo "[client]"
+echo "password='$MARIADB_PASS'"
+} > "$MYCNF"
 chmod 0600 $MYCNF
 chown root:root $MYCNF
 
@@ -202,8 +179,12 @@ expect eof
 echo "$SECURE_MYSQL"
 apt -y purge expect
 
+# Write a new MariaDB config
+run_static_script new_etc_mycnf
+
 # Install VM-tools
 apt install open-vm-tools -y
+
 # Install Apache
 apt install apache2 -y
 a2enmod rewrite \
@@ -412,6 +393,31 @@ a2dissite 000-default.conf
 a2dissite default-ssl.conf
 service apache2 restart
 
+# Enable UTF8mb4 (4-byte support)
+databases=$(mysql -u root -p"$MARIADB_PASS" -e "SHOW DATABASES;" | tr -d "| " | grep -v Database)
+for db in $databases; do
+    if [[ "$db" != "performance_schema" ]] && [[ "$db" != _* ]] && [[ "$db" != "information_schema" ]];
+    then
+        echo "Changing to UTF8mb4 on: $db"
+        mysql -u root -p"$MARIADB_PASS" -e "ALTER DATABASE $db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+    fi
+done
+
+# Enable OPCache for PHP 
+# https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
+phpenmod opcache
+{
+echo "# OPcache settings for Nextcloud"
+echo "opcache.enable=1"
+echo "opcache.enable_cli=1"
+echo "opcache.interned_strings_buffer=8"
+echo "opcache.max_accelerated_files=10000"
+echo "opcache.memory_consumption=128"
+echo "opcache.save_comments=1"
+echo "opcache.revalidate_freq=1"
+echo "opcache.validate_timestamps=1"
+} >> /etc/php/7.0/apache2/php.ini
+
 # Install Redis
 run_static_script redis-server-ubuntu16
 
@@ -450,24 +456,13 @@ apt autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
 # Install virtual kernels for Hyper-V, and extra for UTF8 kernel module + Collabora and OnlyOffice
-if [[ "no" == $(ask_yes_or_no "Is this installed on Hyper-V? (4.4 or 4.8 kernel)") ]]
-then
-    # Kernel 4.4
-    apt install --install-recommends -y \
-    linux-virtual-lts-xenial \
-    linux-tools-virtual-lts-xenial \
-    linux-cloud-tools-virtual-lts-xenial \
-    linux-image-virtual-lts-xenial \
-    linux-image-extra-"$(uname -r)"
-else
-    # Kernel 4.8
-    apt install --install-recommends -y \
-    linux-virtual-hwe-16.04 \
-    linux-tools-virtual-hwe-16.04 \
-    linux-cloud-tools-virtual-hwe-16.04 \
-    linux-image-virtual-hwe-16.04 \
-    linux-image-extra-"$(uname -r)"
-fi
+# Kernel 4.4
+apt install --install-recommends -y \
+linux-virtual-lts-xenial \
+linux-tools-virtual-lts-xenial \
+linux-cloud-tools-virtual-lts-xenial \
+linux-image-virtual-lts-xenial \
+linux-image-extra-"$(uname -r)"
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
