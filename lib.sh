@@ -57,6 +57,7 @@ PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 SECURE="$SCRIPTS/wp-permissions.sh"
 SSL_CONF="/etc/apache2/sites-available/wordpress_port_443.conf"
 HTTP_CONF="/etc/apache2/sites-available/wordpress_port_80.conf"
+ETCMYCNF=/etc/mysql/my.cnf
 
 # Letsencrypt
 LETSENCRYPTPATH="/etc/letsencrypt"
