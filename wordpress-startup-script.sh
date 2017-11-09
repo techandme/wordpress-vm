@@ -299,52 +299,43 @@ else
     echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
     any_key "Press any key to continue..."
 fi
-clear
 
-# Create new WP user
-cat << ENTERNEW
+# Define FQDN and create new WP user
+MYANSWER="no"
+while [ "$MYANSWER" == "no" ] 
+do
+   clear
+   cat << ENTERNEW
 +-----------------------------------------------+
-|    Please create a new user for Wordpress:	|
+|    Please define the FQDN and create a new    |
+|    user for Wordpress.                        |
+|    Make sure your FQDN starts with either     |
+|    http:// or https://, otherwise your        |
+|    installation will not work correctly!      |
 +-----------------------------------------------+
 ENTERNEW
-new_wp_user() {
-echo "Enter FQDN (http://yourdomain.com):"
-read -r FQDN
-echo
-echo "Enter username:"
-read -r USER
-echo
-echo "Enter password:"
-read -r NEWWPADMINPASS
-echo
-echo "Enter email address:"
-read -r EMAIL
-}
-new_wp_user
-
-echo
-if [[ "no" == $(ask_yes_or_no "Is this correct?  FQDN: $FQDN User: $USER Password: $NEWWPADMINPASS Email: $EMAIL") ]]
-	then
-echo
-echo
-cat << ENTERNEW2
-+-----------------------------------------------+
-|    OK, try again. (2/2) 			|
-|    Please create a new user for Wordpress:	|
-|    It's important that it's correct, because	|
-|    the script is based on what you enter	|
-+-----------------------------------------------+
-ENTERNEW2
-new_wp_user
-fi
+   echo "Enter FQDN (http://yourdomain.com):"
+   read -r FQDN
+   echo
+   echo "Enter username:"
+   read -r USER
+   echo
+   echo "Enter password:"
+   read -r NEWWPADMINPASS
+   echo
+   echo "Enter email address:"
+   read -r EMAIL
+   echo
+   MYANSWER=$(ask_yes_or_no "Is this correct?  FQDN: $FQDN User: $USER Password: $NEWWPADMINPASS Email: $EMAIL") 
+done
 clear
 
 echo "$FQDN" > fqdn.txt
 wp option update siteurl < fqdn.txt --allow-root --path="$WPATH"
 rm fqdn.txt
 
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
-wp search-replace "http://$ADDRESS" "$FQDN" --precise --all-tables --path="$WPATH" --allow-root
+OLDHOME=`wp option get home --allow-root --path="$WPATH"`
+wp search-replace "$OLDHOME" "$FQDN" --precise --all-tables --path="$WPATH" --allow-root
 
 wp user create "$USER" "$EMAIL" --role=administrator --user_pass="$NEWWPADMINPASS" --path="$WPATH" --allow-root
 wp user delete 1 --allow-root --reassign="$USER" --path="$WPATH"
