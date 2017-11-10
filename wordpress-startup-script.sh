@@ -314,7 +314,7 @@ do
 |    installation will not work correctly!      |
 +-----------------------------------------------+
 ENTERNEW
-   echo "Enter FQDN (http://yourdomain.com):"
+   echo "Enter FQDN (http(s)://yourdomain.com):"
    read -r FQDN
    echo
    echo "Enter username:"
