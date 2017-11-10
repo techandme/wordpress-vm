@@ -334,7 +334,7 @@ echo "$FQDN" > fqdn.txt
 wp option update siteurl < fqdn.txt --allow-root --path="$WPATH"
 rm fqdn.txt
 
-OLDHOME=`wp option get home --allow-root --path="$WPATH"`
+OLDHOME=$(wp option get home --allow-root --path="$WPATH")
 wp search-replace "$OLDHOME" "$FQDN" --precise --all-tables --path="$WPATH" --allow-root
 
 wp user create "$USER" "$EMAIL" --role=administrator --user_pass="$NEWWPADMINPASS" --path="$WPATH" --allow-root
