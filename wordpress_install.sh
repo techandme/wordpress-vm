@@ -49,8 +49,8 @@ then
 fi
 
 
-if ! version 16.04 "$DISTRO" 16.04.4; then
-    echo "Ubuntu version $DISTRO must be between 16.04 - 16.04.4"
+if ! version 18.04 "$DISTRO" 18.04.4; then
+    echo "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
     exit
 fi
 
@@ -73,8 +73,8 @@ then
     apt install resolvconf -y -q
     dpkg-reconfigure resolvconf
 fi
-echo "nameserver 8.8.8.8" > /etc/resolvconf/resolv.conf.d/base
-echo "nameserver 8.8.4.4" >> /etc/resolvconf/resolv.conf.d/base
+echo "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
+echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
 
 # Check network
 if ! [ -x "$(command -v nslookup)" ]
@@ -86,7 +86,7 @@ then
     apt install ifupdown -y -q
 fi
 sudo ifdown "$IFACE" && sudo ifup "$IFACE"
-if ! nslookup google.com
+if ! nslookup github.com
 then
     echo "Network NOT OK. You must have a working Network connection to run this script."
     exit 1
@@ -94,7 +94,7 @@ fi
 
 # Set locales
 apt install language-pack-en-base -y
-sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Check where the best mirrors are and update
 echo
@@ -195,7 +195,7 @@ a2enmod rewrite \
         ssl \
         setenvif
 
-# Install PHP 7.0
+# Install PHP 7.2
 apt install -y \
         php \
 	libapache2-mod-php \
