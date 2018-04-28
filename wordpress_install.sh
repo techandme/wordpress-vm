@@ -94,7 +94,7 @@ fi
 
 # Set locales
 apt install language-pack-en-base -y
-sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Check where the best mirrors are and update
 echo
