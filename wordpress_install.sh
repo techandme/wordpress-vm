@@ -402,8 +402,8 @@ upstream php {
 }
 	
 server {
-    listen 80 http2;
-    listen [::]:80 http2;
+    listen 80;
+    listen [::]:80;
     
     ## Your website name goes here.
     # server_name domain.tld;
