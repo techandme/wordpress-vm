@@ -445,7 +445,7 @@ sleep 3
 fi
 
 # Enable new config
-ln -s $SSL_CONF /etc/nginx/sites-enabled/
+# ln -s $SSL_CONF /etc/nginx/sites-enabled/
 ln -s $HTTP_CONF /etc/nginx/sites-enabled/
 systemctl restart nginx.service
 
