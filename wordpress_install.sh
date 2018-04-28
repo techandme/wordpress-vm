@@ -447,8 +447,8 @@ sleep 3
 fi
 
 # Enable new config
-sudo ln -s /etc/nginx/sites-available/$HTTP_CONF /etc/nginx/sites-enabled/
-sudo ln -s /etc/nginx/sites-available/$SSL_CONF /etc/nginx/sites-enabled/
+ln -s $SSL_CONF /etc/nginx/sites-enabled/
+ln -s $HTTP_CONF /etc/nginx/sites-enabled/
 systemctl restart nginx.service
 
 # Enable UTF8mb4 (4-byte support)
