@@ -53,10 +53,9 @@ WPADMINPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 
 MYCNF=/root/.my.cnf
 [ ! -z "$MYCNFPW" ] && MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
 # Path to specific files
-PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 SECURE="$SCRIPTS/wp-permissions.sh"
-SSL_CONF="/etc/apache2/sites-available/wordpress_port_443.conf"
-HTTP_CONF="/etc/apache2/sites-available/wordpress_port_80.conf"
+SSL_CONF="/etc/nginx/sites-available/wordpress_port_443.conf"
+HTTP_CONF="/etc/nginx/sites-available/wordpress_port_80.conf"
 ETCMYCNF=/etc/mysql/my.cnf
 
 # Letsencrypt
@@ -66,7 +65,7 @@ DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
 
 # phpMyadmin
 PHPMYADMINDIR=/usr/share/phpmyadmin
-PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
+PHPMYADMIN_CONF="/etc/nginx/sites-available/phpmyadmin.conf"
 UPLOADPATH=""
 SAVEPATH=""
 
