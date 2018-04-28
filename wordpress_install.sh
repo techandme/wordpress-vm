@@ -320,8 +320,7 @@ if [ ! -f $SSL_CONF ];
         touch $SSL_CONF
         cat << SSL_CREATE > $SSL_CONF
 upstream php {
-server unix:/tmp/php-cgi.socket;
-server 127.0.0.1:9000;
+    server unix:/run/php/php7.2-fpm.sock;
 }
 	
 server {
@@ -399,8 +398,7 @@ if [ ! -f $HTTP_CONF ];
         touch $HTTP_CONF
         cat << HTTP_CREATE > $HTTP_CONF
 upstream php {
-server unix:/tmp/php-cgi.socket;
-server 127.0.0.1:9000;
+    server unix:/run/php/php7.2-fpm.sock;
 }
 	
 server {
