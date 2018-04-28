@@ -215,9 +215,7 @@ sed -i "s|upload_max_filesize =.*|upload_max_filesize = 100M|g" /etc/php/7.2/fpm
 sed -i "s|memory_limit =.*|memory_limit = 256M|g" /etc/php/7.2/fpm/php.ini
 sed -i "s|post_max_size =.*|post_max_size = 110M|g" /etc/php/7.2/fpm/php.ini
 sed -i "s|cgi.fix_pathinfo =.*|cgi.fix_pathinfo=0|g" /etc/php/7.2/fpm/php.ini
-
 sed -i "s|date.timezone =.*|date.timezone = Europe/Stockholm|g" /etc/php/7.2/fpm/php.ini
-
 
 # Download wp-cli.phar to be able to install Wordpress
 check_command curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
@@ -376,13 +374,7 @@ server {
                 access_log off;
     }
 
-    location / {
-                # This is cool because no php is touched for static content.
-                # include the "?$args" part so non-default permalinks doesn't break when using query string
-                try_files $uri $uri/ /index.php?$args;
-    }
-
-    location ~ \.php$ {
+    location ~ \\.php$ {
                 #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
                 include fastcgi.conf;
                 fastcgi_intercept_errors on;
@@ -391,7 +383,7 @@ server {
                 fastcgi_buffer_size 32k;
      }
 
-     location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+     location ~* \\.(js|css|png|jpg|jpeg|gif|ico)$ {
                 expires max;
                 log_not_found off;
      }
