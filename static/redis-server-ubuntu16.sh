@@ -49,7 +49,7 @@ sudo apt install -q -y \
     php-pear
 
 # Install PHPmodule
-if ! pecl install -Z redis
+if ! yes no | pecl install -Z redis
 then
     echo "PHP module installation failed"
     sleep 3
@@ -76,17 +76,24 @@ else
     printf "${Green}\nRedis installation OK!${Color_Off}\n"
 fi
 
-# Redis performance tweaks
+## Redis performance tweaks ##
 if ! grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
 then
     echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 fi
-sed -i "s|# unixsocket /var/run/redis/redis.sock|unixsocket $REDIS_SOCK|g" $REDIS_CONF
-sed -i "s|# unixsocketperm 700|unixsocketperm 777|g" $REDIS_CONF
-sed -i "s|port 6379|port 0|g" $REDIS_CONF
-sed -i "s|# requirepass foobared|requirepass $(cat /tmp/redis_pass.txt)|g" $REDIS_CONF
+
+# Disable THP
+if ! grep -Fxq "never" /sys/kernel/mm/transparent_hugepage/enabled
+then
+    echo "never" > /sys/kernel/mm/transparent_hugepage/enabled
+fi
+
+sed -i "s|# unixsocket .*|unixsocket $REDIS_SOCK|g" $REDIS_CONF
+sed -i "s|# unixsocketperm .*|unixsocketperm 777|g" $REDIS_CONF
+sed -i "s|^port.*|port 0|" $REDIS_CONF
+sed -i "s|# requirepass .*|requirepass $REDIS_PASS|g" $REDIS_CONF
+sed -i 's|# rename-command CONFIG ""|rename-command CONFIG ""|' $REDIS_CONF
 redis-cli SHUTDOWN
-rm -f /tmp/redis_pass.txt
 
 # Secure Redis
 chown redis:root /etc/redis/redis.conf
