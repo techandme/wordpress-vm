@@ -427,13 +427,7 @@ server {
                 access_log off;
     }
 
-    location / {
-                # This is cool because no php is touched for static content.
-                # include the "?$args" part so non-default permalinks doesn't break when using query string
-                try_files $uri $uri/ /index.php?$args;
-    }
-
-    location ~ \.php$ {
+    location ~ \\.php$ {
                 #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
                 include fastcgi.conf;
                 fastcgi_intercept_errors on;
@@ -442,7 +436,7 @@ server {
                 fastcgi_buffer_size 32k;
      }
 
-     location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+     location ~* \\.(js|css|png|jpg|jpeg|gif|ico)$ {
                 expires max;
                 log_not_found off;
      }
