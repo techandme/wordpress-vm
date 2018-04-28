@@ -29,6 +29,10 @@ fi
 ram_check 2 Wordpress
 cpu_check 1 Wordpress
 
+# Set locales
+apt install language-pack-en-base -y
+sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+
 # Show current user
 echo
 echo "Current user with sudo permissions is: $UNIXUSER".
@@ -71,7 +75,7 @@ fi
 if ! [ -x "$(command -v resolvconf)" ]
 then
     apt install resolvconf -y -q
-    dpkg-reconfigure resolvconf
+    yes | dpkg-reconfigure resolvconf
 fi
 echo "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
 echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
@@ -91,10 +95,6 @@ then
     echo "Network NOT OK. You must have a working Network connection to run this script."
     exit 1
 fi
-
-# Set locales
-apt install language-pack-en-base -y
-sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Check where the best mirrors are and update
 echo
