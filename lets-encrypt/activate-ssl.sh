@@ -147,7 +147,7 @@ else
     apt dist-upgrade -y
 fi
 #Fix issue #28
-ssl_conf="/etc/apache2/sites-available/"$domain.conf""
+ssl_conf="/etc/nginx/sites-available/"$domain.conf""
 # DHPARAM
 DHPARAMS="$CERTFILES/$domain/dhparam.pem"
 # Check if "$ssl.conf" exists, and if, then delete
