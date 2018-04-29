@@ -213,6 +213,18 @@ else
 clear
 fi
 
+# Change Timezone
+echo "Current timezone is $(cat /etc/timezone)"
+if [[ "no" == $(ask_yes_or_no "Do you want to change timezone?") ]]
+then
+    echo "Not changing timezone..."
+    sleep 1
+    clear
+else
+    dpkg-reconfigure tzdata
+clear
+fi
+
 # Generate new SSH Keys
 printf "\nGenerating new SSH keys for the server...\n"
 rm -v /etc/ssh/ssh_host_*
@@ -251,26 +263,6 @@ do
     esac
 done 9< results
 rm -f results
-clear
-
-# Change Timezone
-echo "Current timezone is $(cat /etc/timezone)"
-echo "You must change it to your timezone"
-any_key "Press any key to change timezone..."
-dpkg-reconfigure tzdata
-sleep 3
-clear
-
-# Add extra security
-if [[ "yes" == $(ask_yes_or_no "Do you want to add extra security, based on this: http://goo.gl/gEJHi7 ?") ]]
-then
-    bash $SCRIPTS/security.sh
-    rm "$SCRIPTS"/security.sh
-else
-    echo
-    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/security.sh"
-    any_key "Press any key to continue..."
-fi
 clear
 
 # Change password
