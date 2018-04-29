@@ -572,8 +572,8 @@ echo "$NGINX_CONF was successfully created"
 sleep 1
 fi
 
-# Generate $NGINX_DEF
-if [ ! -f "$NGINX_DEF" ];
+# Generate $NGINX_CONF
+if [ -f "$NGINX_DEF" ];
 then
     rm -f $NGINX_DEF
     rm -f /etc/nginx/sites-enabled/default
