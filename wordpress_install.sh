@@ -571,10 +571,10 @@ sleep 1
 fi
 
 # Generate $NGINX_CONF
-if [ ! -f $NGINX_DEF ];
+if [ ! -f "$NGINX_DEF" ];
         then
-        touch $NGINX_DEF
-        cat << NGINX_DEFAULT > $NGINX_DEF
+        touch "$NGINX_DEF"
+        cat << NGINX_DEFAULT > "$NGINX_DEF"
 ##
 # You should look at the following URL's in order to grasp a solid understanding
 # of Nginx configuration files in order to fully unleash the power of Nginx.
@@ -618,7 +618,7 @@ server {
 	#
 	# include snippets/snakeoil.conf;
 
-	root /var/www/html;
+	root $WWW_ROOT;
 
 	# Add index.php to the list if you are using PHP
 	index index.html index.htm index.nginx-debian.html;
@@ -628,26 +628,8 @@ server {
 	location / {
 		# First attempt to serve request as file, then
 		# as directory, then fall back to displaying a 404.
-		try_files $uri $uri/ =404;
+		try_files \$uri \$uri/ =404;
 	}
-
-	# pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
-	#
-	#location ~ \.php$ {
-	#	include snippets/fastcgi-php.conf;
-	#
-	#	# With php7.0-cgi alone:
-	#	fastcgi_pass 127.0.0.1:9000;
-	#	# With php7.0-fpm:
-	#	fastcgi_pass unix:/run/php/php7.0-fpm.sock;
-	#}
-
-	# deny access to .htaccess files, if Apache's document root
-	# concurs with nginx's one
-	#
-	#location ~ /\.ht {
-	#	deny all;
-	#}
 }
 NGINX_DEFAULT
 echo "$NGINX_DEF was successfully created"
@@ -655,9 +637,9 @@ sleep 1
 fi
 
 # Enable new config
-ln -s $NGINX_DEF /etc/nginx/sites-enabled/
-ln -s $SSL_CONF /etc/nginx/sites-enabled/
-ln -s $HTTP_CONF /etc/nginx/sites-enabled/
+ln -s "$NGINX_DEF" /etc/nginx/sites-enabled/
+ln -s "$SSL_CONF" /etc/nginx/sites-enabled/
+ln -s "$HTTP_CONF" /etc/nginx/sites-enabled/
 systemctl restart nginx.service
 
 # Enable UTF8mb4 (4-byte support)
