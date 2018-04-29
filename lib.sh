@@ -122,6 +122,11 @@ ask_yes_or_no() {
     esac
 }
 
+msg_box() {
+local PROMPT="$1"
+    whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
+}
+
 # Check if program is installed (is_this_installed apache2)
 is_this_installed() {
 if [ "$(dpkg-query -W -f='${Status}' "${1}" 2>/dev/null | grep -c "ok installed")" == "1" ]
