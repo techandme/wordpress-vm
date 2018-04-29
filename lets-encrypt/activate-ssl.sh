@@ -147,7 +147,7 @@ else
     apt dist-upgrade -y
 fi
 #Fix issue #28
-ssl_conf="/etc/apache2/sites-available/"$domain.conf""
+ssl_conf="/etc/nginx/sites-available/"$domain.conf""
 # DHPARAM
 DHPARAMS="$CERTFILES/$domain/dhparam.pem"
 # Check if "$ssl.conf" exists, and if, then delete
@@ -162,72 +162,112 @@ then
     echo "$ssl_conf was successfully created"
     sleep 2
     cat << SSL_CREATE > "$ssl_conf"
-<VirtualHost *:80>
-     ServerName $domain
-     Redirect / https://$domain
- </VirtualHost>
-
-<VirtualHost *:443>
-    Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
-    SSLEngine on
-### YOUR SERVER ADDRESS ###
-    ServerAdmin admin@$domain
-    ServerName $domain
-### SETTINGS ###
-    DocumentRoot $WPATH
-    <Directory $WPATH>
-    Options Indexes FollowSymLinks MultiViews
-    AllowOverride All
-    Require all granted
-    Satisfy Any
-    </Directory>
-
-    SetEnv HOME $WPATH
-    SetEnv HTTP_HOME $WPATH
-### LOCATION OF CERT FILES ###
-    SSLCertificateChainFile $CERTFILES/$domain/chain.pem
-    SSLCertificateFile $CERTFILES/$domain/cert.pem
-    SSLCertificateKeyFile $CERTFILES/$domain/privkey.pem
-    SSLOpenSSLConfCmd DHParameters $DHPARAMS
-</VirtualHost>
+upstream php {
+    server unix:/run/php/php7.2-fpm.sock;
+}
+	
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    
+    ## Your website name goes here.
+    server_name $domain;
+    ## Your only path reference.
+    root $WPATH;
+    ## This should be in your http block and if it is, it's not needed here.
+    index index.php;
+    resolver $GATEWAY;
+    
+    # certs sent to the client in SERVER HELLO are concatenated in ssl_certificate
+    ssl_certificate $CERTFILES/$domain/cert.pem;
+    ssl_certificate_key $CERTFILES/$domain/privkey.pem;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:50m;
+    ssl_session_tickets off;
+    # Diffie-Hellman parameter for DHE ciphersuites, recommended 4096 bits
+    ssl_dhparam $DHPARAMS;
+    # intermediate configuration. tweak to your needs.
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS';
+    ssl_prefer_server_ciphers on;
+    # HSTS (ngx_http_headers_module is required) (15768000 seconds = 6 months)
+    add_header Strict-Transport-Security max-age=15768000;
+    # OCSP Stapling ---
+    # fetch OCSP records from URL in ssl_certificate and cache them
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ## verify chain of trust of OCSP response using Root CA and Intermediate certs
+    ssl_trusted_certificate /path/to/root_CA_cert_plus_intermediates;
+    
+    location / {
+        try_files \$uri \$uri/ /index.php?\$args;        
+    }
+    
+    location ~ /\\. {
+        access_log off;
+        log_not_found off; 
+        deny all;
+    }
+    location = /favicon.ico {
+                log_not_found off;
+                access_log off;
+    }
+    location = /robots.txt {
+                allow all;
+                log_not_found off;
+                access_log off;
+    }
+    location ~ \\.php$ {
+                #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+                fastcgi_index index.php;
+		include fastcgi.conf;
+		include fastcgi_params;
+                fastcgi_intercept_errors on;
+                fastcgi_pass php;
+                fastcgi_buffers 16 16k;
+                fastcgi_buffer_size 32k;
+		fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+		fastcgi_param SCRIPT_NAME \$fastcgi_script_name;
+     }
+     location ~* \\.(js|css|png|jpg|jpeg|gif|ico)$ {
+                expires max;
+                log_not_found off;
+     }
+}
 SSL_CREATE
 fi
 
 # Methods
 default_le="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
+
 standalone() {
-# Stop Apache to avoid port conflicts
-a2dissite 000-default.conf
-sudo service apache2 stop
 # Generate certs
-if eval "letsencrypt certonly --standalone $default_le"
+if eval "certbot certonly --standalone --pre-hook 'service nginx stop' --post-hook 'service nginx start' $default_le"
 then
     echo "success" > /tmp/le_test
 else
     echo "fail" > /tmp/le_test
 fi
-# Activate Apache again (Disabled during standalone)
-service apache2 start
-a2ensite 000-default.conf
-service apache2 reload
 }
 webroot() {
-if eval "letsencrypt certonly --webroot --webroot-path $NCPATH $default_le"
+if eval "certbot certonly --webroot --webroot-path $WPATH $default_le"
 then
     echo "success" > /tmp/le_test
 else
     echo "fail" > /tmp/le_test
 fi
 }
-certonly() {
-if eval "letsencrypt certonly $default_le"
+dns() {
+if eval "certbot --manual --preferred-challenges dns certonly $default_le"
 then
     echo "success" > /tmp/le_test
 else
     echo "fail" > /tmp/le_test
 fi
 }
-methods=(standalone webroot certonly)
+
+methods=(standalone webroot dns)
+
 create_config() {
 # $1 = method
 local method="$1"
@@ -237,13 +277,14 @@ if [ -d "$CERTFILES" ]
     # Generate DHparams chifer
     if [ ! -f "$DHPARAMS" ]
     then
-        openssl dhparam -dsaparam -out "$DHPARAMS" 8192
+        openssl dhparam -dsaparam -out "$DHPARAMS" 4096
     fi
     # Activate new config
     check_command bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
     exit
 fi
 }
+
 attempts_left() {
 local method="$1"
 if [ "$method" == "standalone" ]
@@ -254,12 +295,13 @@ elif [ "$method" == "webroot" ]
 then
     printf "${ICyan}It seems like no certs were generated, we will do 1 more try.${Color_Off}\n"
     any_key "Press any key to continue..."
-elif [ "$method" == "certonly" ]
+elif [ "$method" == "dns" ]
 then
     printf "${ICyan}It seems like no certs were generated, we will do 0 more tries.${Color_Off}\n"
     any_key "Press any key to continue..."
 fi
 }
+
 # Generate the cert
 for f in "${methods[@]}"; do "$f"
 if [ "$(grep 'success' /tmp/le_test)" == 'success' ]; then
@@ -270,23 +312,18 @@ else
     attempts_left "$f"
 fi
 done
-printf "${ICyan}Sorry, last try failed as well. :/${Color_Off}\n\n"
-cat << ENDMSG
-+------------------------------------------------------------------------+
-| The script is located in $SCRIPTS/activate-ssl.sh                  |
-| Please try to run it again some other time with other settings.        |
-|                                                                        |
-| There are different configs you can try in Let's Encrypt's user guide: |
-| https://letsencrypt.readthedocs.org/en/latest/index.html               |
-| Please check the guide for further information on how to enable SSL.   |
-|                                                                        |
-| This script is developed on GitHub, feel free to contribute:           |
-| https://github.com/techandme/wordpress-vm                              |
-|                                                                        |
-| The script will now do some cleanup and revert the settings.           |
-+------------------------------------------------------------------------+
-ENDMSG
-any_key "Press any key to revert settings and exit... "
+
+# Failed
+msg_box "Sorry, last try failed as well. :/
+The script is located in $SCRIPTS/activate-ssl.sh
+Please try to run it again some other time with other settings.
+There are different configs you can try in Let's Encrypt's user guide:
+https://letsencrypt.readthedocs.org/en/latest/index.html
+Please check the guide for further information on how to enable SSL.
+This script is developed on GitHub, feel free to contribute:
+https://github.com/techandme/wordpress-vm
+The script will now do some cleanup and revert the settings."
+
 # Cleanup
 apt remove letsencrypt -y
 apt autoremove -y

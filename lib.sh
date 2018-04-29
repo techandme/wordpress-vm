@@ -53,11 +53,11 @@ WPADMINPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 
 MYCNF=/root/.my.cnf
 [ ! -z "$MYCNFPW" ] && MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
 # Path to specific files
-PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 SECURE="$SCRIPTS/wp-permissions.sh"
-SSL_CONF="/etc/apache2/sites-available/wordpress_port_443.conf"
-HTTP_CONF="/etc/apache2/sites-available/wordpress_port_80.conf"
+SSL_CONF="/etc/nginx/sites-available/wordpress_port_443.conf"
+HTTP_CONF="/etc/nginx/sites-available/wordpress_port_80.conf"
 ETCMYCNF=/etc/mysql/my.cnf
+NGINX_CONF=/etc/nginx/nginx.cconf
 
 # Letsencrypt
 LETSENCRYPTPATH="/etc/letsencrypt"
@@ -66,13 +66,13 @@ DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
 
 # phpMyadmin
 PHPMYADMINDIR=/usr/share/phpmyadmin
-PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
+PHPMYADMIN_CONF="/etc/nginx/sites-available/phpmyadmin.conf"
 UPLOADPATH=""
 SAVEPATH=""
 
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
-REDIS_SOCK=/var/run/redis/redis.sock
+REDIS_SOCK=/var/run/redis/redis-server.sock
 RSHUF=$(shuf -i 30-35 -n 1)
 REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$RSHUF" | head -n 1)
 
@@ -120,6 +120,11 @@ ask_yes_or_no() {
             echo "no"
         ;;
     esac
+}
+
+msg_box() {
+local PROMPT="$1"
+    whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
 }
 
 # Check if program is installed (is_this_installed apache2)

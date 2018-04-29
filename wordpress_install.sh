@@ -29,6 +29,10 @@ fi
 ram_check 2 Wordpress
 cpu_check 1 Wordpress
 
+# Set locales
+apt install language-pack-en-base -y
+sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+
 # Show current user
 echo
 echo "Current user with sudo permissions is: $UNIXUSER".
@@ -49,14 +53,15 @@ then
 fi
 
 
-if ! version 16.04 "$DISTRO" 16.04.4; then
-    echo "Ubuntu version $DISTRO must be between 16.04 - 16.04.4"
+if ! version 18.04 "$DISTRO" 18.04.4; then
+    echo "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
     exit
 fi
 
 # Check if it's a clean server
 is_this_installed postgresql
 is_this_installed apache2
+is_this_installed nginx
 is_this_installed php
 is_this_installed mysql-common
 is_this_installed mariadb-server
@@ -71,10 +76,10 @@ fi
 if ! [ -x "$(command -v resolvconf)" ]
 then
     apt install resolvconf -y -q
-    dpkg-reconfigure resolvconf
+    yes | dpkg-reconfigure resolvconf
 fi
-echo "nameserver 8.8.8.8" > /etc/resolvconf/resolv.conf.d/base
-echo "nameserver 8.8.4.4" >> /etc/resolvconf/resolv.conf.d/base
+echo "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
+echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
 
 # Check network
 if ! [ -x "$(command -v nslookup)" ]
@@ -86,15 +91,11 @@ then
     apt install ifupdown -y -q
 fi
 sudo ifdown "$IFACE" && sudo ifup "$IFACE"
-if ! nslookup google.com
+if ! nslookup github.com
 then
     echo "Network NOT OK. You must have a working Network connection to run this script."
     exit 1
 fi
-
-# Set locales
-apt install language-pack-en-base -y
-sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Check where the best mirrors are and update
 echo
@@ -185,26 +186,36 @@ run_static_script new_etc_mycnf
 # Install VM-tools
 apt install open-vm-tools -y
 
-# Install Apache
-apt install apache2 -y
-a2enmod rewrite \
-        headers \
-        env \
-        dir \
-        mime \
-        ssl \
-        setenvif
+# Install Nginx
+apt update -q4 && spinner_loading
+check_command apt install nginx -y
+sudo systemctl stop nginx.service
+sudo systemctl start nginx.service
+sudo systemctl enable nginx.service
 
-# Install PHP 7.0
+# Install PHP 7.2
 apt install -y \
         php \
-	libapache2-mod-php \
-	php-mcrypt \
-	php-pear \
-	php-mbstring \
-	php-mysql \
-	php-soap \
-	php-zip
+	php7.2-fpm \
+	php7.2-common \
+	php7.2-mbstring \
+	php7.2-xmlrpc \
+	php7.2-gd \
+	php7.2-xml \
+	php7.2-mysql \
+	php7.2-cli \
+	php7.2-zip \
+	php7.2-curl
+	
+# Configure PHP
+sed -i "s|allow_url_fopen =.*|allow_url_fopen = On|g" /etc/php/7.2/fpm/php.ini
+sed -i "s|max_execution_time =.*|max_execution_time = 360|g" /etc/php/7.2/fpm/php.ini
+sed -i "s|file_uploads =.*|file_uploads = On|g" /etc/php/7.2/fpm/php.ini
+sed -i "s|upload_max_filesize =.*|upload_max_filesize = 100M|g" /etc/php/7.2/fpm/php.ini
+sed -i "s|memory_limit =.*|memory_limit = 256M|g" /etc/php/7.2/fpm/php.ini
+sed -i "s|post_max_size =.*|post_max_size = 110M|g" /etc/php/7.2/fpm/php.ini
+sed -i "s|cgi.fix_pathinfo =.*|cgi.fix_pathinfo=0|g" /etc/php/7.2/fpm/php.ini
+sed -i "s|date.timezone =.*|date.timezone = Europe/Stockholm|g" /etc/php/7.2/fpm/php.ini
 
 # Download wp-cli.phar to be able to install Wordpress
 check_command curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
@@ -217,7 +228,7 @@ mkdir $WPATH
 # Create wp-cli.yml
 touch $WPATH/wp-cli.yml
 cat << YML_CREATE > "$WPATH/wp-cli.yml"
-apache_modules:
+nginx_modules:
   - mod_rewrite
 YML_CREATE
 
@@ -300,18 +311,6 @@ allow from all
 </Files>
 EOL
 
-# Change values in php.ini (increase max file size)
-# max_execution_time
-sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" /etc/php/7.0/apache2/php.ini
-# max_input_time
-sed -i "s|max_input_time =.*|max_input_time = 3600|g" /etc/php/7.0/apache2/php.ini
-# memory_limit
-sed -i "s|memory_limit =.*|memory_limit = 512M|g" /etc/php/7.0/apache2/php.ini
-# post_max
-sed -i "s|post_max_size =.*|post_max_size = 1100M|g" /etc/php/7.0/apache2/php.ini
-# upload_max
-sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" /etc/php/7.0/apache2/php.ini
-
 # Install Figlet
 apt install figlet -y
 
@@ -320,39 +319,92 @@ if [ ! -f $SSL_CONF ];
         then
         touch $SSL_CONF
         cat << SSL_CREATE > $SSL_CONF
-<VirtualHost *:443>
-    Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
-    SSLEngine on
+upstream php {
+    server unix:/run/php/php7.2-fpm.sock;
+}
+	
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    
+    ## Your website name goes here.
+    # server_name example.com;
+    ## Your only path reference.
+    root $WPATH;
+    ## This should be in your http block and if it is, it's not needed here.
+    index index.php;
 
-### YOUR SERVER ADDRESS ###
-#    ServerAdmin admin@example.com
-#    ServerName example.com
-#    ServerAlias www.example.com
+    resolver $GATEWAY;
+    
+    # certs sent to the client in SERVER HELLO are concatenated in ssl_certificate
+    ssl_certificate /path/to/signed_cert_plus_intermediates;
+    ssl_certificate_key /path/to/private_key;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:50m;
+    ssl_session_tickets off;
 
-### SETTINGS ###
-    DocumentRoot $WPATH
-    <Directory $WPATH>
-    Options Indexes FollowSymLinks MultiViews
-    AllowOverride All
-    Require all granted
-    </Directory>
+    # Diffie-Hellman parameter for DHE ciphersuites, recommended 4096 bits
+    ssl_dhparam /path/to/dhparam.pem;
 
-    SetEnv HOME $WPATH
-    SetEnv HTTP_HOME $WPATH
+    # intermediate configuration. tweak to your needs.
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS';
+    ssl_prefer_server_ciphers on;
 
-### LOCATION OF CERT FILES ###
-    SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
-    SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+    # HSTS (ngx_http_headers_module is required) (15768000 seconds = 6 months)
+    add_header Strict-Transport-Security max-age=15768000;
 
-#    SSLCertificateFile /etc/ssl/example.com/certificate.crt
-#    SSLCertificateKeyFile /etc/ssl/example.com/ssl_example_com_se.key
-#    SSLCACertificateFile /etc/ssl/example.com/certificate.ca.crt
-#    SSLCertificateChainFile /etc/crt/example_com.ca-bundle
+    # OCSP Stapling ---
+    # fetch OCSP records from URL in ssl_certificate and cache them
+    ssl_stapling on;
+    ssl_stapling_verify on;
 
-</VirtualHost>
+    ## verify chain of trust of OCSP response using Root CA and Intermediate certs
+    ssl_trusted_certificate /path/to/root_CA_cert_plus_intermediates;
+
+    
+    location / {
+        try_files \$uri \$uri/ /index.php?\$args;        
+    }
+    
+    location ~ /\\. {
+        access_log off;
+        log_not_found off; 
+        deny all;
+    }
+
+    location = /favicon.ico {
+                log_not_found off;
+                access_log off;
+    }
+
+    location = /robots.txt {
+                allow all;
+                log_not_found off;
+                access_log off;
+    }
+
+    location ~ \\.php$ {
+                #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+                fastcgi_index index.php;
+		include fastcgi.conf;
+		include fastcgi_params;
+                fastcgi_intercept_errors on;
+                fastcgi_pass php;
+                fastcgi_buffers 16 16k;
+                fastcgi_buffer_size 32k;
+		fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+		fastcgi_param SCRIPT_NAME \$fastcgi_script_name;
+     }
+
+     location ~* \\.(js|css|png|jpg|jpeg|gif|ico)$ {
+                expires max;
+                log_not_found off;
+     }
+}
 SSL_CREATE
 echo "$SSL_CONF was successfully created"
-sleep 3
+sleep 1
 fi
 
 # Generate $HTTP_CONF
@@ -360,34 +412,171 @@ if [ ! -f $HTTP_CONF ];
         then
         touch $HTTP_CONF
         cat << HTTP_CREATE > $HTTP_CONF
+upstream php {
+    server unix:/run/php/php7.2-fpm.sock;
+}
+	
+server {
+    listen 80;
+    listen [::]:80;
+    
+    ## Your website name goes here.
+    # server_name example.com;
+    ## Your only path reference.
+    root $WPATH;
+    ## This should be in your http block and if it is, it's not needed here.
+    index index.php;
 
-<VirtualHost *:80>
+    resolver $GATEWAY;
+    
+    location / {
+        try_files \$uri \$uri/ /index.php?\$args;        
+    }
+    
+    location ~ /\\. {
+        access_log off;
+        log_not_found off; 
+        deny all;
+    }
 
-### YOUR SERVER ADDRESS ###
-#    ServerAdmin admin@example.com
-#    ServerName example.com
-#    ServerAlias www.example.com
+    location = /favicon.ico {
+                log_not_found off;
+                access_log off;
+    }
 
-### SETTINGS ###
-    DocumentRoot $WPATH
-    <Directory $WPATH>
-    Options Indexes FollowSymLinks MultiViews
-    AllowOverride All
-    Require all granted
-    </Directory>
+    location = /robots.txt {
+                allow all;
+                log_not_found off;
+                access_log off;
+    }
 
-</VirtualHost>
+    location ~ \\.php$ {
+                #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+                fastcgi_index index.php;
+		include fastcgi.conf;
+		include fastcgi_params;
+                fastcgi_intercept_errors on;
+                fastcgi_pass php;
+                fastcgi_buffers 16 16k;
+                fastcgi_buffer_size 32k;
+		fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+		fastcgi_param SCRIPT_NAME \$fastcgi_script_name;
+     }
+
+     location ~* \\.(js|css|png|jpg|jpeg|gif|ico)$ {
+                expires max;
+                log_not_found off;
+     }
+}
 HTTP_CREATE
 echo "$HTTP_CONF was successfully created"
-sleep 3
+sleep 1
+fi
+
+# Generate $NGINX_CONF
+if [ ! -f $NGINX_CONF ];
+        then
+        touch $NGINX_CONF
+        cat << NGINX_CREATE > $NGINX_CONF
+user www-data;
+worker_processes 2;
+pid /run/nginx.pid;
+
+	worker_rlimit_nofile 10240;
+
+events {
+	worker_connections 10240;
+	multi_accept on;
+	use epoll;
+}
+	
+http {
+
+	##
+	# Basic Settings
+	##
+
+	sendfile on;
+	tcp_nopush on;
+	tcp_nodelay on;
+	keepalive_timeout 65;
+	types_hash_max_size 2048;
+	server_tokens off;
+	client_body_timeout   10;
+	client_header_timeout 10;
+	client_header_buffer_size 128;
+        client_max_body_size 10M;
+	# server_names_hash_bucket_size 64;
+	# server_name_in_redirect off;
+
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+
+	##
+	# SSL Settings
+	##
+
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+	ssl_prefer_server_ciphers on;
+
+	##
+	# Logging Settings
+	##
+
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
+
+	##
+	# Gzip Settings
+	##
+
+	gzip on;
+	gzip_disable "msie6";
+
+	# gzip_vary on;
+	# gzip_proxied any;
+	# gzip_comp_level 6;
+	  gzip_buffers 16 4k;
+	# gzip_http_version 1.1;	
+	# gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+	##
+	# Virtual Host Configs
+	##
+
+	include /etc/nginx/conf.d/*.conf;
+	include /etc/nginx/sites-enabled/*;
+}
+
+#mail {
+#	# See sample authentication script at:
+#	# http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
+# 
+#	# auth_http localhost/auth.php;
+#	# pop3_capabilities "TOP" "USER";
+#	# imap_capabilities "IMAP4rev1" "UIDPLUS";
+# 
+#	server {
+#		listen     localhost:110;
+#		protocol   pop3;
+#		proxy      on;
+#	}
+# 
+#	server {
+#		listen     localhost:143;
+#		protocol   imap;
+#		proxy      on;
+#	}
+#}
+NGINX_CREATE
+echo "$NGINX_CONF was successfully created"
+sleep 1
 fi
 
 # Enable new config
-a2ensite wordpress_port_443.conf
-a2ensite wordpress_port_80.conf
-a2dissite 000-default.conf
-a2dissite default-ssl.conf
-service apache2 restart
+# ln -s $SSL_CONF /etc/nginx/sites-enabled/
+ln -s $HTTP_CONF /etc/nginx/sites-enabled/
+systemctl restart nginx.service
 
 # Enable UTF8mb4 (4-byte support)
 databases=$(mysql -u root -p"$MARIADB_PASS" -e "SHOW DATABASES;" | tr -d "| " | grep -v Database)
@@ -411,7 +600,7 @@ echo "opcache.memory_consumption=128"
 echo "opcache.save_comments=1"
 echo "opcache.revalidate_freq=1"
 echo "opcache.validate_timestamps=1"
-} >> /etc/php/7.0/apache2/php.ini
+} >> /etc/php/7.2/fpm/php.ini
 
 # Install Redis
 run_static_script redis-server-ubuntu16
