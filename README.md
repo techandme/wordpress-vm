@@ -3,8 +3,10 @@
 
 ### https://www.techandme.se
 
+- Ubuntu 18.04
 - MariaDB 10.2
 - NGINX 1.14
+- PHP-FPM 7.2
 - Latest Wordpress (updates automatically)
 - WP-CLI
 - and more, https://www.techandme.se/machine-setup-wordpress/
