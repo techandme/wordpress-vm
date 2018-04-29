@@ -314,13 +314,6 @@ EOL
 # Install Figlet
 apt install figlet -y
 
-
-# Make travis happy
-export uri
-export document_root
-export fastcgi_script_name
-export args
-
 # Generate $SSL_CONF
 if [ ! -f $SSL_CONF ];
         then
@@ -371,7 +364,7 @@ server {
 
     
     location / {
-        try_files $uri $uri/ /index.php?$args;        
+        try_files \$uri \$uri/ /index.php?\$args;        
     }
     
     location ~ /\\. {
@@ -400,8 +393,8 @@ server {
                 fastcgi_pass php;
                 fastcgi_buffers 16 16k;
                 fastcgi_buffer_size 32k;
-		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-		fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+		fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+		fastcgi_param SCRIPT_NAME \$fastcgi_script_name;
      }
 
      location ~* \\.(js|css|png|jpg|jpeg|gif|ico)$ {
@@ -437,7 +430,7 @@ server {
     resolver $GATEWAY;
     
     location / {
-        try_files $uri $uri/ /index.php?$args;        
+        try_files \$uri \$uri/ /index.php?\$args;        
     }
     
     location ~ /\\. {
@@ -466,8 +459,8 @@ server {
                 fastcgi_pass php;
                 fastcgi_buffers 16 16k;
                 fastcgi_buffer_size 32k;
-		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-		fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+		fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+		fastcgi_param SCRIPT_NAME \$fastcgi_script_name;
      }
 
      location ~* \\.(js|css|png|jpg|jpeg|gif|ico)$ {
@@ -579,12 +572,6 @@ NGINX_CREATE
 echo "$NGINX_CONF was successfully created"
 sleep 1
 fi
-
-# Not needed for travis anymore
-unset uri
-unset document_root
-unset fastcgi_script_name
-unset args
 
 # Enable new config
 # ln -s $SSL_CONF /etc/nginx/sites-enabled/
