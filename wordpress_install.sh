@@ -316,6 +316,7 @@ apt install figlet -y
 
 # Generate $SSL_CONF
 install_if_not ssl-cert
+systemctl stop nginx.service && wait
 if [ ! -f $SSL_CONF ];
         then
         touch $SSL_CONF
@@ -467,9 +468,10 @@ sleep 1
 fi
 
 # Generate $NGINX_CONF
-if [ ! -f $NGINX_CONF ];
+if [ -f $NGINX_CONF ];
         then
-        touch $NGINX_CONF
+        rm $NGINX_CONF
+	touch $NGINX_CONF
         cat << NGINX_CREATE > $NGINX_CONF
 user www-data;
 worker_processes 2;
@@ -571,9 +573,10 @@ sleep 1
 fi
 
 # Generate $NGINX_CONF
-if [ ! -f "$NGINX_DEF" ];
+if [ -f "$NGINX_DEF" ];
         then
-        touch "$NGINX_DEF"
+        rm $NGINX_DEF
+	touch $NGINX_DEF
         cat << NGINX_DEFAULT > "$NGINX_DEF"
 ##
 # You should look at the following URL's in order to grasp a solid understanding
