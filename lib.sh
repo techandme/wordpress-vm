@@ -57,7 +57,8 @@ SECURE="$SCRIPTS/wp-permissions.sh"
 SSL_CONF="/etc/nginx/sites-available/wordpress_port_443.conf"
 HTTP_CONF="/etc/nginx/sites-available/wordpress_port_80.conf"
 ETCMYCNF=/etc/mysql/my.cnf
-NGINX_CONF=/etc/nginx/nginx.cconf
+NGINX_CONF=/etc/nginx/nginx.conf
+NGINX_DEF=/etc/nginx/sites/available/default
 
 # Letsencrypt
 LETSENCRYPTPATH="/etc/letsencrypt"
@@ -103,6 +104,24 @@ is_root() {
     fi
 }
 
+
+# Check if root
+root_check() {
+if ! is_root
+then
+msg_box "Sorry, you are not root. You now have two options:
+1. With SUDO directly:
+   a) :~$ sudo bash $SCRIPTS/name-of-script.sh
+2. Become ROOT and then type your command:
+   a) :~$ sudo -i
+   b) :~# $SCRIPTS/name-of-script.sh
+In both cases above you can leave out $SCRIPTS/ if the script
+is directly in your PATH.
+More information can be found here: https://unix.stackexchange.com/a/3064"
+    exit 1
+fi
+}
+
 debug_mode() {
 if [ "$DEBUG" -eq 1 ]
 then
@@ -120,6 +139,76 @@ ask_yes_or_no() {
             echo "no"
         ;;
     esac
+}
+
+# Install certbot (Let's Encrypt)
+install_certbot() {
+certbot --version 2> /dev/null
+LE_IS_AVAILABLE=$?
+if [ $LE_IS_AVAILABLE -eq 0 ]
+then
+    certbot --version
+else
+    echo "Installing certbot (Let's Encrypt)..."
+    apt update -q4 & spinner_loading
+    apt install software-properties-common
+    add-apt-repository ppa:certbot/certbot -y
+    apt update -q4 & spinner_loading
+    apt install certbot -y -q
+    apt update -q4 & spinner_loading
+    apt dist-upgrade -y
+fi
+}
+
+# Check if port is open # check_open_port 443 domain.example.com
+check_open_port() {
+# Check to see if user already has nmap installed on their system
+if [ "$(dpkg-query -s nmap 2> /dev/null | grep -c "ok installed")" == "1" ]
+then
+    NMAPSTATUS=preinstalled
+fi
+
+apt update -q4 & spinner_loading
+if [ "$NMAPSTATUS" = "preinstalled" ]
+then
+      echo "nmap is already installed..."
+else
+    apt install nmap -y
+fi
+
+# Check if $1 is open using nmap, if not notify the user
+if [ "$(nmap -sS -p "$1" "$WANIP4" | grep -c "open")" == "1" ]
+then
+  printf "${Green}Port $1 is open on $WANIP4!${Color_Off}\n"
+  if [ "$NMAPSTATUS" = "preinstalled" ]
+  then
+    echo "nmap was previously installed, not removing."
+  else
+    apt remove --purge nmap -y
+  fi
+else
+  whiptail --msgbox "Port $1 is not open on $WANIP4. We will do a second try on $2 instead." "$WT_HEIGHT" "$WT_WIDTH"
+  if [[ "$(nmap -sS -PN -p "$1" "$2" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
+  then
+      printf "${Green}Port $1 is open on $2!${Color_Off}\n"
+      if [ "$NMAPSTATUS" = "preinstalled" ]
+      then
+        echo "nmap was previously installed, not removing."
+      else
+        apt remove --purge nmap -y
+      fi
+  else
+      whiptail --msgbox "Port $1 is not open on $2. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
+      any_key "Press any key to exit... "
+      if [ "$NMAPSTATUS" = "preinstalled" ]
+      then
+        echo "nmap was previously installed, not removing."
+      else
+        apt remove --purge nmap -y
+      fi
+      exit 1
+  fi
+fi
 }
 
 msg_box() {
@@ -177,7 +266,7 @@ fi
 }
 
 check_command() {
-  if ! eval "$*"
+  if ! "$@";
   then
      printf "${IRed}Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!${Color_Off}\n"
      echo "$* failed"
