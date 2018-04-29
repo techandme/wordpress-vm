@@ -56,9 +56,9 @@ MYCNF=/root/.my.cnf
 SECURE="$SCRIPTS/wp-permissions.sh"
 SSL_CONF="/etc/nginx/sites-available/wordpress_port_443.conf"
 HTTP_CONF="/etc/nginx/sites-available/wordpress_port_80.conf"
-ETCMYCNF=/etc/mysql/my.cnf
-NGINX_CONF=/etc/nginx/nginx.conf
-NGINX_DEF=/etc/nginx/sites/available/default
+ETCMYCNF="/etc/mysql/my.cnf"
+NGINX_CONF="/etc/nginx/nginx.conf"
+NGINX_DEF="/etc/nginx/sites/available/default"
 
 # Letsencrypt
 LETSENCRYPTPATH="/etc/letsencrypt"
