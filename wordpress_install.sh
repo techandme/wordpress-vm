@@ -314,6 +314,12 @@ EOL
 # Install Figlet
 apt install figlet -y
 
+
+# Make travis happy
+export uri
+export document_root
+export fastcgi_script_name
+
 # Generate $SSL_CONF
 if [ ! -f $SSL_CONF ];
         then
