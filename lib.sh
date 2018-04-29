@@ -104,7 +104,6 @@ is_root() {
     fi
 }
 
-
 # Check if root
 root_check() {
 if ! is_root
@@ -120,6 +119,23 @@ is directly in your PATH.
 More information can be found here: https://unix.stackexchange.com/a/3064"
     exit 1
 fi
+}
+
+# Check if process is runnnig: is_process_running dpkg
+is_process_running() {
+PROCESS="$1"
+
+while :
+do
+    RESULT=$(pgrep "${PROCESS}")
+
+    if [ "${RESULT:-null}" = null ]; then
+            break
+    else
+            echo "${PROCESS} is running. Waiting for it to stop..."
+            sleep 10
+    fi
+done
 }
 
 debug_mode() {
