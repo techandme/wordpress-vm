@@ -328,12 +328,14 @@ server {
     listen [::]:443 ssl http2;
     
     ## Your website name goes here.
-    # server_name domain.tld;
+    # server_name example.com;
     ## Your only path reference.
     root $WPATH;
     ## This should be in your http block and if it is, it's not needed here.
     index index.php;
 
+    resolver $GATEWAY;
+    
     # certs sent to the client in SERVER HELLO are concatenated in ssl_certificate
     ssl_certificate /path/to/signed_cert_plus_intermediates;
     ssl_certificate_key /path/to/private_key;
@@ -341,7 +343,7 @@ server {
     ssl_session_cache shared:SSL:50m;
     ssl_session_tickets off;
 
-    # Diffie-Hellman parameter for DHE ciphersuites, recommended 2048 bits
+    # Diffie-Hellman parameter for DHE ciphersuites, recommended 4096 bits
     ssl_dhparam /path/to/dhparam.pem;
 
     # intermediate configuration. tweak to your needs.
@@ -360,8 +362,17 @@ server {
     ## verify chain of trust of OCSP response using Root CA and Intermediate certs
     ssl_trusted_certificate /path/to/root_CA_cert_plus_intermediates;
 
-    resolver $GATEWAY;
     
+    location / {
+        try_files $uri $uri/ /index.php?$args;        
+    }
+    
+    location ~ /\\. {
+        access_log off;
+        log_not_found off; 
+        deny all;
+    }
+
     location = /favicon.ico {
                 log_not_found off;
                 access_log off;
@@ -375,11 +386,15 @@ server {
 
     location ~ \\.php$ {
                 #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
-                include fastcgi.conf;
+                fastcgi_index index.php;
+		include fastcgi.conf;
+		include fastcgi_params;
                 fastcgi_intercept_errors on;
                 fastcgi_pass php;
                 fastcgi_buffers 16 16k;
                 fastcgi_buffer_size 32k;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		fastcgi_param SCRIPT_NAME $fastcgi_script_name;
      }
 
      location ~* \\.(js|css|png|jpg|jpeg|gif|ico)$ {
@@ -406,7 +421,7 @@ server {
     listen [::]:80;
     
     ## Your website name goes here.
-    # server_name domain.tld;
+    # server_name example.com;
     ## Your only path reference.
     root $WPATH;
     ## This should be in your http block and if it is, it's not needed here.
@@ -414,6 +429,16 @@ server {
 
     resolver $GATEWAY;
     
+    location / {
+        try_files $uri $uri/ /index.php?$args;        
+    }
+    
+    location ~ /\\. {
+        access_log off;
+        log_not_found off; 
+        deny all;
+    }
+
     location = /favicon.ico {
                 log_not_found off;
                 access_log off;
@@ -427,11 +452,15 @@ server {
 
     location ~ \\.php$ {
                 #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
-                include fastcgi.conf;
+                fastcgi_index index.php;
+		include fastcgi.conf;
+		include fastcgi_params;
                 fastcgi_intercept_errors on;
                 fastcgi_pass php;
                 fastcgi_buffers 16 16k;
                 fastcgi_buffer_size 32k;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		fastcgi_param SCRIPT_NAME $fastcgi_script_name;
      }
 
      location ~* \\.(js|css|png|jpg|jpeg|gif|ico)$ {
