@@ -19,15 +19,19 @@ root_check
 msg_box "Important! Please read this:
 This script will install SSL from Let's Encrypt.
 It's free of charge, and very easy to maintain.
+
 Before we begin the installation you need to have
 a domain that the SSL certs will be valid for.
 If you don't have a domain yet, get one before
 you run this script!
+
 You also have to open port 80+443 against this VMs
 IP address: $ADDRESS - do this in your router/FW.
 Here is a guide: https://goo.gl/Uyuf65
+
 This script is located in $SCRIPTS and you
 can run this script after you got a domain.
+
 Please don't run this script if you don't have
 a domain yet. You can get one for a fair price here:
 https://store.binero.se/?lang=en-US"
@@ -120,10 +124,6 @@ then
     echo "$ssl_conf was successfully created"
     sleep 2
     cat << SSL_CREATE > "$ssl_conf"
-upstream php {
-    server unix:/run/php/php7.2-fpm.sock;
-}
-	
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
