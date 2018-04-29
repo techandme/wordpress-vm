@@ -117,10 +117,10 @@ CONFIG_CREATE
 
 if ! service nginx restart
 then
-msg_box " Ngnx could not restart, something is wrong with the configuration. 
+msg_box "Ngnx could not restart, something is wrong with the configuration. 
 Please report this to $ISSUES."
     exit 1
 else
 msg_box "$PHPMYADMIN_CONF was successfully secured.
-You can reach it at: http://$ADDRESS:81
+You can reach it at: http://$ADDRESS:81"
 fi
