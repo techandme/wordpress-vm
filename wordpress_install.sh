@@ -319,6 +319,7 @@ apt install figlet -y
 export uri
 export document_root
 export fastcgi_script_name
+export args
 
 # Generate $SSL_CONF
 if [ ! -f $SSL_CONF ];
@@ -583,6 +584,7 @@ fi
 unset uri
 unset document_root
 unset fastcgi_script_name
+unset args
 
 # Enable new config
 # ln -s $SSL_CONF /etc/nginx/sites-enabled/
