@@ -80,7 +80,7 @@ server {
                        root /usr/share/;
                        fastcgi_pass php;
                        fastcgi_index index.php;
-                       fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                       fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
                        include /etc/nginx/fastcgi_params;
                }
                location ~* ^/phpmyadmin/(.+\\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
