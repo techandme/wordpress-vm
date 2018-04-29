@@ -12,63 +12,49 @@ true
 DEBUG=0
 debug_mode
 
-# Check if root
-if ! is_root
-then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You need to type: ${Cyan}sudo ${Color_Off}bash %s/activate-ssl.sh\n" "$SCRIPTS"
-    exit 1
-fi
+# Check root
+root_check
 
-clear
+# Information
+msg_box "Important! Please read this:
+This script will install SSL from Let's Encrypt.
+It's free of charge, and very easy to maintain.
+Before we begin the installation you need to have
+a domain that the SSL certs will be valid for.
+If you don't have a domain yet, get one before
+you run this script!
+You also have to open port 80+443 against this VMs
+IP address: $ADDRESS - do this in your router/FW.
+Here is a guide: https://goo.gl/Uyuf65
+This script is located in $SCRIPTS and you
+can run this script after you got a domain.
+Please don't run this script if you don't have
+a domain yet. You can get one for a fair price here:
+https://store.binero.se/?lang=en-US"
 
-cat << STARTMSG
-+---------------------------------------------------------------+
-|       Important! Please read this!                            |
-|                                                               |
-|       This script will install SSL from Let's Encrypt.        |
-|       It's free of charge, and very easy to use.              |
-|                                                               |
-|       Before we begin the installation you need to have       |
-|       a domain that the SSL certs will be valid for.          |
-|       If you don't have a domain yet, get one before          |
-|       you run this script!                                    |
-|                                                               |
-|       You also have to open port 443 against this VMs         |
-|       IP address: "$ADDRESS" - do this in your router.    |
-|       Here is a guide: https://goo.gl/Uyuf65                  |
-|                                                               |
-|       This script is located in "$SCRIPTS" and you        |
-|       can run this script after you got a domain.             |
-|                                                               |
-|       Please don't run this script if you don't have          |
-|       a domain yet. You can get one for a fair price here:    |
-|       https://www.citysites.eu/                               |
-|                                                               |
-+---------------------------------------------------------------+
-STARTMSG
 if [[ "no" == $(ask_yes_or_no "Are you sure you want to continue?") ]]
 then
-    echo
-    echo "OK, but if you want to run this script later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
-    any_key "Press any key to continue..."
-exit
-fi
-if [[ "no" == $(ask_yes_or_no "Have you forwarded port 443 in your router?") ]]
-then
-    echo
-    echo "OK, but if you want to run this script later, just type: sudo bash /var/scripts/activate-ssl.sh"
-    any_key "Press any key to continue..."
+msg_box "OK, but if you want to run this script later,
+just type: sudo bash $SCRIPTS/activate-ssl.sh"
     exit
 fi
+
+if [[ "no" == $(ask_yes_or_no "Have you forwarded port 80+443 in your router?") ]]
+then
+msg_box "OK, but if you want to run this script later,
+just type: sudo bash /var/scripts/activate-ssl.sh"
+    exit
+fi
+
 if [[ "yes" == $(ask_yes_or_no "Do you have a domain that you will use?") ]]
 then
     sleep 1
 else
-    echo
-    echo "OK, but if you want to run this script later, just type: sudo bash /var/scripts/activate-ssl.sh"
-    any_key "Press any key to continue..."
+msg_box "OK, but if you want to run this script later, 
+just type: sudo bash /var/scripts/activate-ssl.sh"
     exit
 fi
+
 echo
 while true
 do
@@ -76,7 +62,7 @@ do
 cat << ENTERDOMAIN
 +---------------------------------------------------------------+
 |    Please enter the domain name you will use for Wordpress:   |
-|    Like this: example.com, or wordpress.example.com           |
+|    Like this: wordpress.com, or wordpress.example.com         |
 +---------------------------------------------------------------+
 ENTERDOMAIN
 echo
@@ -87,34 +73,16 @@ then
     break
 fi
 done
-# Check if 443 is open using nmap, if not notify the user
-apt update -q4 & spinner_loading
-if [ "$(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    echo "nmap is already installed..."
-else
-    apt install nmap -y
-fi
-if [ "$(nmap -sS -p 443 "$WANIP4" -PN | grep -c "open")" == "1" ]
-then
-    apt remove --purge nmap -y
-else
-    echo "Port 443 is not open on $WANIP4. We will do a second try on $domain instead."
-    any_key "Press any key to test $domain... "
-    sed -i "s|127.0.1.1.*|127.0.1.1       $domain wordpress|g" /etc/hosts
-    service networking restart
-    if [[ $(nmap -sS -PN -p 443 "$domain" | grep -m 1 "open" | awk '{print $2}') = open ]]
-    then
-        apt remove --purge nmap -y
-    else
-        echo "Port 443 is not open on $domain. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/"
-        any_key "Press any key to exit..."
-        apt remove --purge nmap -y
-        exit 1
-    fi
-fi
+
+# Check if port is open with NMAP
+sed -i "s|127.0.1.1.*|127.0.1.1       $domain wordpress|g" /etc/hosts
+service networking restart
+check_open_port 80 "$domain"
+check_open_port 443 "$domain"
+
 # Fetch latest version of test-new-config.sh
 check_command download_le_script test-new-config
+
 # Check if $domain exists and is reachable
 echo
 echo "Checking if $domain exists and is reachable..."
@@ -127,27 +95,17 @@ elif curl -s -k -m 10 "$domain"; then
 elif curl -s -k -m 10 "https://$domain" -o /dev/null ; then
     sleep 1
 else
-    echo "Nope, it's not there. You have to create $domain and point"
-    echo "it to this server before you can run this script."
-    any_key "Press any key to continue..."
+msg_box "Nope, it's not there. You have to create $domain and point
+it to this server before you can run this script."
     exit 1
 fi
-# Install letsencrypt
-letsencrypt --version 2> /dev/null
-LE_IS_AVAILABLE=$?
-if [ $LE_IS_AVAILABLE -eq 0 ]
-then
-    letsencrypt --version
-else
-    echo "Installing letsencrypt..."
-    add-apt-repository ppa:certbot/certbot -y
-    apt update -q4 & spinner_loading
-    apt install letsencrypt -y -q
-    apt update -q4 & spinner_loading
-    apt dist-upgrade -y
-fi
+
+# Install certbot (Let's Encrypt)
+install_certbot
+
 #Fix issue #28
 ssl_conf="/etc/nginx/sites-available/"$domain.conf""
+
 # DHPARAM
 DHPARAMS="$CERTFILES/$domain/dhparam.pem"
 # Check if "$ssl.conf" exists, and if, then delete
