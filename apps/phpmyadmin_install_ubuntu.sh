@@ -70,76 +70,27 @@ then
 fi
 touch "$PHPMYADMIN_CONF"
 cat << CONF_CREATE > "$PHPMYADMIN_CONF"
-# phpMyAdmin default Apache configuration
-
-Alias /phpmyadmin $PHPMYADMINDIR
-
-<Directory $PHPMYADMINDIR>
-        Options FollowSymLinks
-        DirectoryIndex index.php
-
-    <IfModule mod_php.c>
-        <IfModule mod_mime.c>
-            AddType application/x-httpd-php .php
-        </IfModule>
-        <FilesMatch ".+\.php$">
-            SetHandler application/x-httpd-php
-        </FilesMatch>
-
-        php_flag magic_quotes_gpc Off
-        php_flag track_vars On
-        php_flag register_globals Off
-        php_admin_flag allow_url_fopen On
-        php_value include_path .
-        php_admin_value upload_tmp_dir /var/lib/phpmyadmin/tmp
-        php_admin_value open_basedir /usr/share/phpmyadmin/:/etc/phpmyadmin/:/var/lib/phpmyadmin/:/usr/share/php/php-gettext/:/usr/share/javascript/:/usr/share/php/tcpdf/:/usr/share/doc/phpm$
-    </IfModule>
-
-    <IfModule mod_authz_core.c>
-# Apache 2.4
-      <RequireAny>
-        Require ip $WANIP4
-        Require ip $ADDRESS
-        Require ip 127.0.0.1
-        Require ip ::1
-      </RequireAny>
-    </IfModule>
-
-        <IfModule !mod_authz_core.c>
-# Apache 2.2
-        Order Deny,Allow
-        Deny from All
-        Allow from $WANIP4
-        Allow from $ADDRESS
-        Allow from ::1
-        Allow from localhost
-    </IfModule>
-</Directory>
-
-# Authorize for setup
-<Directory $PHPMYADMINDIR/setup>
-   Require all denied
-</Directory>
-
-# Authorize for setup
-<Directory $PHPMYADMINDIR/setup>
-    <IfModule mod_authz_core.c>
-        <IfModule mod_authn_file.c>
-            AuthType Basic
-            AuthName "phpMyAdmin Setup"
-            AuthUserFile /etc/phpmyadmin/htpasswd.setup
-        </IfModule>
-        Require valid-user
-    </IfModule>
-</Directory>
-
-# Disallow web access to directories that don't need it
-<Directory $PHPMYADMINDIR/libraries>
-    Require all denied
-</Directory>
-<Directory $PHPMYADMINDIR/setup/lib>
-    Require all denied
-</Directory>
+server {
+    listen 81;
+        location /phpmyadmin {
+               root /usr/share/;
+               index index.php index.html index.htm;
+               location ~ ^/phpmyadmin/(.+\.php)$ {
+                       try_files $uri $uri/ /index.php?$args;
+                       root /usr/share/;
+                       fastcgi_pass php;
+                       fastcgi_index index.php;
+                       fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                       include /etc/nginx/fastcgi_params;
+               }
+               location ~* ^/phpmyadmin/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+                       root /usr/share/;
+               }
+        }
+        location /phpMyAdmin {
+               rewrite ^/* /phpmyadmin last;
+        }
+}
 CONF_CREATE
 
 # Secure phpMyadmin even more
@@ -164,13 +115,12 @@ cat << CONFIG_CREATE >> "$CONFIG"
 ?>
 CONFIG_CREATE
 
-if ! service apache2 restart
+if ! service nginx restart
 then
-    echo "Apache2 could not restart..."
-    echo "The script will exit."
+msg_box " Ngnx could not restart, something is wrong with the configuration. 
+Please report this to $ISSUES."
     exit 1
 else
-    echo
-    echo "$PHPMYADMIN_CONF was successfully secured."
-    echo
+msg_box "$PHPMYADMIN_CONF was successfully secured.
+You can reach it at: http://$ADDRESS:81
 fi
