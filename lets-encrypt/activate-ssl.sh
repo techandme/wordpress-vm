@@ -160,7 +160,9 @@ server {
     location / {
         try_files \$uri \$uri/ /index.php?\$args;        
     }
-    
+    location /.well-known {
+        root /usr/share/nginx/html;
+    }
     location ~ /\\. {
         access_log off;
         log_not_found off; 
