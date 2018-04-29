@@ -53,6 +53,10 @@ else
     rm -f /var/mysql_password.txt
 fi
 
+# Check if dpkg or apt is running
+is_process_running apt
+is_process_running dpkg
+
 # System Upgrade
 apt update -q2
 apt dist-upgrade -y
