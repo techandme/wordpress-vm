@@ -576,6 +576,7 @@ fi
 if [ -f "$NGINX_DEF" ];
         then
         rm $NGINX_DEF
+	rm /etc/nginx/sites-enabled/default
 	touch $NGINX_DEF
         cat << NGINX_DEFAULT > "$NGINX_DEF"
 ##
