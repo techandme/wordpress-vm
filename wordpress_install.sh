@@ -572,12 +572,12 @@ echo "$NGINX_CONF was successfully created"
 sleep 1
 fi
 
-# Generate $NGINX_CONF
-if [ -f "$NGINX_DEF" ];
+# Generate $NGINX_DEF
+if [ ! -f "$NGINX_DEF" ];
 then
-    rm $NGINX_DEF
-	  rm /etc/nginx/sites-enabled/default
-	  touch $NGINX_DEF
+    rm -f $NGINX_DEF
+    rm -f /etc/nginx/sites-enabled/default
+    touch $NGINX_DEF
     cat << NGINX_DEFAULT > "$NGINX_DEF"
 ##
 # You should look at the following URL's in order to grasp a solid understanding
