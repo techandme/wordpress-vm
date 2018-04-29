@@ -62,7 +62,7 @@ do
 cat << ENTERDOMAIN
 +---------------------------------------------------------------+
 |    Please enter the domain name you will use for Wordpress:   |
-|    Like this: wordpress.com, or wordpress.example.com         |
+|    Like this: example.com, or wordpress.example.com         |
 +---------------------------------------------------------------+
 ENTERDOMAIN
 echo
