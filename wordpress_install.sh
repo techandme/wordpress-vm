@@ -579,6 +579,11 @@ echo "$NGINX_CONF was successfully created"
 sleep 1
 fi
 
+# Not needed for travis anymore
+unset uri
+unset document_root
+unset fastcgi_script_name
+
 # Enable new config
 # ln -s $SSL_CONF /etc/nginx/sites-enabled/
 ln -s $HTTP_CONF /etc/nginx/sites-enabled/
