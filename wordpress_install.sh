@@ -710,10 +710,10 @@ find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -nam
 # Install virtual kernels for Hyper-V, and extra for UTF8 kernel module + Collabora and OnlyOffice
 # Kernel 4.4
 apt install --install-recommends -y \
-linux-virtual-lts-xenial \
-linux-tools-virtual-lts-xenial \
-linux-cloud-tools-virtual-lts-xenial \
-linux-image-virtual-lts-xenial \
+linux-virtual-lts-bionic \
+linux-tools-virtual-lts-bionic \
+linux-cloud-tools-virtual-lts-bionic \
+linux-image-virtual-lts-bionic \
 linux-image-extra-"$(uname -r)"
 
 # Prefer IPv6
