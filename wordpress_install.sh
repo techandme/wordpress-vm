@@ -473,6 +473,103 @@ echo "$HTTP_CONF was successfully created"
 sleep 3
 fi
 
+# Generate $NGINX_CONF
+if [ ! -f $NGINX_CONF ];
+        then
+        touch $NGINX_CONF
+        cat << NGINX_CREATE > $NGINX_CONF
+user www-data;
+worker_processes 2;
+pid /run/nginx.pid;
+
+	worker_rlimit_nofile 10240;
+
+events {
+	worker_connections 10240;
+	multi_accept on;
+	use epoll;
+}
+	
+http {
+
+	##
+	# Basic Settings
+	##
+
+	sendfile on;
+	tcp_nopush on;
+	tcp_nodelay on;
+	keepalive_timeout 65;
+	types_hash_max_size 2048;
+	server_tokens off;
+	client_body_timeout   10;
+	client_header_timeout 10;
+	client_header_buffer_size 128;
+        client_max_body_size 10M;
+	# server_names_hash_bucket_size 64;
+	# server_name_in_redirect off;
+
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+
+	##
+	# SSL Settings
+	##
+
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+	ssl_prefer_server_ciphers on;
+
+	##
+	# Logging Settings
+	##
+
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
+
+	##
+	# Gzip Settings
+	##
+
+	gzip on;
+	gzip_disable "msie6";
+
+	# gzip_vary on;
+	# gzip_proxied any;
+	# gzip_comp_level 6;
+	  gzip_buffers 16 4k;
+	# gzip_http_version 1.1;	
+	# gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+	##
+	# Virtual Host Configs
+	##
+
+	include /etc/nginx/conf.d/*.conf;
+	include /etc/nginx/sites-enabled/*;
+}
+
+#mail {
+#	# See sample authentication script at:
+#	# http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
+# 
+#	# auth_http localhost/auth.php;
+#	# pop3_capabilities "TOP" "USER";
+#	# imap_capabilities "IMAP4rev1" "UIDPLUS";
+# 
+#	server {
+#		listen     localhost:110;
+#		protocol   pop3;
+#		proxy      on;
+#	}
+# 
+#	server {
+#		listen     localhost:143;
+#		protocol   imap;
+#		proxy      on;
+#	}
+#}
+NGINX_CREATE
+
 # Enable new config
 # ln -s $SSL_CONF /etc/nginx/sites-enabled/
 ln -s $HTTP_CONF /etc/nginx/sites-enabled/
