@@ -29,7 +29,7 @@ then
 fi
 
 
-if ! version 18.04 "$DISTRO" 186.04.4; then
+if ! version 18.04 "$DISTRO" 18.04.4; then
     echo "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
     exit
 fi
