@@ -315,14 +315,11 @@ EOL
 apt install figlet -y
 
 # Generate $SSL_CONF
+install_if_not ssl-cert
 if [ ! -f $SSL_CONF ];
         then
         touch $SSL_CONF
         cat << SSL_CREATE > $SSL_CONF
-upstream php {
-    server unix:/run/php/php7.2-fpm.sock;
-}
-	
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
@@ -337,14 +334,14 @@ server {
     resolver $GATEWAY;
     
     # certs sent to the client in SERVER HELLO are concatenated in ssl_certificate
-    ssl_certificate /path/to/signed_cert_plus_intermediates;
-    ssl_certificate_key /path/to/private_key;
+    ssl_certificate /etc/ssl/certs/ssl-cert-snakeoil.pem;
+    ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
     ssl_session_timeout 1d;
     ssl_session_cache shared:SSL:50m;
     ssl_session_tickets off;
 
     # Diffie-Hellman parameter for DHE ciphersuites, recommended 4096 bits
-    ssl_dhparam /path/to/dhparam.pem;
+    # ssl_dhparam /path/to/dhparam.pem;
 
     # intermediate configuration. tweak to your needs.
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
@@ -360,7 +357,7 @@ server {
     ssl_stapling_verify on;
 
     ## verify chain of trust of OCSP response using Root CA and Intermediate certs
-    ssl_trusted_certificate /path/to/root_CA_cert_plus_intermediates;
+    # ssl_trusted_certificate /path/to/root_CA_cert_plus_intermediates;
 
     
     location / {
@@ -412,10 +409,6 @@ if [ ! -f $HTTP_CONF ];
         then
         touch $HTTP_CONF
         cat << HTTP_CREATE > $HTTP_CONF
-upstream php {
-    server unix:/run/php/php7.2-fpm.sock;
-}
-	
 server {
     listen 80;
     listen [::]:80;
@@ -546,6 +539,10 @@ http {
 
 	include /etc/nginx/conf.d/*.conf;
 	include /etc/nginx/sites-enabled/*;
+
+	upstream php {
+        server unix:/run/php/php7.2-fpm.sock;
+        }
 }
 
 #mail {
@@ -574,7 +571,7 @@ sleep 1
 fi
 
 # Enable new config
-# ln -s $SSL_CONF /etc/nginx/sites-enabled/
+ln -s $SSL_CONF /etc/nginx/sites-enabled/
 ln -s $HTTP_CONF /etc/nginx/sites-enabled/
 systemctl restart nginx.service
 
