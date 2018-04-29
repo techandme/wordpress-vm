@@ -404,7 +404,7 @@ server {
 }
 SSL_CREATE
 echo "$SSL_CONF was successfully created"
-sleep 3
+sleep 1
 fi
 
 # Generate $HTTP_CONF
@@ -470,7 +470,7 @@ server {
 }
 HTTP_CREATE
 echo "$HTTP_CONF was successfully created"
-sleep 3
+sleep 1
 fi
 
 # Generate $NGINX_CONF
@@ -569,6 +569,9 @@ http {
 #	}
 #}
 NGINX_CREATE
+echo "$NGINX_CONF was successfully created"
+sleep 1
+fi
 
 # Enable new config
 # ln -s $SSL_CONF /etc/nginx/sites-enabled/
