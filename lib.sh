@@ -249,6 +249,25 @@ then
 fi
 }
 
+test_connection() {
+install_if_not dnsutils
+install_if_not network-manager
+check_command service network-manager restart
+ip link set "$IFACE" down
+wait
+ip link set "$IFACE" up
+wait
+check_command service network-manager restart
+echo "Checking connection..."
+sleep 3
+if ! nslookup github.com
+then
+msg_box "Network NOT OK. You must have a working network connection to run this script
+If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
+    exit 1
+fi
+}
+
 # Test RAM size 
 # Call it like this: ram_check [amount of min RAM in GB] [for which program]
 # Example: ram_check 2 Wordpress
