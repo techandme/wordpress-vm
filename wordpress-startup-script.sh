@@ -10,7 +10,14 @@ unset WPDB
 
 # Tech and Me © - 2017, https://www.techandme.se/
 
-## If you want debug mode, please activate it further down in the code at line ~60
+## If you want debug mode, please activate it further down in the code at line ~132
+
+# FUNCTIONS #
+
+msg_box() {
+local PROMPT="$1"
+    whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
+}
 
 is_root() {
     if [[ "$EUID" -ne 0 ]]
@@ -21,9 +28,25 @@ is_root() {
     fi
 }
 
+root_check() {
+if ! is_root
+then
+msg_box "Sorry, you are not root. You now have two options:
+1. With SUDO directly:
+   a) :~$ sudo bash $SCRIPTS/name-of-script.sh
+2. Become ROOT and then type your command:
+   a) :~$ sudo -i
+   b) :~# $SCRIPTS/name-of-script.sh
+In both cases above you can leave out $SCRIPTS/ if the script
+is directly in your PATH.
+More information can be found here: https://unix.stackexchange.com/a/3064"
+    exit 1
+fi
+}
+
 network_ok() {
     echo "Testing if network is OK..."
-    service networking restart
+    service network-manager restart
     if wget -q -T 20 -t 2 http://github.com -O /dev/null
     then
         return 0
@@ -32,12 +55,19 @@ network_ok() {
     fi
 }
 
-# Check if root
-if ! is_root
-then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/wordpress-startup-script.sh\n"
+check_command() {
+  if ! "$@";
+  then
+     printf "${IRed}Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!${Color_Off}\n"
+     echo "$* failed"
     exit 1
-fi
+  fi
+}
+
+# END OF FUNCTIONS #
+
+# Check if root
+root_check
 
 # Check network
 if network_ok
@@ -47,32 +77,48 @@ else
     echo "Setting correct interface..."
     [ -z "$IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
     # Set correct interface
-    {
-        sed '/# The primary network interface/q' /etc/network/interfaces
-        printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"
-    } > /etc/network/interfaces.new
-    mv /etc/network/interfaces.new /etc/network/interfaces
-    service networking restart
-    # shellcheck source=lib.sh
-    CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
-    unset CHECK_CURRENT_REPO
+cat <<-SETDHCP > "/etc/netplan/01-netcfg.yaml"
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    $IFACE:
+      dhcp4: yes
+      dhcp6: yes
+SETDHCP
+    check_command netplan apply
+    check_command service network-manager restart
+    ip link set "$IFACE" down
+    wait
+    ip link set "$IFACE" up
+    wait
+    check_command service network-manager restart
+    echo "Checking connection..."
+    sleep 3
+    if ! nslookup github.com
+    then
+msg_box "Network NOT OK. You must have a working network connection to run this script
+If you think that this is a bug, please report it to https://github.com/techandme/wordpress-vm/issues."
+    exit 1
+    fi
 fi
 
-# Check for errors + debug code and abort if something isn't right
-# 1 = ON
-# 0 = OFF
-DEBUG=0
-debug_mode
-
-# Check network
+# Check network again
 if network_ok
 then
     printf "${Green}Online!${Color_Off}\n"
 else
-    printf "\nNetwork NOT OK. You must have a working Network connection to run this script.\n"
-    echo "Please report this issue here: $ISSUES"
+msg_box "Network NOT OK. You must have a working network connection to run this script
+If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
     exit 1
 fi
+
+# shellcheck source=lib.sh
+WPDB=1 && MYCNFPW=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
+unset FIRST_IFACE
+unset CHECK_CURRENT_REPO
+unset MYCNFPW
+unset WPDB
 
 # Check where the best mirrors are and update
 printf "\nTo make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.\n"
@@ -80,6 +126,12 @@ echo "This VM comes with mirrors based on servers in that where used when the VM
 echo "We recomend you to change the mirrors based on where this is currently installed."
 echo "Checking current mirror..."
 printf "Your current server repository is:  ${Cyan}$REPO${Color_Off}\n"
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
 
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
