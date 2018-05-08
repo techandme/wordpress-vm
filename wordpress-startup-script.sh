@@ -109,7 +109,7 @@ then
     printf "${Green}Online!${Color_Off}\n"
 else
 msg_box "Network NOT OK. You must have a working network connection to run this script
-If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
+If you think that this is a bug, please report it to https://github.com/techandme/wordpress-vm/issues."
     exit 1
 fi
 
