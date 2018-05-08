@@ -193,65 +193,10 @@ EOMSTART
 any_key "Press any key to start the script..."
 clear
 
-# VPS?
-if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
-then
-    # Change IP
-    printf "\n${Color_Off}OK, we assume you run this locally and we will now configure your IP to be static.${Color_Off}\n"
-    echo "Your internal IP is: $ADDRESS"
-    printf "\n${Color_Off}Write this down, you will need it to set static IP\n"
-    echo "in your router later. It's included in this guide:"
-    echo "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
-    any_key "Press any key to set static IP..."
-    ifdown "$IFACE"
-    wait
-    ifup "$IFACE"
-    wait
-    bash "$SCRIPTS/ip.sh"
-    if [ -z "$IFACE" ]
-    then
-        echo "IFACE is an emtpy value. Trying to set IFACE with another method..."
-        download_static_script ip2
-        bash "$SCRIPTS/ip2.sh"
-        rm -f "$SCRIPTS/ip2.sh"
-    fi
-    ifdown "$IFACE"
-    wait
-    ifup "$IFACE"
-    wait
-    echo
-    echo "Testing if network is OK..."
-    echo
-    CONTEST=$(bash $SCRIPTS/test_connection.sh)
-    if [ "$CONTEST" == "Connected!" ]
-    then
-        # Connected!
-        printf "${Green}Connected!${Color_Off}\n"
-        printf "We will use the DHCP IP: ${Green}$ADDRESS${Color_Off}. If you want to change it later then just edit the interfaces file:\n"
-        printf "sudo nano /etc/network/interfaces\n"
-        echo "If you experience any bugs, please report it here:"
-        echo "$ISSUES"
-        any_key "Press any key to continue..."
-    else
-        # Not connected!
-        printf "${Red}Not Connected${Color_Off}\nYou should change your settings manually in the next step.\n"
-        any_key "Press any key to open /etc/network/interfaces..."
-        nano /etc/network/interfaces
-        service networking restart
-        clear
-        echo "Testing if network is OK..."
-        ifdown "$IFACE"
-        wait
-        ifup "$IFACE"
-        wait
-        bash "$SCRIPTS/test_connection.sh"
-        wait
-    fi
-else
-    echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
-    sleep 5 & spinner_loading
-fi
-clear
+# Set static IP
+wget https://raw.githubusercontent.com/nextcloud/vm/master/static/set_static_ip.sh
+bash set_static_ip.sh
+rm -f set_static_ip.sh
 
 # Set keyboard layout
 echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
