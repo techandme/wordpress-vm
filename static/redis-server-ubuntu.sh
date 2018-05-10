@@ -47,6 +47,9 @@ sudo apt install -q -y \
     tcl8.6 \
     php-dev \
     php-pear
+    
+# Update Pecl
+check_command pecl update-channels pecl.net
 
 # Install PHPmodule
 if ! yes no | pecl install -Z redis
