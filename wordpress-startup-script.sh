@@ -194,7 +194,7 @@ any_key "Press any key to start the script..."
 clear
 
 # Set static IP
-wget https://raw.githubusercontent.com/nextcloud/vm/master/static/set_static_ip.sh
+wget -q https://raw.githubusercontent.com/nextcloud/vm/master/static/set_static_ip.sh
 bash set_static_ip.sh
 rm -f set_static_ip.sh
 
