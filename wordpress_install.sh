@@ -235,7 +235,7 @@ define( 'WP_DEBUG', false );
 define( 'WP_CACHE_KEY_SALT', 'wpredis_' );
 define( 'WP_REDIS_MAXTTL', 9600);
 define( 'WP_REDIS_SCHEME', 'unix' );
-define( 'WP_REDIS_PATH', '/var/run/redis/redis.sock' );
+define( 'WP_REDIS_PATH', '$REDIS_SOCK' );
 define( 'WP_REDIS_PASSWORD', '$REDIS_PASS' );
 define( 'WP_AUTO_UPDATE_CORE', true );
 PHP
