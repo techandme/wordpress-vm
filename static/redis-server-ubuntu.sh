@@ -62,9 +62,8 @@ fi
 # echo 'extension=redis.so' > /etc/php/7.0/mods-available/redis.ini
 # phpenmod redis
 # Setting direct to apache2 works if 'libapache2-mod-php7.0' is installed
-echo 'extension=redis.so' >> /etc/php/7.0/apache2/php.ini
-service apache2 restart
-
+echo 'extension=redis.so' >> /etc/php/7.2/fpm/php.ini
+service nginx restart
 
 # Install Redis
 if ! apt -y install redis-server
