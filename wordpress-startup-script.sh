@@ -333,6 +333,11 @@ echo "WP USER: $USER"
 echo "WP PASS: $NEWWPADMINPASS"
 } > /var/adminpass.txt
 
+# Change servername in Nginx
+server_name=$(echo "$FQDN" | cut -d "/" -f3)
+sed -i "s|# server_name .*|server_name $server_name;|g" /etc/nginx/sites-available/wordpress_port_80.conf
+sed -i "s|# server_name .*|server_name $server_name;|g" /etc/nginx/sites-available/wordpress_port_443.conf
+check_command service nginx restart
 
 # Show current administrators
 echo
