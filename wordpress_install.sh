@@ -82,20 +82,7 @@ echo "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
 echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
 
 # Check network
-if ! [ -x "$(command -v nslookup)" ]
-then
-    apt install dnsutils -y -q
-fi
-if ! [ -x "$(command -v ifup)" ]
-then
-    apt install ifupdown -y -q
-fi
-sudo ifdown "$IFACE" && sudo ifup "$IFACE"
-if ! nslookup github.com
-then
-    echo "Network NOT OK. You must have a working Network connection to run this script."
-    exit 1
-fi
+test_connection
 
 # Check where the best mirrors are and update
 echo
