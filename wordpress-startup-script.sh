@@ -397,7 +397,7 @@ apt autoclean
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e "$(uname -r | cut -f1,2 -d"-")" | grep -e "[0-9]" | xargs sudo apt -y purge)
 echo "$CLEARBOOT"
 
-ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
+ADDRESS2=$(grep "server_name" /etc/nginx/sites-available/wordpress_port_80.conf | awk '$1 == "server_name" { print $2 }' | cut -d ";" -f1)
 # Success!
 clear
 printf "%s\n""${Green}"
