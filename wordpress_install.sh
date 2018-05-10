@@ -73,11 +73,8 @@ then
 fi
 
 # Change DNS
-if ! [ -x "$(command -v resolvconf)" ]
-then
-    apt install resolvconf -y -q
-    yes | dpkg-reconfigure resolvconf
-fi
+install_if_not resolvconf
+yes | dpkg-reconfigure --frontend=noninteractive resolvconf
 echo "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
 echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
 
