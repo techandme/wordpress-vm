@@ -197,6 +197,7 @@ clear
 wget -q https://raw.githubusercontent.com/nextcloud/vm/master/static/set_static_ip.sh
 bash set_static_ip.sh
 rm -f set_static_ip.sh
+clear
 
 # Set keyboard layout
 echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
