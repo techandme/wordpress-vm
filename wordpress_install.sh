@@ -318,6 +318,13 @@ server {
 
     resolver $GATEWAY;
     
+     ## Show real IP behind proxy (change to the proxy IP)
+#    set_real_ip_from  $GATEWAY/24;
+#    set_real_ip_from  $GATEWAY;
+#    set_real_ip_from  2001:0db8::/32;
+#    real_ip_header    X-Forwarded-For;
+#    real_ip_recursive on;
+    
     # certs sent to the client in SERVER HELLO are concatenated in ssl_certificate
     ssl_certificate /etc/ssl/certs/ssl-cert-snakeoil.pem;
     ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
