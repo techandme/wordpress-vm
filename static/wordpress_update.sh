@@ -66,7 +66,7 @@ then
     install_if_not php-dev
     echo "Trying to upgrade the Redis Pecl extenstion..."
     yes no | pecl upgrade redis
-    service apache2 restart
+    service nginx restart
 fi
 wp cli update --allow-root
 cd $WPATH
