@@ -42,6 +42,10 @@ UNIXUSER=$SUDO_USER
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
 
+# PHP-FPM
+PHP_INI=/etc/php/7.2/fpm/php.ini
+PHP_POOL_DIR=/etc/php/7.2/fpm/pool.d
+
 # MARIADB
 SHUF=$(shuf -i 25-29 -n 1)
 MARIADB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
