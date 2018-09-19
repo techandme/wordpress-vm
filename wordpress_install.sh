@@ -402,7 +402,7 @@ server {
     location ~* \\.php$ {
                 #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
                 fastcgi_split_path_info ^(.+\.php)(/.+)$;
-                try_files $uri =404;
+                try_files \$uri =404;
                 fastcgi_index index.php;
                 include fastcgi.conf;
                 include fastcgi_params;
@@ -473,7 +473,7 @@ server {
     location ~* \\.php$ {
                 #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
                 fastcgi_split_path_info ^(.+\.php)(/.+)$;
-                try_files $uri =404;
+                try_files \$uri =404;
                 fastcgi_index index.php;
                 include fastcgi.conf;
                 include fastcgi_params;
