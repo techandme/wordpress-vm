@@ -45,6 +45,7 @@ ROOT_PROFILE="/root/.bash_profile"
 # PHP-FPM
 PHP_INI=/etc/php/7.2/fpm/php.ini
 PHP_POOL_DIR=/etc/php/7.2/fpm/pool.d
+PHP_FPM_SOCK=/var/run/php7.2-fpm-wordpress.sock
 
 # MARIADB
 SHUF=$(shuf -i 25-29 -n 1)
