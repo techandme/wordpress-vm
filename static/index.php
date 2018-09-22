@@ -77,7 +77,7 @@ a:active {
 <div class="information">
 <p>Thank you for downloading the pre-configured Wordpress VM! If you see this page, you have successfully mounted the  Wordpress VM on the computer that will act as host for Wordpress.</p>
 <p>To complete the installation, please run the setup script. You can find login details in the middle of this page.
-<p>Don't hesitate to ask if you have any questions. My email is: <a href="mailto:daniel@techandme.se?Subject=Before%20login%20-%20Wordpress%20VM" target="_top">daniel@techandme.se</a> You can also check the <a href="https://www.techandme.se/install-instructions/" target="_blank">complete install instructions</a>.</p>
+<p>Don't hesitate to ask if you have any questions. My email is: <a href="mailto:daniel@hanssonit.se?Subject=Before%20login%20-%20Wordpress%20VM" target="_top">daniel@hanssonit.se</a> You can also check the <a href="https://www.techandme.se/install-instructions/" target="_blank">complete install instructions</a>.</p>
 <p>Please <a href="https://www.techandme.se/thank_you">donate</a> if you like it. All the donations will go to server costs and developing, making this VM even better.</p>
 
 </div>
