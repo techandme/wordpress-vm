@@ -66,7 +66,7 @@ server {
 
    location / {
            index   adminer.php;
-           allow   $WAN4 $ADDRESS;
+           allow   $WANIP4 $ADDRESS;
            deny    all;
        }
 
