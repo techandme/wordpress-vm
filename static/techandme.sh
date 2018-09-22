@@ -4,7 +4,7 @@ ADDRESS=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0
 WPADMINUSER=$(grep "WP USER:" /var/adminpass.txt)
 WPADMINPASS=$(grep "WP PASS:" /var/adminpass.txt)
 clear
-figlet -f small Tech and Me
+figlet -f small T&M Hansson IT AB
 echo "           https://www.techandme.se"
 echo
 echo

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me © - 2017, https://www.techandme.se/
+# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
@@ -252,7 +252,7 @@ chown wordpress:wordpress /var/adminpass.txt
 check_command wget -q $STATIC/welcome.txt
 sed -i "s|wordpress_user_login|$WPADMINUSER|g" welcome.txt
 sed -i "s|wordpress_password_login|$WPADMINPASS|g" welcome.txt
-wp post create ./welcome.txt --post_title='Tech and Me - Welcome' --post_status=publish --path=$WPATH --allow-root
+wp post create ./welcome.txt --post_title='T&M Hansson IT AB - Welcome' --post_status=publish --path=$WPATH --allow-root
 rm -f welcome.txt
 wp post delete 1 --force --allow-root
 

@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-<head><title>Wordpress - Tech and Me</title>
+<head><title>Wordpress - T&M Hansson IT AB</title>
 <style>
 body {
 	background-image: url("https://i.imgur.com/SfBe17Z.jpg");
@@ -71,7 +71,7 @@ a:active {
 <div class="logo">
 </div>
 <div class="logotext">
-<h2>Wordpress VM - <a href="https://www.techandme.se/pre-configured-wordpress-vm/" target="_blank">Tech and Me</a></h2>
+<h2>Wordpress VM - <a href="https://www.techandme.se/pre-configured-wordpress-vm/" target="_blank">T&M Hansson IT AB</a></h2>
 </div>
 <br>
 <div class="information">
