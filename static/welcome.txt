@@ -39,7 +39,6 @@
 
 <hr />
 
-<h1><a href="./phpmyadmin">Access phpMyadmin</a></h1>
-<h3>Note: Please accept the warning in the browser if you connect via HTTPS.</h3>
+<h1><a href=":81">Access Adminer</a></h1>
 <h1><a href="https://www.techandme.se/user-pass/" target="_blank">Login details</a></h1>
 <h3>Note: Your external IP is set as approved, all other access is forbidden.</h3>
