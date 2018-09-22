@@ -70,11 +70,9 @@ LETSENCRYPTPATH="/etc/letsencrypt"
 CERTFILES="$LETSENCRYPTPATH/live"
 DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
 
-# phpMyadmin
-PHPMYADMINDIR=/usr/share/phpmyadmin
-PHPMYADMIN_CONF="/etc/nginx/sites-available/phpmyadmin.conf"
-UPLOADPATH=""
-SAVEPATH=""
+# Adminer
+ADMINERDIR=/usr/share/adminer
+ADMINER_CONF=/etc/nginx/sites-available/adminer.conf
 
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
