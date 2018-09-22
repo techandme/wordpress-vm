@@ -65,7 +65,9 @@ server {
 
 
    location / {
-           index  index.php;
+           index   adminer.php;
+           allow   $WAN4 $ADDRESS;
+           deny    all;
        }
 
        ## Images and static content is treated different
@@ -111,7 +113,7 @@ The script will exit."
     exit 1
 else
 msg_box "Adminer was sucessfully installed and can be reached here:
-http://$ADDRESS/adminer.php
+http://$ADDRESS/adminer.php:81
 
 You can download more plugins and get more information here: 
 https://www.adminer.org
