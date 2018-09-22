@@ -1,4 +1,4 @@
-<h1 style="text-align: center;">Wordpress VM - <a href="https://www.techandme.se/pre-configured-wordpress-vm/" target="_blank">Tech and Me</a></h1>
+<h1 style="text-align: center;">Wordpress VM - <a href="https://www.techandme.se/pre-configured-wordpress-vm/" target="_blank">T&M Hansson IT AB</a></h1>
 <h3>Thank you for downloading the pre-configured Wordpress VM! If you see this page, you have successfully mounted the Wordpress VM on the computer that will act as host for Wordpress.</h3>
 <h3>To complete the installation, please run the setup script. You can find login details in the middle of this page.</h3>
 <h3>Don't hesitate to ask if you have any questions. My email is: <a href="mailto:daniel@techandme.se?Subject=Before%20login%20-%20Wordpress%20VM" target="_top">daniel@techandme.se</a> You can also check the <a href="https://www.techandme.se/install-instructions/" target="_blank">complete install instructions</a>.</h3>
