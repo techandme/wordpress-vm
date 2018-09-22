@@ -187,7 +187,7 @@ cat << EOMSTART
 |   - Change system timezone                                    |
 |   - Set new password to the Linux system (user: wordpress)	|
 |								|
-|    ################# T&M Hansson IT AB - 2018 #################	|
+|    ############### T&M Hansson IT AB - 2018 ###############   |
 +---------------------------------------------------------------+
 EOMSTART
 any_key "Press any key to start the script..."
@@ -414,7 +414,7 @@ echo    "|                                                                    |"
 printf "|         ${Color_Off}To update this VM just type: ${Green}                              |\n"
 printf "|         ${Cyan}'sudo bash /var/scripts/update.sh'${Green}                         |\n"
 echo    "|                                                                    |"
-printf "|    ${IRed}#################### T&M Hansson IT AB - 2018 ####################${Green}    |\n"
+printf "|    ${IRed}################ T&M Hansson IT AB - 2018 ################${Green}      |\n"
 echo    "+--------------------------------------------------------------------+"
 printf "${Color_Off}\n"
 
