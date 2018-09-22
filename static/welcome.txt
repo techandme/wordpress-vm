@@ -39,6 +39,6 @@
 
 <hr />
 
-<h1><a href=":81">Access Adminer</a></h1>
+<h1><a href=":81">Access Adminer</a> (You may have to remove the ending slash (/) to access the port number)</h1>
 <h1><a href="https://www.techandme.se/user-pass/" target="_blank">Login details</a></h1>
 <h3>Note: Your external IP is set as approved, all other access is forbidden.</h3>
