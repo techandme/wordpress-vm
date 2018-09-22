@@ -68,6 +68,16 @@ then
     yes no | pecl upgrade redis
     service nginx restart
 fi
+
+# Update adminer
+if [ -d $ADMINERDIR ]
+then
+    echo "Updating Adminer..."
+    rm -f "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
+    wget -q "http://www.adminer.org/latest.php" -O "$ADMINERDIR"/latest.php
+    ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
+fi
+
 wp cli update --allow-root
 cd $WPATH
 wp db export mysql_backup.sql --allow-root
