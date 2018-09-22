@@ -182,7 +182,7 @@ cat << EOMSTART
 |   - Create a new WP user                                      |
 |   - Upgrade the system                                        |
 |   - Activate SSL (Let's Encrypt)                              |
-|   - Install phpMyadmin					|
+|   - Install Adminer				|
 |   - Change keyboard setup (current is Swedish)                |
 |   - Change system timezone                                    |
 |   - Set new password to the Linux system (user: wordpress)	|
@@ -238,7 +238,7 @@ fi
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
 "Webmin" "(Server GUI)       " OFF \
-"phpMyadmin" "(*SQL GUI)       " OFF 2>results
+"Adminer" "(*SQL GUI)       " OFF 2>results
 while read -r -u 9 choice
 do
     case $choice in
@@ -252,8 +252,8 @@ do
 
         ;;
 
-        phpMyadmin)
-            run_app_script phpmyadmin_install_ubuntu
+        Adminer)
+            run_app_script adminer
         ;;
 
         *)
