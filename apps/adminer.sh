@@ -60,30 +60,28 @@ server {
     root /usr/share/adminer/adminer;
 
     # Logging
-    error_log /var/log/adminer/adminer.access_log;
-    access_log /var/log/adminer/adminer.error_log;
+    error_log /var/log/adminer.access_log;
+    access_log /var/log/adminer.error_log;
 
 
-   location / {
-           index   adminer.php;
-           allow   $WANIP4 $ADDRESS;
+    location / {
+           index   index.php;
+           allow   $WANIP4;
            deny    all;
        }
 
-       ## Images and static content is treated different
-       location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico|xml)$ {
-           access_log        off;
-           expires           360d;
+    location ~* ^/adminer/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+                root /usr/share/adminer/;
        }
-
-       location ~ /\.ht {
+       
+    location ~ /\.ht {
            deny  all;
        }
 
-       location ~ /(libraries|setup/frames|setup/libs) {
+    location ~ /(libraries|setup/frames|setup/libs) {
            deny all;
            return 404;
-}
+       }
 
     # Pass the PHP scripts to FastCGI server
     location ~* \\.php$ {
@@ -99,7 +97,7 @@ server {
                 fastcgi_buffer_size 32k;
                 fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
                 fastcgi_param SCRIPT_NAME \$fastcgi_script_name;
-     }
+       }
 }
 ADMINER_CREATE
 
@@ -113,12 +111,12 @@ The script will exit."
     exit 1
 else
 msg_box "Adminer was sucessfully installed and can be reached here:
-http://$ADDRESS/adminer.php:81
+http://$ADDRESS:81
 
 You can download more plugins and get more information here: 
 https://www.adminer.org
 
-Your PostgreSQL connection information can be found in $NCPATH/config/config.php
+Your MariaDB connection information can be found in /root/.my.cnf
 
 In case you try to access Adminer and get 'Forbidden' you need to change the IP in:
 $ADMINER_CONF"
