@@ -77,7 +77,7 @@ a:active {
 <div class="information">
 <p>Thank you for downloading the pre-configured Wordpress VM! If you see this page, you have successfully mounted the  Wordpress VM on the computer that will act as host for Wordpress.</p>
 <p>To complete the installation, please run the setup script. You can find login details in the middle of this page.
-<p>Don't hesitate to ask if you have any questions. My email is: <a href="mailto:daniel@techandme.se?Subject=Before%20login%20-%20Wordpress%20VM" target="_top">daniel@techandme.se</a> You can also check the <a href="https://www.techandme.se/install-instructions/" target="_blank">complete install instructions</a>.</p>
+<p>Don't hesitate to ask if you have any questions. My email is: <a href="mailto:daniel@hanssonit.se?Subject=Before%20login%20-%20Wordpress%20VM" target="_top">daniel@hanssonit.se</a> You can also check the <a href="https://www.techandme.se/install-instructions/" target="_blank">complete install instructions</a>.</p>
 <p>Please <a href="https://www.techandme.se/thank_you">donate</a> if you like it. All the donations will go to server costs and developing, making this VM even better.</p>
 
 </div>
@@ -136,20 +136,16 @@ a:active {
 <p> Note: Webmin is installed when you run the setup script. To access Webmin externally you have to open port 10000 in your router.</p>
 </div>
 
-<h2>Access phpMyadmin</h2>
+<h2>Access Adminer</h2>
 
 <div class="information">
 <p>Use one of the following addresses, HTTPS is preffered:
 <h3>
 <ul>
- <li><a href="http://<?=$_SERVER['SERVER_NAME'];?>/phpmyadmin"        >http://<?=$_SERVER['SERVER_NAME'];?></a> (HTTP)
- <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>/phpmyadmin"             >https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)
+ <li><a href="http://<?=$_SERVER['SERVER_NAME'];?>:81"        >http://<?=$_SERVER['SERVER_NAME'];?></a> (HTTP)
  <p>
  </ul>
-</h3>
-<p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
-<h3>
 <a href="https://www.techandme.se/user-pass/" target="_blank">Login details</a>
 </h3>
-<p>Note: Your external IP is set as approved in /etc/apache2/conf-available/phpmyadmin.conf, all other access is forbidden.<p/>
+<p>Note: Your external IP is set as approved in /etc/nginx/sites-available/adminer.conf, all other access is forbidden.<p/>
 </div>
