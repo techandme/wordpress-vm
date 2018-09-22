@@ -71,8 +71,8 @@ fi
 wp cli update --allow-root
 cd $WPATH
 wp db export mysql_backup.sql --allow-root
-mv $WPATH/mysql_backup.sql /var/www/html/mysql_backup.sql
-chown root:root /var/www/html/mysql_backup.sql
+mv $WPATH/mysql_backup.sql /var/www/mysql_backup.sql
+chown root:root /var/www/mysql_backup.sql
 wp core update --force --allow-root
 wp plugin update --all --allow-root
 wp core update-db --allow-root
@@ -82,7 +82,6 @@ echo "This is the current version installed:"
 echo
 wp core version --extra --allow-root
 
-# Set secure permissions
 # Set secure permissions
 if [ ! -f "$SECURE" ]
 then
