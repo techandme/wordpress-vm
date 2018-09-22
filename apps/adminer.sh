@@ -60,13 +60,13 @@ server {
     root /usr/share/adminer/adminer;
 
     # Logging
-    error_log /var/log/adminer/adminer.access_log;
-    access_log /var/log/adminer/adminer.error_log;
+    error_log /var/log/adminer.access_log;
+    access_log /var/log/adminer.error_log;
 
 
    location / {
-           index   adminer.php;
-           allow   $WANIP4 $ADDRESS;
+           index   index.php;
+           allow   $WANIP4;
            deny    all;
        }
 
