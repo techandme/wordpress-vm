@@ -407,7 +407,7 @@ server {
                 include fastcgi.conf;
                 include fastcgi_params;
                 fastcgi_intercept_errors on;
-                fastcgi_pass unix:PHP_FPM_SOCK;
+                fastcgi_pass unix:$PHP_FPM_SOCK;
                 fastcgi_buffers 16 16k;
                 fastcgi_buffer_size 32k;
                 fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
@@ -478,7 +478,7 @@ server {
                 include fastcgi.conf;
                 include fastcgi_params;
                 fastcgi_intercept_errors on;
-                fastcgi_pass unix:PHP_FPM_SOCK;
+                fastcgi_pass unix:$PHP_FPM_SOCK;
                 fastcgi_buffers 16 16k;
                 fastcgi_buffer_size 32k;
                 fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
