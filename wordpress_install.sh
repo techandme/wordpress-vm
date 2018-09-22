@@ -295,6 +295,32 @@ allow from all
 </Files>
 EOL
 
+# Set up a php-fpm pool with a unixsocket
+cat << POOL_CONF > "$PHP_POOL_DIR/www_wordpress.conf"
+[www_wordpress]
+user = www-data
+group = www-data
+listen = $PHP_FPM_SOCK
+listen.owner = www-data
+listen.group = www-data
+pm = dynamic
+pm.max_children = 17
+pm.start_servers = 5
+pm.min_spare_servers = 2
+pm.max_spare_servers = 10
+pm.max_requests = 500
+env[HOSTNAME] = $(hostname -f)
+env[PATH] = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+env[TMP] = /tmp
+env[TMPDIR] = /tmp
+env[TEMP] = /tmp
+security.limit_extensions = .php
+php_admin_value [cgi.fix_pathinfo] = 1
+POOL_CONF
+
+# Disable regular pool
+mv $PHP_POOL_DIR/www.conf $PHP_POOL_DIR/default_www.config
+
 # Install Figlet
 apt install figlet -y
 
@@ -373,17 +399,19 @@ server {
                 access_log off;
     }
 
-    location ~ \\.php$ {
+    location ~* \\.php$ {
                 #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                try_files \$uri =404;
                 fastcgi_index index.php;
-		include fastcgi.conf;
-		include fastcgi_params;
+                include fastcgi.conf;
+                include fastcgi_params;
                 fastcgi_intercept_errors on;
-                fastcgi_pass php;
+                fastcgi_pass unix:PHP_FPM_SOCK;
                 fastcgi_buffers 16 16k;
                 fastcgi_buffer_size 32k;
-		fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-		fastcgi_param SCRIPT_NAME \$fastcgi_script_name;
+                fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+                fastcgi_param SCRIPT_NAME \$fastcgi_script_name;
      }
 
      location ~* \\.(js|css|png|jpg|jpeg|gif|ico)$ {
@@ -442,17 +470,20 @@ server {
                 access_log off;
     }
 
-    location ~ \\.php$ {
+    location ~* \\.php$ {
                 #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                try_files \$uri =404;
                 fastcgi_index index.php;
-		include fastcgi.conf;
-		include fastcgi_params;
+                include fastcgi.conf;
+                include fastcgi_params;
                 fastcgi_intercept_errors on;
-                fastcgi_pass php;
+                fastcgi_pass unix:PHP_FPM_SOCK;
                 fastcgi_buffers 16 16k;
                 fastcgi_buffer_size 32k;
-		fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-		fastcgi_param SCRIPT_NAME \$fastcgi_script_name;
+                fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+                fastcgi_param SCRIPT_NAME \$fastcgi_script_name;
+
      }
 
      location ~* \\.(js|css|png|jpg|jpeg|gif|ico)$ {

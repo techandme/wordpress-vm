@@ -185,17 +185,19 @@ server {
                 log_not_found off;
                 access_log off;
     }
-    location ~ \\.php$ {
+    location ~* \\.php$ {
                 #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                try_files \$uri =404;
                 fastcgi_index index.php;
-		include fastcgi.conf;
-		include fastcgi_params;
+                include fastcgi.conf;
+                include fastcgi_params;
                 fastcgi_intercept_errors on;
-                fastcgi_pass php;
+                fastcgi_pass unix:PHP_FPM_SOCK;
                 fastcgi_buffers 16 16k;
                 fastcgi_buffer_size 32k;
-		fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-		fastcgi_param SCRIPT_NAME \$fastcgi_script_name;
+                fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+                fastcgi_param SCRIPT_NAME \$fastcgi_script_name;
      }
      location ~* \\.(js|css|png|jpg|jpeg|gif|ico)$ {
                 expires max;
