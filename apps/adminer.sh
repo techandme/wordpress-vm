@@ -64,26 +64,24 @@ server {
     access_log /var/log/adminer.error_log;
 
 
-   location / {
+    location / {
            index   index.php;
            allow   $WANIP4;
            deny    all;
        }
 
-       ## Images and static content is treated different
-       location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico|xml)$ {
-           access_log        off;
-           expires           360d;
+    location ~* ^/adminer/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+                root /usr/share/adminer/;
        }
-
-       location ~ /\.ht {
+       
+    location ~ /\.ht {
            deny  all;
        }
 
-       location ~ /(libraries|setup/frames|setup/libs) {
+    location ~ /(libraries|setup/frames|setup/libs) {
            deny all;
            return 404;
-}
+       }
 
     # Pass the PHP scripts to FastCGI server
     location ~* \\.php$ {
@@ -99,7 +97,7 @@ server {
                 fastcgi_buffer_size 32k;
                 fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
                 fastcgi_param SCRIPT_NAME \$fastcgi_script_name;
-     }
+       }
 }
 ADMINER_CREATE
 
