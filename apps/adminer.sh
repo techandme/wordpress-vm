@@ -111,12 +111,12 @@ The script will exit."
     exit 1
 else
 msg_box "Adminer was sucessfully installed and can be reached here:
-http://$ADDRESS/adminer.php:81
+http://$ADDRESS:81
 
 You can download more plugins and get more information here: 
 https://www.adminer.org
 
-Your PostgreSQL connection information can be found in $NCPATH/config/config.php
+Your MariaDB connection information can be found in /root/.my.cnf
 
 In case you try to access Adminer and get 'Forbidden' you need to change the IP in:
 $ADMINER_CONF"
