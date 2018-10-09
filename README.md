@@ -10,4 +10,4 @@
 - PHP-FPM 7.2
 - Latest Wordpress (updates automatically)
 - WP-CLI
-- and more, https://www.techandme.se/machine-setup-wordpress/
+- and [more](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7jL1OPiqQz3_MtV/wordpress-vm-machine-configuration).
