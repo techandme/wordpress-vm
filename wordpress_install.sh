@@ -734,14 +734,17 @@ apt autoremove -y
 apt autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
-# Install virtual kernels for Hyper-V, and extra for UTF8 kernel module + Collabora and OnlyOffice
+# Install virtual kernels for Hyper-V
 # Kernel 4.15
-yes | apt install --install-recommends \
+apt install -y --install-recommends \
 linux-virtual \
 linux-tools-virtual \
 linux-cloud-tools-virtual \
 linux-image-virtual \
 linux-image-extra-virtual
+
+# Force MOTD to show correct number of updates
+sudo /usr/lib/update-notifier/update-motd-updates-available --force
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
