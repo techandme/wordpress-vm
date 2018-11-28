@@ -162,8 +162,6 @@ server {
     # fetch OCSP records from URL in ssl_certificate and cache them
     ssl_stapling on;
     ssl_stapling_verify on;
-    ## verify chain of trust of OCSP response using Root CA and Intermediate certs
-    ssl_trusted_certificate /path/to/root_CA_cert_plus_intermediates;
     
     location / {
         try_files \$uri \$uri/ /index.php?\$args;        
