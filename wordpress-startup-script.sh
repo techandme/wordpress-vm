@@ -177,19 +177,20 @@ cat << EOMSTART
 +---------------------------------------------------------------+
 |   This script will do the final setup for you                 |
 |                                                               |
-|   - Genereate new server SSH keys				|
+|   - Genereate new server SSH keys                             |
 |   - Set static IP                                             |
 |   - Create a new WP user                                      |
 |   - Upgrade the system                                        |
 |   - Activate SSL (Let's Encrypt)                              |
-|   - Install Adminer				|
+|   - Install Adminer                                           |
 |   - Change keyboard setup (current is Swedish)                |
 |   - Change system timezone                                    |
-|   - Set new password to the Linux system (user: wordpress)	|
-|								|
+|   - Set new password to the Linux system (user: wordpress)    |
+|                                                               |
 |    ############### T&M Hansson IT AB - 2018 ###############   |
 +---------------------------------------------------------------+
 EOMSTART
+
 any_key "Press any key to start the script..."
 clear
 
@@ -395,8 +396,6 @@ bash $SCRIPTS/update.sh
 # Cleanup 2
 apt autoremove -y
 apt autoclean
-CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e "$(uname -r | cut -f1,2 -d"-")" | grep -e "[0-9]" | xargs sudo apt -y purge)
-echo "$CLEARBOOT"
 
 ADDRESS2=$(grep "server_name" /etc/nginx/sites-available/wordpress_port_80.conf | awk '$1 == "server_name" { print $2 }' | cut -d ";" -f1)
 # Success!
