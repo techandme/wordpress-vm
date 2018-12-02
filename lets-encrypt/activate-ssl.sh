@@ -80,6 +80,7 @@ done
 
 # Check if port is open with NMAP
 sed -i "s|127.0.1.1.*|127.0.1.1       $domain wordpress|g" /etc/hosts
+install_if_not net-tools
 service networking restart
 check_open_port 80 "$domain"
 check_open_port 443 "$domain"
