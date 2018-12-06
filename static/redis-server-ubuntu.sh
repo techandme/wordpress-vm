@@ -39,17 +39,9 @@ if [ ! -d $SCRIPTS ]
 then
     mkdir -p $SCRIPTS
 fi
-
-# Get packages to be able to install Redis
-apt update -q4 & spinner_loading
-sudo apt install -q -y \
-    build-essential \
-    tcl8.6 \
-    php-dev \
-    php-pear
     
 # Update Pecl
-check_command pecl update-channels pecl.net
+check_command pecl channel-update pecl.php.net
 
 # Install PHPmodule
 if ! yes no | pecl install -Z redis
@@ -101,11 +93,6 @@ rm -f /tmp/redis_pass.txt
 # Secure Redis
 chown redis:root /etc/redis/redis.conf
 chmod 600 /etc/redis/redis.conf
-
-# Cleanup
-apt purge -y \
-    git \
-    build-essential*
 
 apt update -q4 & spinner_loading
 apt autoremove -y
