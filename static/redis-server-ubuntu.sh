@@ -40,18 +40,18 @@ then
     mkdir -p $SCRIPTS
 fi
     
-# Update Pecl
-check_command pecl channel-update pecl.php.net
-
-# Install PHPmodule
+# Install Redis
+install_if_not php7.2-dev
+pecl channel-update pecl.php.net
 if ! yes no | pecl install -Z redis
 then
-    echo "PHP module installation failed"
-    sleep 3
-    exit 1
+    msg_box "PHP module installation failed"
+exit 1
 else
     printf "${Green}\nPHP module installation OK!${Color_Off}\n"
 fi
+install_if_not redis-server
+
 # Set globally doesn't work for some reason
 # touch /etc/php/7.0/mods-available/redis.ini
 # echo 'extension=redis.so' > /etc/php/7.0/mods-available/redis.ini
