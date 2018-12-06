@@ -208,7 +208,7 @@ mv wp-cli.phar /usr/local/bin/wp
 
 # Create dir
 mkdir -p $WPATH
-chown -R www-data:www:data $WPATH
+chown -R www-data:www-data $WPATH
 
 # Create wp-cli.yml
 touch $WPATH/wp-cli.yml
