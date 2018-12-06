@@ -1,13 +1,13 @@
-<h1 style="text-align: center;">Wordpress VM - <a href="https://www.techandme.se/pre-configured-wordpress-vm/" target="_blank">T&M Hansson IT AB</a></h1>
+<h1 style="text-align: center;">Wordpress VM - <a href="https://www.hanssonit.se/wordpress-vm/" target="_blank">T&M Hansson IT AB</a></h1>
 <h3>Thank you for downloading the pre-configured Wordpress VM! If you see this page, you have successfully mounted the Wordpress VM on the computer that will act as host for Wordpress.</h3>
 <h3>To complete the installation, please run the setup script. You can find login details in the middle of this page.</h3>
-<h3>Don't hesitate to ask if you have any questions. My email is: <a href="mailto:daniel@hanssonit.se?Subject=Before%20login%20-%20Wordpress%20VM" target="_top">daniel@hanssonit.se</a> You can also check the <a href="https://www.techandme.se/install-instructions/" target="_blank">complete install instructions</a>.</h3>
-<h3>Please <a href="https://www.techandme.se/thank_you">donate</a> if you like it. All the donations will go to server costs and developing, making this VM even better.</h3>
+<h3>Don't hesitate to ask if you have any questions. My email is: <a href="mailto:daniel@hanssonit.se?Subject=Before%20login%20-%20Wordpress%20VM" target="_top">daniel@hanssonit.se</a> You can also check the <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7jILePiqQz3_Msw/wordpress-vm" target="_blank">complete install instructions</a>.</h3>
+<h3>Please <a href="https://shop.hanssonit.se/product-category/donate/">donate</a> if you like it. All the donations will go to server costs and developing, making this VM even better.</h3>
 &nbsp;
 
 <hr />
 
-<h1><a href="https://www.techandme.se/user-pass/" target="_blank">Login</a> to Wordpress</h1>
+<h1><a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7jILePiqQz3_Msw/wordpress-vm?currentPageId=W7jILePiqQz3_Ms3" target="_blank">Login</a> to Wordpress</h1>
 <h3>Default User:</h3>
 <h1><strong>wordpress_user_login</strong></h1>
 <h3>Default Password:</h3>
@@ -25,7 +25,7 @@
 <hr />
 
 <h1><a href="./wp-admin/options-general.php">Access Wordpress</a></h1>
-<h3>Note: Please accept the warning in the browser if you connect via HTTPS. It is recommended to <a href="https://www.techandme.se/publish-your-server-online" target="_blank">buy your own certificate and replace the self-signed certificate to your own.</a></h3>
+<h3>Note: Please accept the warning in the browser if you connect via HTTPS. It is recommended to <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6-83ePiqQz3_MrT/publish-your-server-online" target="_blank">buy your own certificate and replace the self-signed certificate to your own.</a></h3>
 <h3>Note: Before you can login you have to run the setup script, as described in the video above.</h3>
 &nbsp;
 
@@ -33,7 +33,7 @@
 
 <h1><a href=":10000">Access Webmin</a> (You may have to remove the ending slash (/) to access the port number)</h1>
 <h3>Note: Please accept the warning in the browser if you connect via HTTPS.</h3>
-<h1><a href="https://www.techandme.se/user-and-password/" target="_blank">Login details</a></h1>
+<h1><a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7jILePiqQz3_Msw/wordpress-vm?currentPageId=W7jILePiqQz3_Ms3" target="_blank">Login details</a></h1>
 <h3>Note: Webmin is installed when you run the setup script. To access Webmin externally you have to open port 10000 in your router.</h3>
 &nbsp;
 
