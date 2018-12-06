@@ -124,6 +124,10 @@ More information can be found here: https://unix.stackexchange.com/a/3064"
 fi
 }
 
+wp_cli_cmd() {
+sudo -u www-data wp "$@"
+}
+
 # Check if process is runnnig: is_process_running dpkg
 is_process_running() {
 PROCESS="$1"

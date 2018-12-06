@@ -35,27 +35,19 @@ if [ ! -d $SCRIPTS ]
 then
     mkdir -p $SCRIPTS
 fi
-
-# Get packages to be able to install Redis
-apt update -q4 & spinner_loading
-sudo apt install -q -y \
-    build-essential \
-    tcl8.6 \
-    php-dev \
-    php-pear
     
-# Update Pecl
-check_command pecl update-channels pecl.net
-
-# Install PHPmodule
+# Install Redis
+install_if_not php7.2-dev
+pecl channel-update pecl.php.net
 if ! yes no | pecl install -Z redis
 then
-    echo "PHP module installation failed"
-    sleep 3
-    exit 1
+    msg_box "PHP module installation failed"
+exit 1
 else
     printf "${Green}\nPHP module installation OK!${Color_Off}\n"
 fi
+install_if_not redis-server
+
 # Set globally doesn't work for some reason
 # touch /etc/php/7.0/mods-available/redis.ini
 # echo 'extension=redis.so' > /etc/php/7.0/mods-available/redis.ini
@@ -97,11 +89,6 @@ rm -f /tmp/redis_pass.txt
 # Secure Redis
 chown redis:root /etc/redis/redis.conf
 chmod 600 /etc/redis/redis.conf
-
-# Cleanup
-apt purge -y \
-    git \
-    build-essential*
 
 apt update -q4 & spinner_loading
 apt autoremove -y

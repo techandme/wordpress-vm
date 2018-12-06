@@ -217,11 +217,11 @@ nginx_modules:
 YML_CREATE
 
 # Show info about wp-cli
-wp --info --allow-root
+wp_cli_cmd --info
 
 # Download Wordpress
 cd "$WPATH"
-check_command wp core download --allow-root --force --debug --path="$WPATH"
+check_command wp_cli_cmd core download --force --debug --path="$WPATH"
 
 # Populate DB
 mysql -uroot -p"$MARIADB_PASS" <<MYSQL_SCRIPT
@@ -230,21 +230,28 @@ CREATE USER '$WPDBUSER'@'localhost' IDENTIFIED BY '$WPDBPASS';
 GRANT ALL PRIVILEGES ON $WPDBNAME.* TO '$WPDBUSER'@'localhost';
 FLUSH PRIVILEGES;
 MYSQL_SCRIPT
-wp core config --allow-root --dbname=$WPDBNAME --dbuser=$WPDBUSER --dbpass="$WPDBPASS" --dbhost=localhost --extra-php <<PHP
-define( 'WP_DEBUG', false );
-define( 'WP_CACHE_KEY_SALT', 'wpredis_' );
-define( 'WP_REDIS_MAXTTL', 9600);
-define( 'WP_REDIS_SCHEME', 'unix' );
-define( 'WP_REDIS_PATH', '$REDIS_SOCK' );
+wp_cli_cmd core config --dbname=$WPDBNAME --dbuser=$WPDBUSER --dbpass="$WPDBPASS" --dbhost=localhost --extra-php <<PHP
+/** REDIS PASSWORD */
 define( 'WP_REDIS_PASSWORD', '$REDIS_PASS' );
+/** REDIS CLIENT */
+define( 'WP_REDIS_CLIENT', 'pecl' );
+/** REDIS SOCKET */
+define( 'WP_REDIS_SCHEME', 'unix' );
+/** REDIS PATH TO SOCKET */
+define( 'WP_REDIS_PATH', '$REDIS_SOCK' );
+/** REDIS SALT */
+define('WP_REDIS_MAXTTL', 9600);
+/** AUTO UPDATE */
 define( 'WP_AUTO_UPDATE_CORE', true );
+/** WP DEBUG? */
+define( 'WP_DEBUG', false );
 PHP
 
 # Make sure the passwords are the same, this file will be deleted when Redis is run.
 echo "$REDIS_PASS" > /tmp/redis_pass.txt
 
 # Install Wordpress
-check_command wp core install --allow-root --url=http://"$ADDRESS"/ --title=Wordpress --admin_user=$WPADMINUSER --admin_password="$WPADMINPASS" --admin_email=no-reply@techandme.se --skip-email
+check_command wp_cli_cmd core install --url=http://"$ADDRESS"/ --title=Wordpress --admin_user=$WPADMINUSER --admin_password="$WPADMINPASS" --admin_email=no-reply@techandme.se --skip-email
 echo "WP PASS: $WPADMINPASS" > /var/adminpass.txt
 chown wordpress:wordpress /var/adminpass.txt
 
@@ -252,28 +259,28 @@ chown wordpress:wordpress /var/adminpass.txt
 check_command wget -q $STATIC/welcome.txt
 sed -i "s|wordpress_user_login|$WPADMINUSER|g" welcome.txt
 sed -i "s|wordpress_password_login|$WPADMINPASS|g" welcome.txt
-wp post create ./welcome.txt --post_title='T&M Hansson IT AB - Welcome' --post_status=publish --path=$WPATH --allow-root
+wp_cli_cmd post create ./welcome.txt --post_title='T&M Hansson IT AB - Welcome' --post_status=publish --path=$WPATH
 rm -f welcome.txt
-wp post delete 1 --force --allow-root
+wp_cli_cmd post delete 1 --force
 
 # Show version
-wp core version --allow-root
+wp_cli_cmd core version
 sleep 3
 
 # Install Apps
-wp plugin install --allow-root twitter-tweets --activate
-wp plugin install --allow-root social-pug --activate
-wp plugin install --allow-root wp-mail-smtp --activate
-wp plugin install --allow-root google-captcha --activate
-wp plugin install --allow-root redis-cache --activate
+wp_cli_cmd plugin install twitter-tweets --activate
+wp_cli_cmd plugin install social-pug --activate
+wp_cli_cmd plugin install wp-mail-smtp --activate
+wp_cli_cmd plugin install google-captcha --activate
+wp_cli_cmd plugin install redis-cache --activate
 
 # set pretty urls
-wp rewrite structure '/%postname%/' --hard --allow-root
-wp rewrite flush --hard --allow-root
+wp_cli_cmd rewrite structure '/%postname%/' --hard
+wp_cli_cmd rewrite flush --hard
 
 # delete akismet and hello dolly
-wp plugin delete akismet --allow-root
-wp plugin delete hello --allow-root
+wp_cli_cmd plugin delete akismet
+wp_cli_cmd plugin delete hello
 
 # Secure permissions
 run_static_script wp-permissions
