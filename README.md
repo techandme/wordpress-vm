@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/techandme/wordpress-vm.svg?branch=master)](https://travis-ci.org/techandme/wordpress-vm)
 
 ### https://www.techandme.se
-### https://www.hanssonit.se
+### https://www.hanssonit.se/wordpress-vm/
 
 - Ubuntu 18.04
 - MariaDB 10.2
