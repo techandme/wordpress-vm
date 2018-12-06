@@ -231,13 +231,20 @@ GRANT ALL PRIVILEGES ON $WPDBNAME.* TO '$WPDBUSER'@'localhost';
 FLUSH PRIVILEGES;
 MYSQL_SCRIPT
 wp core config --allow-root --dbname=$WPDBNAME --dbuser=$WPDBUSER --dbpass="$WPDBPASS" --dbhost=localhost --extra-php <<PHP
-define( 'WP_DEBUG', false );
-define( 'WP_CACHE_KEY_SALT', 'wpredis_' );
-define( 'WP_REDIS_MAXTTL', 9600);
-define( 'WP_REDIS_SCHEME', 'unix' );
-define( 'WP_REDIS_PATH', '$REDIS_SOCK' );
+/** REDIS PASSWORD */
 define( 'WP_REDIS_PASSWORD', '$REDIS_PASS' );
+/** REDIS CLIENT */
+define( 'WP_REDIS_CLIENT', 'pecl' );
+/** REDIS SOCKET */
+define( 'WP_REDIS_SCHEME', 'unix' );
+/** REDIS PATH TO SOCKET */
+define( 'WP_REDIS_PATH', '$REDIS_SOCK' );
+/** REDIS SALT */
+define('WP_REDIS_MAXTTL', 9600);
+/** AUTO UPDATE */
 define( 'WP_AUTO_UPDATE_CORE', true );
+/** WP DEBUG? */
+define( 'WP_DEBUG', false );
 PHP
 
 # Make sure the passwords are the same, this file will be deleted when Redis is run.
