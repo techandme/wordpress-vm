@@ -207,7 +207,8 @@ chmod +x wp-cli.phar
 mv wp-cli.phar /usr/local/bin/wp
 
 # Create dir
-mkdir $WPATH
+mkdir -p $WPATH
+chown -R www-data:www:data $WPATH
 
 # Create wp-cli.yml
 touch $WPATH/wp-cli.yml
