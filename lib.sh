@@ -125,7 +125,7 @@ fi
 }
 
 wp_cli_cmd() {
-sudo -u www-data wp $@
+sudo -u www-data wp "$@"
 }
 
 # Check if process is runnnig: is_process_running dpkg
