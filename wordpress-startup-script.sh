@@ -322,14 +322,14 @@ done
 clear
 
 echo "$FQDN" > fqdn.txt
-wp option update siteurl < fqdn.txt --allow-root --path="$WPATH"
+wp_cli_cmd option update siteurl < fqdn.txt --path="$WPATH"
 rm fqdn.txt
 
-OLDHOME=$(wp option get home --allow-root --path="$WPATH")
-wp search-replace "$OLDHOME" "$FQDN" --precise --all-tables --path="$WPATH" --allow-root
+OLDHOME=$(wp_cli_cmd option get home --path="$WPATH")
+wp_cli_cmd search-replace "$OLDHOME" "$FQDN" --precise --all-tables --path="$WPATH"
 
-wp user create "$USER" "$EMAIL" --role=administrator --user_pass="$NEWWPADMINPASS" --path="$WPATH" --allow-root
-wp user delete 1 --allow-root --reassign="$USER" --path="$WPATH"
+wp_cli_cmd user create "$USER" "$EMAIL" --role=administrator --user_pass="$NEWWPADMINPASS" --path="$WPATH"
+wp_cli_cmd user delete 1 --reassign="$USER" --path="$WPATH"
 {
 echo "WP USER: $USER"
 echo "WP PASS: $NEWWPADMINPASS"
@@ -344,7 +344,7 @@ check_command service nginx restart
 # Show current administrators
 echo
 echo "This is the current administrator(s):"
-wp user list --role=administrator --path="$WPATH" --allow-root
+wp_cli_cmd user list --role=administrator --path="$WPATH"
 any_key "Press any key to continue..."
 clear
 

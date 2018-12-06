@@ -39,7 +39,7 @@ check_command update-rc.d fail2ban disable
 
 # Install WP-Fail2ban and activate conf
 cd $WPATH
-wp plugin install --allow-root wp-fail2ban --activate
+wp_cli_cmd plugin install wp-fail2ban --activate
 curl https://plugins.svn.wordpress.org/wp-fail2ban/trunk/filters.d/wordpress-hard.conf > /etc/fail2ban/filter.d/wordpress.conf
 
 if [ ! -f $AUTHLOG ]

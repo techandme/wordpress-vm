@@ -78,19 +78,19 @@ then
     ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 fi
 
-wp cli update --allow-root
+wp_cli_cmd cli update
 cd $WPATH
-wp db export mysql_backup.sql --allow-root
+wp_cli_cmd db export mysql_backup.sql
 mv $WPATH/mysql_backup.sql /var/www/mysql_backup.sql
 chown root:root /var/www/mysql_backup.sql
-wp core update --force --allow-root
-wp plugin update --all --allow-root
-wp core update-db --allow-root
-wp db optimize --allow-root
+wp_cli_cmd core update --force
+wp_cli_cmd plugin update --all
+wp_cli_cmd core update-db
+wp_cli_cmd db optimize
 echo
 echo "This is the current version installed:"
 echo
-wp core version --extra --allow-root
+wp_cli_cmd core version --extra
 
 # Set secure permissions
 if [ ! -f "$SECURE" ]
