@@ -206,9 +206,15 @@ check_command curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/p
 chmod +x wp-cli.phar
 mv wp-cli.phar /usr/local/bin/wp
 
-# Create dir
+# Create dirs
 mkdir -p $WPATH
 chown -R www-data:www-data $WPATH
+if [ ! -d $home/.wp-cli/cache ]
+then
+    mkdir -p $home/.wp-cli
+    mkdir -p mkdir $home/.wp-cli/cache
+    chown -R www-data:www-data $home/.wp-cli
+fi
 
 # Create wp-cli.yml
 touch $WPATH/wp-cli.yml
