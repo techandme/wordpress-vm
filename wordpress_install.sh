@@ -211,6 +211,11 @@ echo "root ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
 # Create dir
 mkdir -p "$WPATH"
 chown -R www-data:www-data "$WPATH"
+if [ ! -d /home/"$SUDO_USER"/.wp-cli ]
+then
+    mkdir -p /home/"$SUDO_USER"/.wp-cli/
+    chown -R www-data:www-data /home/"$SUDO_USER"/.wp-cli/
+fi
 
 # Create wp-cli.yml
 touch $WPATH/wp-cli.yml
@@ -254,7 +259,7 @@ PHP
 echo "$REDIS_PASS" > /tmp/redis_pass.txt
 
 # Install Wordpress
-check_command wp_cli_cmd core install --url=http://"$ADDRESS"/ --title=Wordpress --admin_user=$WPADMINUSER --admin_password="$WPADMINPASS" --admin_email=no-reply@techandme.se --skip-email
+check_command wp_cli_cmd core install --url=http://"$ADDRESS"/ --title=Wordpress --admin_user=$WPADMINUSER --admin_password="$WPADMINPASS" --admin_email=no-reply@hanssonit.se --skip-email
 echo "WP PASS: $WPADMINPASS" > /var/adminpass.txt
 chown wordpress:wordpress /var/adminpass.txt
 
