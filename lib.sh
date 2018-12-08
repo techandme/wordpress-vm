@@ -126,7 +126,7 @@ fi
 
 wp_cli_cmd() {
 export WP_CLI_CACHE_DIR=$WPATH/.wp-cli/cache
-sudo -u www-data -E /usr/local/bin/wp "$@";
+sudo -u www-data /usr/local/bin/wp "$@";
 }
 
 # Check if process is runnnig: is_process_running dpkg
