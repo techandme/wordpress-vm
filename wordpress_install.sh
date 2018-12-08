@@ -212,9 +212,6 @@ echo "root ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
 mkdir -p "$WPATH"
 chown -R www-data:www-data "$WPATH"
 
-# WP-CLI environment variable
-export WP_CLI_CACHE_DIR=$WPATH/.wp-cli/cache
-
 # Create wp-cli.yml
 touch $WPATH/wp-cli.yml
 cat << YML_CREATE > "$WPATH/wp-cli.yml"
