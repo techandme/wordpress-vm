@@ -202,9 +202,11 @@ chmod +x wp-cli.phar
 mv wp-cli.phar /usr/local/bin/wp
 
 # Add www-data in sudoers
-echo "# WP-CLI" >> /etc/sudoers
-echo "$SUDO_USER ALL=(www-data) NOPASSWD: /usr/local/bin/wp" >> /etc/sudoers
-echo "root ALL=(www-data) NOPASSWD: /usr/local/bin/wp" >> /etc/sudoers
+{
+echo "# WP-CLI" 
+echo "$SUDO_USER ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
+echo "root ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
+} >> /etc/sudoers
 
 # Create dir
 mkdir -p "$WPATH"
