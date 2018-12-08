@@ -133,6 +133,14 @@ printf "Your current server repository is:  ${Cyan}$REPO${Color_Off}\n"
 DEBUG=0
 debug_mode
 
+# Check where the best mirrors are and update
+msg_box "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.
+This VM comes with mirrors based on servers in that where used when the VM was released and packaged.
+
+If you are located outside of Europe, we recomend you to change the mirrors so that downloads are faster."
+echo "Checking current mirror..."
+printf "Your current server repository is:  ${Cyan}$REPO${Color_Off}\n"
+
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
     echo "Keeping $REPO as mirror..."
@@ -144,7 +152,7 @@ else
     pip install \
         --upgrade pip \
         apt-select
-    apt-select -m up-to-date -t 5 -c
+    check_command apt-select -m up-to-date -t 5 -c -C "$(localectl status | grep "Layout" | awk '{print $3}')"
     sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
     if [ -f sources.list ]
     then
