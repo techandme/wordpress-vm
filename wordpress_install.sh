@@ -259,7 +259,7 @@ PHP
 echo "$REDIS_PASS" > /tmp/redis_pass.txt
 
 # Install Wordpress
-check_command wp_cli_cmd core install --url=http://"$ADDRESS"/ --title=Wordpress --admin_user=$WPADMINUSER --admin_password="$WPADMINPASS" --admin_email=no-reply@techandme.se --skip-email
+check_command wp_cli_cmd core install --url=http://"$ADDRESS"/ --title=Wordpress --admin_user=$WPADMINUSER --admin_password="$WPADMINPASS" --admin_email=no-reply@hanssonit.se --skip-email
 echo "WP PASS: $WPADMINPASS" > /var/adminpass.txt
 chown wordpress:wordpress /var/adminpass.txt
 
