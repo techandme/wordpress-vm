@@ -34,14 +34,9 @@ apt install language-pack-en-base -y
 sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Show current user
-echo
-echo "Current user with sudo permissions is: $UNIXUSER".
-echo "This script will set up everything with that user."
-echo "If the field after ':' is blank you are probably running as a pure root user."
-echo "It's possible to install with root, but there will be minor errors."
-echo
-echo "Please create a user with sudo permissions if you want an optimal installation."
-run_static_script adduser
+download_static_script adduser
+bash $SCRIPTS/adduser.sh "wordpress_install.sh"
+rm $SCRIPTS/adduser.sh
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
@@ -206,9 +201,19 @@ check_command curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/p
 chmod +x wp-cli.phar
 mv wp-cli.phar /usr/local/bin/wp
 
-# Create dir
-mkdir -p $WPATH
-chown -R www-data:www-data $WPATH
+# Add www-data in sudoers
+echo "# WP-CLI"
+echo "$SUDO_USER ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
+echo "root ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
+
+# Create dirs
+mkdir -p "$WPATH"
+chown -R www-data:www-data "$WPATH"
+if [ ! -d /home/"$SUDO_USER"/.wp-cli ]
+then
+    mkdir -p /home/"$SUDO_USER"/.wp-cli/
+    chown -R www-data:www-data /home/"$SUDO_USER"/.wp-cli/
+fi
 
 # Create wp-cli.yml
 touch $WPATH/wp-cli.yml

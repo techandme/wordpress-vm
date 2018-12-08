@@ -17,6 +17,10 @@ then
     exit 1
 fi
 
+# MariaDB recomends this
+mv -f /etc/mysql/my.cnf /etc/mysql/my.cnf.old
+ln -sf mariadb.cnf $ETCMYCNF
+
 /bin/cat <<WRITENEW >"$ETCMYCNF"
 # MariaDB database server configuration file.
 #
