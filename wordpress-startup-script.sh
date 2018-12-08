@@ -120,13 +120,6 @@ unset CHECK_CURRENT_REPO
 unset MYCNFPW
 unset WPDB
 
-# Check where the best mirrors are and update
-printf "\nTo make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.\n"
-echo "This VM comes with mirrors based on servers in that where used when the VM was released and packaged."
-echo "We recomend you to change the mirrors based on where this is currently installed."
-echo "Checking current mirror..."
-printf "Your current server repository is:  ${Cyan}$REPO${Color_Off}\n"
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
