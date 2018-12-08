@@ -211,6 +211,11 @@ echo "root ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
 # Create dir
 mkdir -p "$WPATH"
 chown -R www-data:www-data "$WPATH"
+if [ ! -d /home/"$SUDO_USER"/.wp-cli ]
+then
+    mkdir -p /home/"$SUDO_USER"/.wp-cli/
+    chown -R www-data:www-data /home/"$SUDO_USER"/.wp-cli/
+fi
 
 # Create wp-cli.yml
 touch $WPATH/wp-cli.yml
