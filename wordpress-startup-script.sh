@@ -423,5 +423,5 @@ printf "${Color_Off}\n"
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 ## Reboot
-echo "Installations finished. System will now reboot..."
+any_key "Installation finished, press any key to reboot system..."
 reboot
