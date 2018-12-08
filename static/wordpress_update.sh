@@ -78,7 +78,10 @@ then
     ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 fi
 
-wp_cli_cmd cli update
+# Upgrade WP-CLI
+wp cli update
+
+# Upgrade Wordpress and apps
 cd $WPATH
 wp_cli_cmd db export mysql_backup.sql
 mv $WPATH/mysql_backup.sql /var/www/mysql_backup.sql
