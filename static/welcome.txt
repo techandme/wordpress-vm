@@ -9,7 +9,7 @@
 <h6>Default User:</h6>
 <p>wordpress_user_login</p>
 <h6>Default Password:</h6>
-<p>wordpress_user_login</p>
+<p>wordpress_password_login</p>
 <hr />
 <h3>How to mount the VM and and login:</h3>
 <p>Before you can use Wordpress you have to run the setup script to complete the installation. This is easily done by just typing 'wordpress' when you log in to the terminal for the first time.</p>
