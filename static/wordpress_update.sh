@@ -60,13 +60,35 @@ is_process_running dpkg
 # System Upgrade
 apt update -q2
 apt dist-upgrade -y
-# Update Redis PHP extention
-if type pecl > /dev/null 2>&1
+
+# Update Redis PHP extension
+echo "Trying to upgrade the Redis PECL extenstion..."
+if ! pecl list | grep redis >/dev/null 2>&1
 then
-    install_if_not php-dev
-    echo "Trying to upgrade the Redis Pecl extenstion..."
+    if dpkg -l | grep php7.2 > /dev/null 2>&1
+    then
+        install_if_not php7.2-dev
+    else
+        install_if_not php7.0-dev
+    fi
+    apt purge php-redis -y
+    apt autoremove -y
+    pecl channel-update pecl.php.net
+    yes no | pecl install redis
+    service redis-server restart
+    systemctl restart nginx
+elif pecl list | grep redis >/dev/null 2>&1
+then
+    if dpkg -l | grep php7.2 > /dev/null 2>&1
+    then
+        install_if_not php7.2-dev
+    else
+        install_if_not php7.0-dev
+    fi
+    pecl channel-update pecl.php.net
     yes no | pecl upgrade redis
-    service nginx restart
+    service redis-server restart
+    systemctl restart nginx
 fi
 
 # Update adminer
