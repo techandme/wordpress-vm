@@ -100,6 +100,18 @@ then
     ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 fi
 
+# Set secure permissions
+if [ ! -f "$SECURE" ]
+then
+    mkdir -p "$SCRIPTS"
+    download_static_script wp-permissions
+    chmod +x "$SECURE"
+    bash "$SECURE"
+elif [ -f "$SECURE" ]
+then
+    bash "$SECURE"
+fi
+
 # Upgrade WP-CLI
 wp cli update
 
@@ -116,14 +128,6 @@ echo
 echo "This is the current version installed:"
 echo
 wp_cli_cmd core version --extra
-
-# Set secure permissions
-if [ ! -f "$SECURE" ]
-then
-    mkdir -p "$SCRIPTS"
-    download_static_script wp-permissions
-    chmod +x "$SECURE"
-fi
 
 # Cleanup un-used packages
 apt autoremove -y
