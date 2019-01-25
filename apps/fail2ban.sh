@@ -22,7 +22,7 @@ then
 fi
 
 ### Local variables ###
-# location of Nextcloud logs
+# location of logs
 AUTHLOG="/var/log/auth.log"
 # time to ban an IP that exceeded attempts
 BANTIME_=600000
