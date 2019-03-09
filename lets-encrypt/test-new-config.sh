@@ -29,7 +29,7 @@ then
     print_text_in_color "$ICyan" "'crontab -u root -e'"
     print_text_in_color "$ICyan" "Feel free to contribute to this project: https://goo.gl/3fQD65"
     any_key "Press any key to continue..."
-    crontab -u root -l | { cat; print_text_in_color "$ICyan" "@daily $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
+    crontab -u root -l | { cat; echo "@daily $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 
 FQDOMAIN=$(grep -m 1 "server_name" "/etc/nginx/sites-enabled/$1" | awk '{print $2}')
 if [ "$(hostname)" != "$FQDOMAIN" ]
