@@ -165,6 +165,14 @@ ask_yes_or_no() {
     esac
 }
 
+restart_webserver() {
+check_command systemctl restart nginx
+if which php7.2-fpm > /dev/null
+then
+    check_command systemctl restart php7.2-fpm.service
+fi
+}
+
 # Install certbot (Let's Encrypt)
 install_certbot() {
 certbot --version 2> /dev/null
