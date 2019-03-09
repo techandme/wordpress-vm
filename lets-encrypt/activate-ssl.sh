@@ -12,11 +12,12 @@ true
 DEBUG=0
 debug_mode
 
-# Check root
+# Check if root
 root_check
 
 # Information
 msg_box "Important! Please read this:
+
 This script will install SSL from Let's Encrypt.
 It's free of charge, and very easy to maintain.
 
@@ -29,8 +30,8 @@ You also have to open port 80+443 against this VMs
 IP address: $ADDRESS - do this in your router/FW.
 Here is a guide: https://goo.gl/Uyuf65
 
-This script is located in $SCRIPTS and you
-can run this script after you got a domain.
+You can find the script here: $SCRIPTS/activate-ssl.sh 
+and you can run it after you got a domain.
 
 Please don't run this script if you don't have
 a domain yet. You can get one for a fair price here:
@@ -59,19 +60,19 @@ just type: sudo bash /var/scripts/activate-ssl.sh"
     exit
 fi
 
-print_text_in_color "$ICyan"
+echo
 while true
 do
 # Ask for domain name
 cat << ENTERDOMAIN
 +---------------------------------------------------------------+
 |    Please enter the domain name you will use for Wordpress:   |
-|    Like this: example.com, or wordpress.example.com         |
+|    Like this: example.com, or wordpress.example.com           |
 +---------------------------------------------------------------+
 ENTERDOMAIN
-print_text_in_color "$ICyan"
+echo
 read -r domain
-print_text_in_color "$ICyan"
+echo
 if [[ "yes" == $(ask_yes_or_no "Is this correct? $domain") ]]
 then
     break
@@ -80,8 +81,7 @@ done
 
 # Check if port is open with NMAP
 sed -i "s|127.0.1.1.*|127.0.1.1       $domain wordpress|g" /etc/hosts
-install_if_not net-tools
-service networking restart
+network_ok
 check_open_port 80 "$domain"
 check_open_port 443 "$domain"
 
@@ -89,7 +89,7 @@ check_open_port 443 "$domain"
 check_command download_le_script test-new-config
 
 # Check if $domain exists and is reachable
-print_text_in_color "$ICyan"
+echo
 print_text_in_color "$ICyan" "Checking if $domain exists and is reachable..."
 if wget -q -T 10 -t 2 --spider "$domain"; then
     sleep 1
@@ -113,18 +113,26 @@ ssl_conf="/etc/nginx/sites-available/"$domain.conf""
 
 # DHPARAM
 DHPARAMS="$CERTFILES/$domain/dhparam.pem"
+
 # Check if "$ssl.conf" exists, and if, then delete
 if [ -f "$ssl_conf" ]
 then
     rm -f "$ssl_conf"
 fi
+
 # Generate vhost.conf
 if [ ! -f "$ssl_conf" ]
 then
     touch "$ssl_conf"
-    print_text_in_color "$ICyan" "$ssl_conf was successfully created"
+    print_text_in_color "$IGreen" "$ssl_conf was successfully created."
     sleep 2
     cat << SSL_CREATE > "$ssl_conf"
+server {
+        listen 80;
+        server_name $URL;
+        return 301 https://$URL$request_uri;
+}
+
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
@@ -213,29 +221,29 @@ standalone() {
 # Generate certs
 if eval "certbot certonly --standalone --pre-hook 'service nginx stop' --post-hook 'service nginx start' $default_le"
 then
-    print_text_in_color "$ICyan" "success" > /tmp/le_test
+    echo "success" > /tmp/le_test
 else
-    print_text_in_color "$ICyan" "fail" > /tmp/le_test
+    echo "fail" > /tmp/le_test
 fi
 }
-webroot() {
-if eval "certbot certonly --webroot --webroot-path $WPATH $default_le"
+tls-alpn-01() {
+if eval "certbot certonly --preferred-challenges tls-alpn-01 $default_le"
 then
-    print_text_in_color "$ICyan" "success" > /tmp/le_test
+    echo "success" > /tmp/le_test
 else
-    print_text_in_color "$ICyan" "fail" > /tmp/le_test
+    echo "fail" > /tmp/le_test
 fi
 }
 dns() {
 if eval "certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns --server https://acme-v02.api.letsencrypt.org/directory  $default_le"
 then
-    print_text_in_color "$ICyan" "success" > /tmp/le_test
+    echo "success" > /tmp/le_test
 else
-    print_text_in_color "$ICyan" "fail" > /tmp/le_test
+    echo "fail" > /tmp/le_test
 fi
 }
 
-methods=(standalone webroot dns)
+methods=(standalone dns)
 
 create_config() {
 # $1 = method
@@ -260,10 +268,10 @@ if [ "$method" == "standalone" ]
 then
     printf "%b" "${ICyan}It seems like no certs were generated, we will do 2 more tries.\n${Color_Off}"
     any_key "Press any key to continue..."
-elif [ "$method" == "webroot" ]
-then
-    printf "%b" "${ICyan}It seems like no certs were generated, we will do 1 more tries.\n${Color_Off}"
-    any_key "Press any key to continue..."
+#elif [ "$method" == "tls-alpn-01" ]
+#then
+#    printf "%b" "${ICyan}It seems like no certs were generated, we will do 1 more tries.\n${Color_Off}"
+#    any_key "Press any key to continue..."
 elif [ "$method" == "dns" ]
 then
     printf "%b" "${IRed}It seems like no certs were generated, please check your DNS and try again.\n${Color_Off}"
@@ -284,16 +292,20 @@ done
 
 # Failed
 msg_box "Sorry, last try failed as well. :/
+
 The script is located in $SCRIPTS/activate-ssl.sh
 Please try to run it again some other time with other settings.
+
 There are different configs you can try in Let's Encrypt's user guide:
 https://letsencrypt.readthedocs.org/en/latest/index.html
 Please check the guide for further information on how to enable SSL.
+
 This script is developed on GitHub, feel free to contribute:
-https://github.com/techandme/wordpress-vm
+https://github.com/nextcloud/vm
+
 The script will now do some cleanup and revert the settings."
 
 # Cleanup
-apt remove letsencrypt -y
+apt remove certbot -y
 apt autoremove -y
 clear
