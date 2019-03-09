@@ -476,7 +476,7 @@ echo    "|                                                                    |"
 printf "|         ${Color_Off}To update this VM just type: ${Green}                              |\n"
 printf "|         ${Cyan}'sudo bash /var/scripts/update.sh'${Green}                         |\n"
 echo    "|                                                                    |"
-printf "|    ${IRed}################ T&M Hansson IT AB - 2018 ################${Green}      |\n"
+printf "|    ${IRed}################ T&M Hansson IT AB - $(date +"%Y") ################${Green}      |\n"
 echo    "+--------------------------------------------------------------------+"
 printf "${Color_Off}\n"
 
