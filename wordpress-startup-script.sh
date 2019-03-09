@@ -182,7 +182,6 @@ echo "Getting scripts from GitHub to be able to run the first setup..."
 # All the shell scripts in static (.sh)
 download_static_script security
 download_static_script update
-download_static_script ip
 download_static_script test_connection
 download_static_script wp-permissions
 download_static_script change_mysql_pass
@@ -198,31 +197,19 @@ chown root:root -R $SCRIPTS
 chown wordpress:wordpress $SCRIPTS/techandme.sh
 
 clear
-cat << EOMSTART
-+---------------------------------------------------------------+
-|   This script will do the final setup for you                 |
-|                                                               |
-|   - Genereate new server SSH keys                             |
-|   - Set static IP                                             |
-|   - Create a new WP user                                      |
-|   - Upgrade the system                                        |
-|   - Activate SSL (Let's Encrypt)                              |
-|   - Install Adminer                                           |
-|   - Change keyboard setup (current is Swedish)                |
-|   - Change system timezone                                    |
-|   - Set new password to the Linux system (user: wordpress)    |
-|                                                               |
-|    ############### T&M Hansson IT AB - 2018 ###############   |
-+---------------------------------------------------------------+
-EOMSTART
+msg_box"This script will do the final setup for you
 
-any_key "Press any key to start the script..."
-clear
+- Genereate new server SSH keys
+- Set static IP
+- Create a new WP user
+- Upgrade the system
+- Activate SSL (Let's Encrypt)
+- Install Adminer
+- Change keyboard setup (current is Swedish)
+- Change system timezone
+- Set new password to the Linux system (user: wordpress)
 
-# Set static IP
-wget -q https://raw.githubusercontent.com/nextcloud/vm/master/static/set_static_ip.sh
-bash set_static_ip.sh
-rm -f set_static_ip.sh
+############### T&M Hansson IT AB -  $(date +"%Y") ###############"
 clear
 
 # Set keyboard layout
@@ -252,17 +239,16 @@ fi
 # Check where the best mirrors are and update
 msg_box "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.
 This VM comes with mirrors based on servers in that where used when the VM was released and packaged.
-
 If you are located outside of Europe, we recomend you to change the mirrors so that downloads are faster."
-echo "Checking current mirror..."
-printf "Your current server repository is:  ${Cyan}$REPO${Color_Off}\n"
+print_text_in_color "$ICyan" "Checking current mirror..."
+print_text_in_color "$ICyan" "Your current server repository is: $REPO"
 
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
-    echo "Keeping $REPO as mirror..."
+    print_text_in_color "$ICyan" "Keeping $REPO as mirror..."
     sleep 1
 else
-    echo "Locating the best mirrors..."
+    print_text_in_color "$ICyan" "Locating the best mirrors..."
     apt update -q4 & spinner_loading
     apt install python-pip -y
     pip install \
@@ -316,6 +302,30 @@ do
 done 9< results
 rm -f results
 clear
+
+# Extra configurations
+whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
+"Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF 2>results
+
+while read -r -u 9 choice
+do
+    case $choice in
+        "Security")
+            clear
+            run_static_script security
+        ;;
+
+        "Static IP")
+            clear
+            run_static_script static_ip
+        ;;
+
+        *)
+        ;;
+    esac
+done 9< results
+rm -f results
 
 # Change password
 printf "${Color_Off}\n"
