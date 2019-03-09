@@ -46,9 +46,9 @@ DATE='$(date +%Y-%m-%d_%H:%M)'
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/sh
 if ! certbot renew --quiet --no-self-upgrade > /var/log/letsencrypt/renew.log 2>&1 ; then
-        print_text_in_color "$ICyan" "Let's Encrypt FAILED!"--$DATE >> /var/log/letsencrypt/cronjob.log
+        echo "Let's Encrypt FAILED!"--$DATE >> /var/log/letsencrypt/cronjob.log
 else
-        print_text_in_color "$ICyan" "Let's Encrypt SUCCESS!"--$DATE >> /var/log/letsencrypt/cronjob.log
+        echo "Let's Encrypt SUCCESS!"--$DATE >> /var/log/letsencrypt/cronjob.log
 fi
 
 # Check if service is running
