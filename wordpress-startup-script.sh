@@ -8,7 +8,7 @@ unset CHECK_CURRENT_REPO
 unset MYCNFPW
 unset WPDB
 
-# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
 ## If you want debug mode, please activate it further down in the code at line ~132
 
@@ -45,7 +45,7 @@ fi
 }
 
 network_ok() {
-    echo "Testing if network is OK..."
+    print_text_in_color "$ICyan" "Testing if network is OK..."
     service network-manager restart
     if wget -q -T 20 -t 2 http://github.com -O /dev/null
     then
@@ -58,8 +58,8 @@ network_ok() {
 check_command() {
   if ! "$@";
   then
-     printf "${IRed}Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!${Color_Off}\n"
-     echo "$* failed"
+     print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
+	 print_text_in_color "$Red" "$* failed"
     exit 1
   fi
 }
@@ -72,9 +72,9 @@ root_check
 # Check network
 if network_ok
 then
-    printf "${Green}Online!${Color_Off}\n"
+    printf "${IGreen}Online!${Color_Off}\n"
 else
-    echo "Setting correct interface..."
+    print_text_in_color "$ICyan" "Setting correct interface..."
     [ -z "$IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
     # Set correct interface
 cat <<-SETDHCP > "/etc/netplan/01-netcfg.yaml"
@@ -93,26 +93,77 @@ SETDHCP
     ip link set "$IFACE" up
     wait
     check_command service network-manager restart
-    echo "Checking connection..."
-    sleep 3
+    print_text_in_color "$ICyan" "Checking connection..."
+    sleep 1
     if ! nslookup github.com
     then
-msg_box "Network NOT OK. You must have a working network connection to run this script
-If you think that this is a bug, please report it to https://github.com/techandme/wordpress-vm/issues."
-    exit 1
+msg_box "The script failed to get an address from DHCP.
+You must have a working network connection to run this script.
+You will now be provided with the option to set a static IP manually instead."
+
+    # Copy old interfaces files
+msg_box "Copying old netplan.io config files file to:
+/tmp/netplan_io_backup/"
+    if [ -d /etc/netplan/ ] 
+    then
+        mkdir -p /tmp/netplan_io_backup
+        check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/
+    fi
+
+    # Ask for IP address
+cat << ENTERIP
++----------------------------------------------------------+
+|    Please enter the static IP address you want to set,   |
+|    including the subnet. Example: 192.168.1.100/24       |
++----------------------------------------------------------+
+ENTERIP
+    echo
+    read -r LANIP
+    echo
+
+    # Ask for gateway address
+cat << ENTERGATEWAY
++----------------------------------------------------------+
+|    Please enter the gateway address you want to set,     |
+|    Example: 192.168.1.1                                  |
++----------------------------------------------------------+
+ENTERGATEWAY
+    echo
+    read -r GATEWAYIP
+    echo
+
+    # Create the Static IP file
+cat <<-IPCONFIG > /etc/netplan/01-netcfg.yaml
+network:
+   version: 2
+   renderer: networkd
+   ethernets:
+       $IFACE: #object name
+         dhcp4: no # dhcp v4 disable
+         dhcp6: no # dhcp v6 disable
+         addresses: [$LANIP] # client IP address
+         gateway4: $GATEWAYIP # gateway address
+         nameservers:
+           addresses: [9.9.9.9,149.112.112.112] #name servers
+IPCONFIG
+
+msg_box "These are your settings, please make sure they are correct:
+$(cat /etc/netplan/01-netcfg.yaml)"
+    netplan try
     fi
 fi
 
 # Check network again
 if network_ok
 then
-    printf "${Green}Online!${Color_Off}\n"
+    printf "${IGreen}Online!${Color_Off}\n"
 else
-msg_box "Network NOT OK. You must have a working network connection to run this script
-If you think that this is a bug, please report it to https://github.com/techandme/wordpress-vm/issues."
+msg_box "Network NOT OK. You must have a working network connection to run this script.
+Please contact us for support:
+https://shop.hanssonit.se/product/premium-support-per-30-minutes/
+Please also post this issue on: $ISSUES"
     exit 1
 fi
-
 # shellcheck source=lib.sh
 WPDB=1 && MYCNFPW=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
 unset FIRST_IFACE
