@@ -44,7 +44,7 @@ curl https://plugins.svn.wordpress.org/wp-fail2ban/trunk/filters.d/wordpress-har
 
 if [ ! -f $AUTHLOG ]
 then
-    print_text_in_color "$ICyan" "$AUTHLOG not found"
+    print_text_in_color "$IRed" "$AUTHLOG not found"
     exit 1
 fi
 
@@ -90,9 +90,8 @@ check_command update-rc.d fail2ban enable
 check_command service fail2ban restart
 
 # The End
-print_text_in_color "$ICyan"
-print_text_in_color "$ICyan" "Fail2ban is now sucessfully installed."
-print_text_in_color "$ICyan" "Please use 'fail2ban-client set wordpress unbanip <Banned IP>' to unban certain IPs"
-print_text_in_color "$ICyan" "You can also use 'iptables -L -n' to check which IPs that are banned"
-any_key "Press any key to continue..."
+msg_box "Fail2ban is now sucessfully installed.
+Please use 'fail2ban-client set wordpress unbanip <Banned IP>' to unban certain IPs
+You can also use 'iptables -L -n' to check which IPs that are banned"
+
 clear
