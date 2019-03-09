@@ -4,7 +4,7 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
 
-# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -16,17 +16,17 @@ debug_mode
 root_check
 
 # Check Ubuntu version
-echo "Checking server OS and version..."
+print_text_in_color "$ICyan" "Checking server OS and version..."
 if [ "$OS" != 1 ]
 then
-    echo "Ubuntu Server is required to run this script."
-    echo "Please install that distro and try again."
+    print_text_in_color "$ICyan" "Ubuntu Server is required to run this script."
+    print_text_in_color "$ICyan" "Please install that distro and try again."
     exit 1
 fi
 
 
 if ! version 18.04 "$DISTRO" 18.04.4; then
-    echo "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
+    print_text_in_color "$ICyan" "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
     exit
 fi
 
@@ -50,16 +50,16 @@ install_if_not redis-server
 
 # Set globally doesn't work for some reason
 # touch /etc/php/7.0/mods-available/redis.ini
-# echo 'extension=redis.so' > /etc/php/7.0/mods-available/redis.ini
+# print_text_in_color "$ICyan" 'extension=redis.so' > /etc/php/7.0/mods-available/redis.ini
 # phpenmod redis
 # Setting direct to apache2 works if 'libapache2-mod-php7.0' is installed
-echo 'extension=redis.so' >> /etc/php/7.2/fpm/php.ini
+print_text_in_color "$ICyan" 'extension=redis.so' >> /etc/php/7.2/fpm/php.ini
 service nginx restart
 
 # Install Redis
 if ! apt -y install redis-server
 then
-    echo "Installation failed."
+    print_text_in_color "$ICyan" "Installation failed."
     sleep 3
     exit 1
 else
@@ -69,13 +69,13 @@ fi
 ## Redis performance tweaks ##
 if ! grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
 then
-    echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
+    print_text_in_color "$ICyan" 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 fi
 
 # Disable THP
 if ! grep -Fxq "never" /sys/kernel/mm/transparent_hugepage/enabled
 then
-    echo "never" > /sys/kernel/mm/transparent_hugepage/enabled
+    print_text_in_color "$ICyan" "never" > /sys/kernel/mm/transparent_hugepage/enabled
 fi
 
 sed -i "s|# unixsocket .*|unixsocket $REDIS_SOCK|g" $REDIS_CONF

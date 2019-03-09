@@ -4,7 +4,7 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
 
-# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -23,18 +23,18 @@ rm -f /etc/nginx/sites-enabled/default
 if service nginx restart
 then
     printf "${On_Green}New settings works! SSL is now activated and OK!${Color_Off}\n\n"
-    echo "This cert will expire in 90 days, so you have to renew it."
-    echo "There are several ways of doing so, here are some tips and tricks: https://goo.gl/c1JHR0"
-    echo "This script will add a renew cronjob to get you started, edit it by typing:"
-    echo "'crontab -u root -e'"
-    echo "Feel free to contribute to this project: https://goo.gl/3fQD65"
+    print_text_in_color "$ICyan" "This cert will expire in 90 days, so you have to renew it."
+    print_text_in_color "$ICyan" "There are several ways of doing so, here are some tips and tricks: https://goo.gl/c1JHR0"
+    print_text_in_color "$ICyan" "This script will add a renew cronjob to get you started, edit it by typing:"
+    print_text_in_color "$ICyan" "'crontab -u root -e'"
+    print_text_in_color "$ICyan" "Feel free to contribute to this project: https://goo.gl/3fQD65"
     any_key "Press any key to continue..."
-    crontab -u root -l | { cat; echo "@daily $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
+    crontab -u root -l | { cat; print_text_in_color "$ICyan" "@daily $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 
 FQDOMAIN=$(grep -m 1 "server_name" "/etc/nginx/sites-enabled/$1" | awk '{print $2}')
 if [ "$(hostname)" != "$FQDOMAIN" ]
 then
-    echo "Setting hostname to $FQDOMAIN..."
+    print_text_in_color "$ICyan" "Setting hostname to $FQDOMAIN..."
     sudo hostnamectl set-hostname "$FQDOMAIN"
     # Change /etc/hosts as well
     sed -i "s|127.0.1.1.*|127.0.1.1       $FQDOMAIN $(hostname -s)|g" /etc/hosts
@@ -46,9 +46,9 @@ DATE='$(date +%Y-%m-%d_%H:%M)'
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/sh
 if ! certbot renew --quiet --no-self-upgrade > /var/log/letsencrypt/renew.log 2>&1 ; then
-        echo "Let's Encrypt FAILED!"--$DATE >> /var/log/letsencrypt/cronjob.log
+        print_text_in_color "$ICyan" "Let's Encrypt FAILED!"--$DATE >> /var/log/letsencrypt/cronjob.log
 else
-        echo "Let's Encrypt SUCCESS!"--$DATE >> /var/log/letsencrypt/cronjob.log
+        print_text_in_color "$ICyan" "Let's Encrypt SUCCESS!"--$DATE >> /var/log/letsencrypt/cronjob.log
 fi
 
 # Check if service is running

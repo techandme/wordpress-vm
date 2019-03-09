@@ -4,7 +4,7 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
 
-# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -59,7 +59,7 @@ just type: sudo bash /var/scripts/activate-ssl.sh"
     exit
 fi
 
-echo
+print_text_in_color "$ICyan"
 while true
 do
 # Ask for domain name
@@ -69,9 +69,9 @@ cat << ENTERDOMAIN
 |    Like this: example.com, or wordpress.example.com         |
 +---------------------------------------------------------------+
 ENTERDOMAIN
-echo
+print_text_in_color "$ICyan"
 read -r domain
-echo
+print_text_in_color "$ICyan"
 if [[ "yes" == $(ask_yes_or_no "Is this correct? $domain") ]]
 then
     break
@@ -89,8 +89,8 @@ check_open_port 443 "$domain"
 check_command download_le_script test-new-config
 
 # Check if $domain exists and is reachable
-echo
-echo "Checking if $domain exists and is reachable..."
+print_text_in_color "$ICyan"
+print_text_in_color "$ICyan" "Checking if $domain exists and is reachable..."
 if wget -q -T 10 -t 2 --spider "$domain"; then
     sleep 1
 elif wget -q -T 10 -t 2 --spider --no-check-certificate "https://$domain"; then
@@ -122,7 +122,7 @@ fi
 if [ ! -f "$ssl_conf" ]
 then
     touch "$ssl_conf"
-    echo "$ssl_conf was successfully created"
+    print_text_in_color "$ICyan" "$ssl_conf was successfully created"
     sleep 2
     cat << SSL_CREATE > "$ssl_conf"
 server {
@@ -213,25 +213,25 @@ standalone() {
 # Generate certs
 if eval "certbot certonly --standalone --pre-hook 'service nginx stop' --post-hook 'service nginx start' $default_le"
 then
-    echo "success" > /tmp/le_test
+    print_text_in_color "$ICyan" "success" > /tmp/le_test
 else
-    echo "fail" > /tmp/le_test
+    print_text_in_color "$ICyan" "fail" > /tmp/le_test
 fi
 }
 webroot() {
 if eval "certbot certonly --webroot --webroot-path $WPATH $default_le"
 then
-    echo "success" > /tmp/le_test
+    print_text_in_color "$ICyan" "success" > /tmp/le_test
 else
-    echo "fail" > /tmp/le_test
+    print_text_in_color "$ICyan" "fail" > /tmp/le_test
 fi
 }
 dns() {
 if eval "certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns --server https://acme-v02.api.letsencrypt.org/directory  $default_le"
 then
-    echo "success" > /tmp/le_test
+    print_text_in_color "$ICyan" "success" > /tmp/le_test
 else
-    echo "fail" > /tmp/le_test
+    print_text_in_color "$ICyan" "fail" > /tmp/le_test
 fi
 }
 

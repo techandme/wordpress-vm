@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
 # shellcheck disable=2034,2059
 true
@@ -31,7 +31,7 @@ FINDTIME_=1800
 #bad attempts before banning an IP
 MAXRETRY_=10
 
-echo "Installing Fail2ban..."
+print_text_in_color "$ICyan" "Installing Fail2ban..."
 
 apt update -q4 & spinner_loading
 check_command apt install fail2ban -y
@@ -44,7 +44,7 @@ curl https://plugins.svn.wordpress.org/wp-fail2ban/trunk/filters.d/wordpress-har
 
 if [ ! -f $AUTHLOG ]
 then
-    echo "$AUTHLOG not found"
+    print_text_in_color "$ICyan" "$AUTHLOG not found"
     exit 1
 fi
 
@@ -90,9 +90,9 @@ check_command update-rc.d fail2ban enable
 check_command service fail2ban restart
 
 # The End
-echo
-echo "Fail2ban is now sucessfully installed."
-echo "Please use 'fail2ban-client set wordpress unbanip <Banned IP>' to unban certain IPs"
-echo "You can also use 'iptables -L -n' to check which IPs that are banned"
+print_text_in_color "$ICyan"
+print_text_in_color "$ICyan" "Fail2ban is now sucessfully installed."
+print_text_in_color "$ICyan" "Please use 'fail2ban-client set wordpress unbanip <Banned IP>' to unban certain IPs"
+print_text_in_color "$ICyan" "You can also use 'iptables -L -n' to check which IPs that are banned"
 any_key "Press any key to continue..."
 clear

@@ -117,9 +117,9 @@ cat << ENTERIP
 |    including the subnet. Example: 192.168.1.100/24       |
 +----------------------------------------------------------+
 ENTERIP
-    echo
+    print_text_in_color "$ICyan"
     read -r LANIP
-    echo
+    print_text_in_color "$ICyan"
 
     # Ask for gateway address
 cat << ENTERGATEWAY
@@ -128,9 +128,9 @@ cat << ENTERGATEWAY
 |    Example: 192.168.1.1                                  |
 +----------------------------------------------------------+
 ENTERGATEWAY
-    echo
+    print_text_in_color "$ICyan"
     read -r GATEWAYIP
-    echo
+    print_text_in_color "$ICyan"
 
     # Create the Static IP file
 cat <<-IPCONFIG > /etc/netplan/01-netcfg.yaml
@@ -177,8 +177,8 @@ unset WPDB
 DEBUG=0
 debug_mode
 
-echo
-echo "Getting scripts from GitHub to be able to run the first setup..."
+print_text_in_color "$ICyan"
+print_text_in_color "$ICyan" "Getting scripts from GitHub to be able to run the first setup..."
 # All the shell scripts in static (.sh)
 download_static_script security
 download_static_script update
@@ -213,10 +213,10 @@ msg_box"This script will do the final setup for you
 clear
 
 # Set keyboard layout
-echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
+print_text_in_color "$ICyan" "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
 if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
 then
-    echo "Not changing keyboard layout..."
+    print_text_in_color "$ICyan" "Not changing keyboard layout..."
     sleep 1
     clear
 else
@@ -225,10 +225,10 @@ clear
 fi
 
 # Change Timezone
-echo "Current timezone is $(cat /etc/timezone)"
+print_text_in_color "$ICyan" "Current timezone is $(cat /etc/timezone)"
 if [[ "no" == $(ask_yes_or_no "Do you want to change timezone?") ]]
 then
-    echo "Not changing timezone..."
+    print_text_in_color "$ICyan" "Not changing timezone..."
     sleep 1
     clear
 else
@@ -269,7 +269,7 @@ rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
 
 # Generate new MARIADB password
-echo "Generating new MARIADB password..."
+print_text_in_color "$ICyan" "Generating new MARIADB password..."
 if bash "$SCRIPTS/change_mysql_pass.sh" && wait
 then
    rm "$SCRIPTS/change_mysql_pass.sh"
@@ -329,13 +329,13 @@ rm -f results
 
 # Change password
 printf "${Color_Off}\n"
-echo "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"
+print_text_in_color "$ICyan" "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"
 any_key "Press any key to change password for system user..."
 while true
 do
     sudo passwd "$(getent group sudo | cut -d: -f4 | cut -d, -f1)" && break
 done
-echo
+print_text_in_color "$ICyan"
 clear
 
 cat << LETSENC
@@ -349,8 +349,8 @@ if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
 then
     bash $SCRIPTS/activate-ssl.sh
 else
-    echo
-    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
+    print_text_in_color "$ICyan"
+    print_text_in_color "$ICyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
     any_key "Press any key to continue..."
 fi
 
@@ -368,23 +368,23 @@ do
 |    installation will not work correctly!      |
 +-----------------------------------------------+
 ENTERNEW
-   echo "Enter FQDN (http(s)://yourdomain.com):"
+   print_text_in_color "$ICyan" "Enter FQDN (http(s)://yourdomain.com):"
    read -r FQDN
-   echo
-   echo "Enter username:"
+   print_text_in_color "$ICyan"
+   print_text_in_color "$ICyan" "Enter username:"
    read -r USER
-   echo
-   echo "Enter password:"
+   print_text_in_color "$ICyan"
+   print_text_in_color "$ICyan" "Enter password:"
    read -r NEWWPADMINPASS
-   echo
-   echo "Enter email address:"
+   print_text_in_color "$ICyan"
+   print_text_in_color "$ICyan" "Enter email address:"
    read -r EMAIL
-   echo
+   print_text_in_color "$ICyan"
    MYANSWER=$(ask_yes_or_no "Is this correct?  FQDN: $FQDN User: $USER Password: $NEWWPADMINPASS Email: $EMAIL") 
 done
 clear
 
-echo "$FQDN" > fqdn.txt
+print_text_in_color "$ICyan" "$FQDN" > fqdn.txt
 wp_cli_cmd option update siteurl < fqdn.txt --path="$WPATH"
 rm fqdn.txt
 
@@ -394,19 +394,19 @@ wp_cli_cmd search-replace "$OLDHOME" "$FQDN" --precise --all-tables --path="$WPA
 wp_cli_cmd user create "$USER" "$EMAIL" --role=administrator --user_pass="$NEWWPADMINPASS" --path="$WPATH"
 wp_cli_cmd user delete 1 --reassign="$USER" --path="$WPATH"
 {
-echo "WP USER: $USER"
-echo "WP PASS: $NEWWPADMINPASS"
+print_text_in_color "$ICyan" "WP USER: $USER"
+print_text_in_color "$ICyan" "WP PASS: $NEWWPADMINPASS"
 } > /var/adminpass.txt
 
 # Change servername in Nginx
-server_name=$(echo "$FQDN" | cut -d "/" -f3)
+server_name=$(print_text_in_color "$ICyan" "$FQDN" | cut -d "/" -f3)
 sed -i "s|# server_name .*|server_name $server_name;|g" /etc/nginx/sites-available/wordpress_port_80.conf
 sed -i "s|# server_name .*|server_name $server_name;|g" /etc/nginx/sites-available/wordpress_port_443.conf
 check_command service nginx restart
 
 # Show current administrators
-echo
-echo "This is the current administrator(s):"
+print_text_in_color "$ICyan"
+print_text_in_color "$ICyan" "This is the current administrator(s):"
 wp_cli_cmd user list --role=administrator --path="$WPATH"
 any_key "Press any key to continue..."
 clear
@@ -453,7 +453,7 @@ RCLOCAL
 clear
 
 # Upgrade system
-echo "System will now upgrade..."
+print_text_in_color "$ICyan" "System will now upgrade..."
 bash $SCRIPTS/update.sh
 
 # Cleanup 2
@@ -464,20 +464,20 @@ ADDRESS2=$(grep "server_name" /etc/nginx/sites-available/wordpress_port_80.conf 
 # Success!
 clear
 printf "%s\n""${Green}"
-echo    "+--------------------------------------------------------------------+"
-echo    "|      Congratulations! You have successfully installed Wordpress!   |"
-echo    "|                                                                    |"
+print_text_in_color "$ICyan"    "+--------------------------------------------------------------------+"
+print_text_in_color "$ICyan"    "|      Congratulations! You have successfully installed Wordpress!   |"
+print_text_in_color "$ICyan"    "|                                                                    |"
 printf "|         ${Color_Off}Login to Wordpress in your browser: ${Cyan}\"$ADDRESS2\"${Green}         |\n"
-echo    "|                                                                    |"
+print_text_in_color "$ICyan"    "|                                                                    |"
 printf "|         ${Color_Off}Publish your server online! ${Cyan}https://goo.gl/iUGE2U${Green}          |\n"
-echo    "|                                                                    |"
+print_text_in_color "$ICyan"    "|                                                                    |"
 printf "|         ${Color_Off}To login to MARIADB just type: ${Cyan}'mysql -u root'${Green}             |\n"
-echo    "|                                                                    |"
+print_text_in_color "$ICyan"    "|                                                                    |"
 printf "|         ${Color_Off}To update this VM just type: ${Green}                              |\n"
 printf "|         ${Cyan}'sudo bash /var/scripts/update.sh'${Green}                         |\n"
-echo    "|                                                                    |"
+print_text_in_color "$ICyan"    "|                                                                    |"
 printf "|    ${IRed}################ T&M Hansson IT AB - $(date +"%Y") ################${Green}      |\n"
-echo    "+--------------------------------------------------------------------+"
+print_text_in_color "$ICyan"    "+--------------------------------------------------------------------+"
 printf "${Color_Off}\n"
 
 # Prefer IPv6

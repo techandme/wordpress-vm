@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
@@ -39,17 +39,17 @@ bash $SCRIPTS/adduser.sh "wordpress_install.sh"
 rm $SCRIPTS/adduser.sh
 
 # Check Ubuntu version
-echo "Checking server OS and version..."
+print_text_in_color "$ICyan" "Checking server OS and version..."
 if [ "$OS" != 1 ]
 then
-    echo "Ubuntu Server is required to run this script."
-    echo "Please install that distro and try again."
+    print_text_in_color "$ICyan" "Ubuntu Server is required to run this script."
+    print_text_in_color "$ICyan" "Please install that distro and try again."
     exit 1
 fi
 
 
 if ! version 18.04 "$DISTRO" 18.04.4; then
-    echo "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
+    print_text_in_color "$ICyan" "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
     exit
 fi
 
@@ -70,21 +70,21 @@ fi
 # Change DNS
 install_if_not resolvconf
 yes | dpkg-reconfigure --frontend=noninteractive resolvconf
-echo "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
-echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
+print_text_in_color "$ICyan" "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
+print_text_in_color "$ICyan" "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
 
 # Check network
 test_connection
 
 # Check where the best mirrors are and update
-echo
+print_text_in_color "$ICyan"
 printf "Your current server repository is:  ${Cyan}%s${Color_Off}\n" "$REPO"
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
-    echo "Keeping $REPO as mirror..."
+    print_text_in_color "$ICyan" "Keeping $REPO as mirror..."
     sleep 1
 else
-   echo "Locating the best mirrors..."
+   print_text_in_color "$ICyan" "Locating the best mirrors..."
    apt update -q4 & spinner_loading
    apt install python-pip -y
    pip install \
@@ -100,10 +100,10 @@ fi
 clear
 
 # Set keyboard layout
-echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
+print_text_in_color "$ICyan" "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
 if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
 then
-    echo "Not changing keyboard layout..."
+    print_text_in_color "$ICyan" "Not changing keyboard layout..."
     sleep 1
     clear
 else
@@ -116,8 +116,8 @@ apt update -q4 & spinner_loading
 
 # Write MARIADB pass to file and keep it safe
 {
-echo "[client]"
-echo "password='$MARIADB_PASS'"
+print_text_in_color "$ICyan" "[client]"
+print_text_in_color "$ICyan" "password='$MARIADB_PASS'"
 } > "$MYCNF"
 chmod 0600 $MYCNF
 chown root:root $MYCNF
@@ -156,7 +156,7 @@ expect \"Reload privilege tables now?\"
 send \"y\r\"
 expect eof
 ")
-echo "$SECURE_MYSQL"
+print_text_in_color "$ICyan" "$SECURE_MYSQL"
 apt -y purge expect
 
 # Write a new MariaDB config
@@ -203,9 +203,9 @@ mv wp-cli.phar /usr/local/bin/wp
 
 # Add www-data in sudoers
 {
-echo "# WP-CLI" 
-echo "$SUDO_USER ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
-echo "root ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
+print_text_in_color "$ICyan" "# WP-CLI" 
+print_text_in_color "$ICyan" "$SUDO_USER ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
+print_text_in_color "$ICyan" "root ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
 } >> /etc/sudoers
 
 # Create dir
@@ -256,11 +256,11 @@ define( 'WP_DEBUG', false );
 PHP
 
 # Make sure the passwords are the same, this file will be deleted when Redis is run.
-echo "$REDIS_PASS" > /tmp/redis_pass.txt
+print_text_in_color "$ICyan" "$REDIS_PASS" > /tmp/redis_pass.txt
 
 # Install Wordpress
 check_command wp_cli_cmd core install --url=http://"$ADDRESS"/ --title=Wordpress --admin_user=$WPADMINUSER --admin_password="$WPADMINPASS" --admin_email=no-reply@hanssonit.se --skip-email
-echo "WP PASS: $WPADMINPASS" > /var/adminpass.txt
+print_text_in_color "$ICyan" "WP PASS: $WPADMINPASS" > /var/adminpass.txt
 chown wordpress:wordpress /var/adminpass.txt
 
 # Create welcome post
@@ -435,7 +435,7 @@ server {
      }
 }
 SSL_CREATE
-echo "$SSL_CONF was successfully created"
+print_text_in_color "$ICyan" "$SSL_CONF was successfully created"
 sleep 1
 fi
 
@@ -507,7 +507,7 @@ server {
      }
 }
 HTTP_CREATE
-echo "$HTTP_CONF was successfully created"
+print_text_in_color "$ICyan" "$HTTP_CONF was successfully created"
 sleep 1
 fi
 
@@ -612,7 +612,7 @@ http {
 #	}
 #}
 NGINX_CREATE
-echo "$NGINX_CONF was successfully created"
+print_text_in_color "$ICyan" "$NGINX_CONF was successfully created"
 sleep 1
 fi
 
@@ -680,7 +680,7 @@ server {
 	}
 }
 NGINX_DEFAULT
-echo "$NGINX_DEF was successfully created"
+print_text_in_color "$ICyan" "$NGINX_DEF was successfully created"
 sleep 1
 fi
 
@@ -695,7 +695,7 @@ databases=$(mysql -u root -p"$MARIADB_PASS" -e "SHOW DATABASES;" | tr -d "| " | 
 for db in $databases; do
     if [[ "$db" != "performance_schema" ]] && [[ "$db" != _* ]] && [[ "$db" != "information_schema" ]];
     then
-        echo "Changing to UTF8mb4 on: $db"
+        print_text_in_color "$ICyan" "Changing to UTF8mb4 on: $db"
         mysql -u root -p"$MARIADB_PASS" -e "ALTER DATABASE $db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
     fi
 done
@@ -703,15 +703,15 @@ done
 # Enable OPCache for PHP
 phpenmod opcache
 {
-echo "# OPcache settings for Wordpress"
-echo "opcache.enable=1"
-echo "opcache.enable_cli=1"
-echo "opcache.interned_strings_buffer=8"
-echo "opcache.max_accelerated_files=10000"
-echo "opcache.memory_consumption=128"
-echo "opcache.save_comments=1"
-echo "opcache.revalidate_freq=1"
-echo "opcache.validate_timestamps=1"
+print_text_in_color "$ICyan" "# OPcache settings for Wordpress"
+print_text_in_color "$ICyan" "opcache.enable=1"
+print_text_in_color "$ICyan" "opcache.enable_cli=1"
+print_text_in_color "$ICyan" "opcache.interned_strings_buffer=8"
+print_text_in_color "$ICyan" "opcache.max_accelerated_files=10000"
+print_text_in_color "$ICyan" "opcache.memory_consumption=128"
+print_text_in_color "$ICyan" "opcache.save_comments=1"
+print_text_in_color "$ICyan" "opcache.revalidate_freq=1"
+print_text_in_color "$ICyan" "opcache.validate_timestamps=1"
 } >> /etc/php/7.2/fpm/php.ini
 
 # Install Redis
@@ -765,5 +765,5 @@ sudo /usr/lib/update-notifier/update-motd-updates-available --force
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Reboot
-echo "Installation done, system will now reboot..."
+print_text_in_color "$ICyan" "Installation done, system will now reboot..."
 reboot

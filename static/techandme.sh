@@ -5,18 +5,18 @@ WPADMINUSER=$(grep "WP USER:" /var/adminpass.txt)
 WPADMINPASS=$(grep "WP PASS:" /var/adminpass.txt)
 clear
 figlet -f small Wordpress
-echo "  https://www.hanssonit.se/wordpress-vm/"
-echo
-echo
-echo "|NETWORK|"
-echo "WAN IP: $WANIP"
-echo "LAN IP: $ADDRESS"
-echo
-echo "|WORDPRESS LOGIN|"
-echo "$WPADMINUSER"
-echo "$WPADMINPASS"
-echo
-echo "|MySQL|"
-echo "PASS: cat /root/.my.cnf"
-echo
+print_text_in_color "$ICyan" "  https://www.hanssonit.se/wordpress-vm/"
+print_text_in_color "$ICyan"
+print_text_in_color "$ICyan"
+print_text_in_color "$ICyan" "|NETWORK|"
+print_text_in_color "$ICyan" "WAN IP: $WANIP"
+print_text_in_color "$ICyan" "LAN IP: $ADDRESS"
+print_text_in_color "$ICyan"
+print_text_in_color "$ICyan" "|WORDPRESS LOGIN|"
+print_text_in_color "$ICyan" "$WPADMINUSER"
+print_text_in_color "$ICyan" "$WPADMINPASS"
+print_text_in_color "$ICyan"
+print_text_in_color "$ICyan" "|MySQL|"
+print_text_in_color "$ICyan" "PASS: cat /root/.my.cnf"
+print_text_in_color "$ICyan"
 exit 0

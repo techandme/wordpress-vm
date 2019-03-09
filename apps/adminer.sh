@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
-echo "Installing and securing Adminer..."
+print_text_in_color "$ICyan" "Installing and securing Adminer..."
 
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
@@ -28,17 +28,17 @@ fi
 # Check Ubuntu version
 if [ "$OS" != 1 ]
 then
-    echo "Ubuntu Server is required to run this script."
-    echo "Please install that distro and try again."
+    print_text_in_color "$ICyan" "Ubuntu Server is required to run this script."
+    print_text_in_color "$ICyan" "Please install that distro and try again."
     sleep 3
     exit 1
 fi
 
 
 if ! version 16.04 "$DISTRO" 18.04.4; then
-    echo "Ubuntu version seems to be $DISTRO"
-    echo "It must be between 16.04 - 18.04.4"
-    echo "Please install that version and try again."
+    print_text_in_color "$ICyan" "Ubuntu version seems to be $DISTRO"
+    print_text_in_color "$ICyan" "It must be between 16.04 - 18.04.4"
+    print_text_in_color "$ICyan" "Please install that version and try again."
     exit 1
 fi
 
