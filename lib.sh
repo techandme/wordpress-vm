@@ -94,7 +94,7 @@ APACHE2=/etc/apache2/apache2.conf
 # then
 #     # do stuff
 # else
-#     print_text_in_color "$ICyan" "You are not root..."
+#     print_text_in_color "$IRed" "You are not root..."
 #     exit 1
 # fi
 #
