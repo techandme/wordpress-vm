@@ -28,17 +28,17 @@ fi
 # Check Ubuntu version
 if [ "$OS" != 1 ]
 then
-    print_text_in_color "$ICyan" "Ubuntu Server is required to run this script."
-    print_text_in_color "$ICyan" "Please install that distro and try again."
+    print_text_in_color "$IRed" "Ubuntu Server is required to run this script."
+    print_text_in_color "$IRed" "Please install that distro and try again."
     sleep 3
     exit 1
 fi
 
 
 if ! version 16.04 "$DISTRO" 18.04.4; then
-    print_text_in_color "$ICyan" "Ubuntu version seems to be $DISTRO"
-    print_text_in_color "$ICyan" "It must be between 16.04 - 18.04.4"
-    print_text_in_color "$ICyan" "Please install that version and try again."
+    print_text_in_color "$IRed" "Ubuntu version seems to be $DISTRO"
+    print_text_in_color "$IRed" "It must be between 16.04 - 18.04.4"
+    print_text_in_color "$IRed" "Please install that version and try again."
     exit 1
 fi
 
