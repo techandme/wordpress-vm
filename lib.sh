@@ -157,10 +157,10 @@ ask_yes_or_no() {
     read -r -p "$1 ([y]es or [N]o): "
     case ${REPLY,,} in
         y|yes)
-            print_text_in_color "$ICyan" "yes"
+            echo "yes"
         ;;
         *)
-            print_text_in_color "$ICyan" "no"
+            echo "no"
         ;;
     esac
 }
