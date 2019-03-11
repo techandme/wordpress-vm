@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
 # shellcheck disable=2034,2059
 true
@@ -31,7 +31,7 @@ password='$regressionpw'
 LOGIN
     chmod 0600 $MYCNF
     chown root:root $MYCNF
-    echo "Please restart the upgrade process, we fixed the password file $MYCNF."
+    print_text_in_color "$ICyan" "Please restart the upgrade process, we fixed the password file $MYCNF."
     exit 1
 elif [ -z "$MARIADBMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
 then
@@ -40,14 +40,14 @@ then
     echo "[client]"
     echo "password='$regressionpw'"
     } >> "$MYCNF"
-    echo "Please restart the upgrade process, we fixed the password file $MYCNF."
+    print_text_in_color "$ICyan" "Please restart the upgrade process, we fixed the password file $MYCNF."
     exit 1
 fi
 
 if [ -z "$MARIADBMYCNFPASS" ]
 then
-    echo "Something went wrong with copying your mysql password to $MYCNF."
-    echo "Please report this issue to $ISSUES, thanks!"
+    print_text_in_color "$IRed" "Something went wrong with copying your mysql password to $MYCNF."
+    print_text_in_color "$IRed" "Please report this issue to $ISSUES, thanks!"
     exit 1
 else
     rm -f /var/mysql_password.txt
@@ -62,7 +62,7 @@ apt update -q2
 apt dist-upgrade -y
 
 # Update Redis PHP extension
-echo "Trying to upgrade the Redis PECL extenstion..."
+print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extenstion..."
 if ! pecl list | grep redis >/dev/null 2>&1
 then
     if dpkg -l | grep php7.2 > /dev/null 2>&1
@@ -94,7 +94,7 @@ fi
 # Update adminer
 if [ -d $ADMINERDIR ]
 then
-    echo "Updating Adminer..."
+    print_text_in_color "$ICyan" "Updating Adminer..."
     rm -f "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
     wget -q "http://www.adminer.org/latest.php" -O "$ADMINERDIR"/latest.php
     ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
@@ -124,9 +124,7 @@ wp_cli_cmd core update --force
 wp_cli_cmd plugin update --all
 wp_cli_cmd core update-db
 wp_cli_cmd db optimize
-echo
-echo "This is the current version installed:"
-echo
+print_text_in_color "$ICyan" "This is the current version installed:"
 wp_cli_cmd core version --extra
 
 # Cleanup un-used packages

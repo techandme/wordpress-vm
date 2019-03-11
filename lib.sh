@@ -94,7 +94,7 @@ APACHE2=/etc/apache2/apache2.conf
 # then
 #     # do stuff
 # else
-#     echo "You are not root..."
+#     print_text_in_color "$IRed" "You are not root..."
 #     exit 1
 # fi
 #
@@ -140,7 +140,7 @@ do
     if [ "${RESULT:-null}" = null ]; then
             break
     else
-            echo "${PROCESS} is running. Waiting for it to stop..."
+            print_text_in_color "$ICyan" "${PROCESS} is running. Waiting for it to stop..."
             sleep 10
     fi
 done
@@ -181,7 +181,7 @@ if [ $LE_IS_AVAILABLE -eq 0 ]
 then
     certbot --version
 else
-    echo "Installing certbot (Let's Encrypt)..."
+    print_text_in_color "$ICyan" "Installing certbot (Let's Encrypt)..."
     apt update -q4 & spinner_loading
     apt install software-properties-common
     add-apt-repository ppa:certbot/certbot -y
@@ -203,7 +203,7 @@ fi
 apt update -q4 & spinner_loading
 if [ "$NMAPSTATUS" = "preinstalled" ]
 then
-      echo "nmap is already installed..."
+      print_text_in_color "$ICyan" "nmap is already installed..."
 else
     apt install nmap -y
 fi
@@ -214,7 +214,7 @@ then
   printf "${Green}Port $1 is open on $WANIP4!${Color_Off}\n"
   if [ "$NMAPSTATUS" = "preinstalled" ]
   then
-    echo "nmap was previously installed, not removing."
+    print_text_in_color "$ICyan" "nmap was previously installed, not removing."
   else
     apt remove --purge nmap -y
   fi
@@ -225,7 +225,7 @@ else
       printf "${Green}Port $1 is open on $2!${Color_Off}\n"
       if [ "$NMAPSTATUS" = "preinstalled" ]
       then
-        echo "nmap was previously installed, not removing."
+        print_text_in_color "$ICyan" "nmap was previously installed, not removing."
       else
         apt remove --purge nmap -y
       fi
@@ -234,7 +234,7 @@ else
       any_key "Press any key to exit... "
       if [ "$NMAPSTATUS" = "preinstalled" ]
       then
-        echo "nmap was previously installed, not removing."
+        print_text_in_color "$ICyan" "nmap was previously installed, not removing."
       else
         apt remove --purge nmap -y
       fi
@@ -252,7 +252,7 @@ local PROMPT="$1"
 is_this_installed() {
 if [ "$(dpkg-query -W -f='${Status}' "${1}" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
-    echo "${1} is installed, it must be a clean server."
+    print_text_in_color "$IRed" "${1} is installed, it must be a clean server."
     exit 1
 fi
 }
@@ -274,7 +274,7 @@ wait
 ip link set "$IFACE" up
 wait
 check_command service network-manager restart
-echo "Checking connection..."
+print_text_in_color "$ICyan" "Checking connection..."
 sleep 3
 if ! nslookup github.com
 then
@@ -320,14 +320,19 @@ check_command() {
   if ! "$@";
   then
      printf "${IRed}Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!${Color_Off}\n"
-     echo "$* failed"
+     print_text_in_color "$IRed" "$* failed"
     exit 1
   fi
 }
 
 network_ok() {
-    echo "Testing if network is OK..."
-    service networking restart
+    print_text_in_color "$ICyan" "Testing if network is OK..."
+    install_if_not network-manager
+    if ! service network-manager restart > /dev/null
+    then
+        service networking restart > /dev/null
+    fi
+    sleep 2
     if wget -q -T 20 -t 2 http://github.com -O /dev/null & spinner_loading
     then
         return 0
@@ -358,9 +363,9 @@ download_static_script() {
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
     if ! { wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS" || wget -q "${STATIC}/${1}.php" -P "$SCRIPTS" || wget -q "${STATIC}/${1}.py" -P "$SCRIPTS"; }
     then
-        echo "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
-        echo "If you get this error when running the wordpress-startup-script then just re-run it with:"
-        echo "'sudo bash $SCRIPTS/wordpress-startup-script.sh' and all the scripts will be downloaded again"
+        print_text_in_color "$IRed" "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
+        print_text_in_color "$IRed" "If you get this error when running the wordpress-startup-script then just re-run it with:"
+        print_text_in_color "$IRed" "'sudo bash $SCRIPTS/wordpress-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
     fi
 }
@@ -372,9 +377,9 @@ download_le_script() {
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
     if ! { wget -q "${LETS_ENC}/${1}.sh" -P "$SCRIPTS" || wget -q "${LETS_ENC}/${1}.php" -P "$SCRIPTS" || wget -q "${LETS_ENC}/${1}.py" -P "$SCRIPTS"; }
     then
-        echo "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
-        echo "If you get this error when running the wordpress-startup-script then just re-run it with:"
-        echo "'sudo bash $SCRIPTS/wordpress-startup-script.sh' and all the scripts will be downloaded again"
+        print_text_in_color "$IRed" "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
+        print_text_in_color "$IRed" "If you get this error when running the wordpress-startup-script then just re-run it with:"
+        print_text_in_color "$IRed" "'sudo bash $SCRIPTS/wordpress-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
     fi
 }
@@ -396,8 +401,8 @@ run_main_script() {
         python "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
-        echo "Downloading ${1} failed"
-        echo "Script failed to download. Please run: 'sudo wget ${GITHUB_REPO}/${1}.sh|php|py' again."
+        print_text_in_color "$IRed" "Downloading ${1} failed"
+        print_text_in_color "$IRed" "Script failed to download. Please run: 'sudo wget ${GITHUB_REPO}/${1}.sh|php|py' again."
         sleep 3
     fi
 }
@@ -420,8 +425,8 @@ run_static_script() {
         python "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
-        echo "Downloading ${1} failed"
-        echo "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|php|py' again."
+        print_text_in_color "$IRed" "Downloading ${1} failed"
+        print_text_in_color "$IRed" "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|php|py' again."
         sleep 3
     fi
 }
@@ -443,8 +448,8 @@ run_app_script() {
         python "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
-        echo "Downloading ${1} failed"
-        echo "Script failed to download. Please run: 'sudo wget ${APP}/${1}.sh|php|py' again."
+        print_text_in_color "$IRed" "Downloading ${1} failed"
+        print_text_in_color "$IRed" "Script failed to download. Please run: 'sudo wget ${APP}/${1}.sh|php|py' again."
         sleep 3
     fi
 }

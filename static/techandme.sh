@@ -19,9 +19,9 @@ echo "LAN IPv4: $ADDRESS"
 echo
 echo "|Wordpress Login|"
 echo "USER:$WPADMINUSER"
-echo "PASS:************"
+echo "PASS: 'grep WP PASS: /var/adminpass.txt'"
 echo
 echo "|MySQL/MariaDB|"
 echo "USER: root"
-echo "PASS: cat /root/.my.cnf"
+echo "PASS: 'cat /root/.my.cnf'"
 echo

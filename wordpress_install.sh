@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
@@ -39,17 +39,17 @@ bash $SCRIPTS/adduser.sh "wordpress_install.sh"
 rm $SCRIPTS/adduser.sh
 
 # Check Ubuntu version
-echo "Checking server OS and version..."
+print_text_in_color "$ICyan" "Checking server OS and version..."
 if [ "$OS" != 1 ]
 then
-    echo "Ubuntu Server is required to run this script."
-    echo "Please install that distro and try again."
+    print_text_in_color "$IRed" "Ubuntu Server is required to run this script."
+    print_text_in_color "$IRed" "Please install that distro and try again."
     exit 1
 fi
 
 
 if ! version 18.04 "$DISTRO" 18.04.4; then
-    echo "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
+    print_text_in_color "$IRed" "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
     exit
 fi
 
@@ -77,14 +77,13 @@ echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
 test_connection
 
 # Check where the best mirrors are and update
-echo
-printf "Your current server repository is:  ${Cyan}%s${Color_Off}\n" "$REPO"
+print_text_in_color "$ICyan" "Your current server repository is: $REPO"
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
-    echo "Keeping $REPO as mirror..."
+    print_text_in_color "$ICyan" "Keeping $REPO as mirror..."
     sleep 1
 else
-   echo "Locating the best mirrors..."
+   print_text_in_color "$ICyan" "Locating the best mirrors..."
    apt update -q4 & spinner_loading
    apt install python-pip -y
    pip install \
@@ -100,10 +99,10 @@ fi
 clear
 
 # Set keyboard layout
-echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
+print_text_in_color "$ICyan" "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
 if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
 then
-    echo "Not changing keyboard layout..."
+    print_text_in_color "$ICyan" "Not changing keyboard layout..."
     sleep 1
     clear
 else
@@ -435,7 +434,7 @@ server {
      }
 }
 SSL_CREATE
-echo "$SSL_CONF was successfully created"
+print_text_in_color "$IGreen" "$SSL_CONF was successfully created"
 sleep 1
 fi
 
@@ -507,7 +506,7 @@ server {
      }
 }
 HTTP_CREATE
-echo "$HTTP_CONF was successfully created"
+print_text_in_color "$IGreen" "$HTTP_CONF was successfully created"
 sleep 1
 fi
 
@@ -612,7 +611,7 @@ http {
 #	}
 #}
 NGINX_CREATE
-echo "$NGINX_CONF was successfully created"
+print_text_in_color "$IGreen" "$NGINX_CONF was successfully created"
 sleep 1
 fi
 
@@ -680,7 +679,7 @@ server {
 	}
 }
 NGINX_DEFAULT
-echo "$NGINX_DEF was successfully created"
+print_text_in_color "$IGreen" "$NGINX_DEF was successfully created"
 sleep 1
 fi
 
@@ -695,7 +694,7 @@ databases=$(mysql -u root -p"$MARIADB_PASS" -e "SHOW DATABASES;" | tr -d "| " | 
 for db in $databases; do
     if [[ "$db" != "performance_schema" ]] && [[ "$db" != _* ]] && [[ "$db" != "information_schema" ]];
     then
-        echo "Changing to UTF8mb4 on: $db"
+        print_text_in_color "$ICyan" "Changing to UTF8mb4 on: $db"
         mysql -u root -p"$MARIADB_PASS" -e "ALTER DATABASE $db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
     fi
 done
@@ -765,5 +764,5 @@ sudo /usr/lib/update-notifier/update-motd-updates-available --force
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Reboot
-echo "Installation done, system will now reboot..."
+print_text_in_color "$IGreen" "Installation done, system will now reboot..."
 reboot

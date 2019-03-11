@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
 # shellcheck disable=2034,2059
 true
@@ -16,7 +16,7 @@ debug_mode
 # Must be root
 if ! is_root
 then
-    echo "Must be root to run script, in Ubuntu type: sudo -i"
+    print_text_in_color "$IRed" "Must be root to run script, in Ubuntu type: sudo -i"
     exit 1
 fi
 

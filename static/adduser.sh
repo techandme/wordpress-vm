@@ -4,7 +4,7 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
 
-# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -22,7 +22,7 @@ Please create a user with sudo permissions if you want an optimal installation.
 The preferred user is 'wordpress'."
     if [[ "no" == $(ask_yes_or_no "Do you want to create a new user?") ]]
     then
-        echo "Not adding another user..."
+        print_text_in_color "$ICyan" "Not adding another user..."
         sleep 1
     else
         read -r -p "Enter name of the new user: " NEWUSER
