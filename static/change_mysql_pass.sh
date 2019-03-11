@@ -16,7 +16,7 @@ debug_mode
 # Change MARIADB Password
 if mysqladmin -u root -p"$MARIADBMYCNFPASS" password "$NEWMARIADBPASS" > /dev/null 2>&1
 then
-    print_text_in_color "$ICyan" -e "${Green}Your new MARIADB root password is: $NEWMARIADBPASS${Color_Off}"
+    print_text_in_color "$IGreen" "Your new MARIADB root password is: $NEWMARIADBPASS"
     cat << LOGIN > "$MYCNF"
 [client]
 password='$NEWMARIADBPASS'
