@@ -252,7 +252,7 @@ local PROMPT="$1"
 is_this_installed() {
 if [ "$(dpkg-query -W -f='${Status}' "${1}" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
-    print_text_in_color "$ICyan" "${1} is installed, it must be a clean server."
+    print_text_in_color "$IRed" "${1} is installed, it must be a clean server."
     exit 1
 fi
 }
@@ -320,7 +320,7 @@ check_command() {
   if ! "$@";
   then
      printf "${IRed}Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!${Color_Off}\n"
-     print_text_in_color "$ICyan" "$* failed"
+     print_text_in_color "$IRed" "$* failed"
     exit 1
   fi
 }
@@ -358,9 +358,9 @@ download_static_script() {
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
     if ! { wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS" || wget -q "${STATIC}/${1}.php" -P "$SCRIPTS" || wget -q "${STATIC}/${1}.py" -P "$SCRIPTS"; }
     then
-        print_text_in_color "$ICyan" "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
-        print_text_in_color "$ICyan" "If you get this error when running the wordpress-startup-script then just re-run it with:"
-        print_text_in_color "$ICyan" "'sudo bash $SCRIPTS/wordpress-startup-script.sh' and all the scripts will be downloaded again"
+        print_text_in_color "$IRed" "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
+        print_text_in_color "$IRed" "If you get this error when running the wordpress-startup-script then just re-run it with:"
+        print_text_in_color "$IRed" "'sudo bash $SCRIPTS/wordpress-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
     fi
 }
@@ -372,9 +372,9 @@ download_le_script() {
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
     if ! { wget -q "${LETS_ENC}/${1}.sh" -P "$SCRIPTS" || wget -q "${LETS_ENC}/${1}.php" -P "$SCRIPTS" || wget -q "${LETS_ENC}/${1}.py" -P "$SCRIPTS"; }
     then
-        print_text_in_color "$ICyan" "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
-        print_text_in_color "$ICyan" "If you get this error when running the wordpress-startup-script then just re-run it with:"
-        print_text_in_color "$ICyan" "'sudo bash $SCRIPTS/wordpress-startup-script.sh' and all the scripts will be downloaded again"
+        print_text_in_color "$IRed" "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
+        print_text_in_color "$IRed" "If you get this error when running the wordpress-startup-script then just re-run it with:"
+        print_text_in_color "$IRed" "'sudo bash $SCRIPTS/wordpress-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
     fi
 }
@@ -396,8 +396,8 @@ run_main_script() {
         python "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
-        print_text_in_color "$ICyan" "Downloading ${1} failed"
-        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo wget ${GITHUB_REPO}/${1}.sh|php|py' again."
+        print_text_in_color "$IRed" "Downloading ${1} failed"
+        print_text_in_color "$IRed" "Script failed to download. Please run: 'sudo wget ${GITHUB_REPO}/${1}.sh|php|py' again."
         sleep 3
     fi
 }
@@ -420,8 +420,8 @@ run_static_script() {
         python "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
-        print_text_in_color "$ICyan" "Downloading ${1} failed"
-        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|php|py' again."
+        print_text_in_color "$IRed" "Downloading ${1} failed"
+        print_text_in_color "$IRed" "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|php|py' again."
         sleep 3
     fi
 }
@@ -443,8 +443,8 @@ run_app_script() {
         python "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
-        print_text_in_color "$ICyan" "Downloading ${1} failed"
-        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo wget ${APP}/${1}.sh|php|py' again."
+        print_text_in_color "$IRed" "Downloading ${1} failed"
+        print_text_in_color "$IRed" "Script failed to download. Please run: 'sudo wget ${APP}/${1}.sh|php|py' again."
         sleep 3
     fi
 }
@@ -485,7 +485,7 @@ spinner_loading() {
 any_key() {
     local PROMPT="$1"
     read -r -p "$(printf "${Green}${PROMPT}${Color_Off}")" -n1 -s
-    print_text_in_color "$ICyan"
+    echo
 }
 
 print_text_in_color() {
