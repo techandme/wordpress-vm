@@ -20,15 +20,19 @@ rm -f /etc/nginx/sites-enabled/wordpress_port_80.conf
 rm -f /etc/nginx/sites-enabled/wordpress_port_443.conf
 rm -f /etc/nginx/sites-enabled/default.conf
 rm -f /etc/nginx/sites-enabled/default
-if service nginx restart
+if restart_webserver
 then
-    printf "${On_Green}New settings works! SSL is now activated and OK!${Color_Off}\n\n"
-    print_text_in_color "$ICyan" "This cert will expire in 90 days, so you have to renew it."
-    print_text_in_color "$ICyan" "There are several ways of doing so, here are some tips and tricks: https://goo.gl/c1JHR0"
-    print_text_in_color "$ICyan" "This script will add a renew cronjob to get you started, edit it by typing:"
-    print_text_in_color "$ICyan" "'crontab -u root -e'"
-    print_text_in_color "$ICyan" "Feel free to contribute to this project: https://goo.gl/3fQD65"
-    any_key "Press any key to continue..."
+msg_box "New settings works! SSL is now activated and OK!
+
+This cert will expire in 90 days if you don't renew it.
+There are several ways of renewing this cert and here are some tips and tricks:
+https://goo.gl/c1JHR0
+
+To do your job a little bit easier we have added a autorenew script as a cronjob.
+If you need to edit the crontab please type: crontab -u root -e
+If you need to edit the script itself, please check: $SCRIPTS/letsencryptrenew.sh
+
+Feel free to contribute to this project: https://goo.gl/3fQD65"
     crontab -u root -l | { cat; echo "@daily $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 
 FQDOMAIN=$(grep -m 1 "server_name" "/etc/nginx/sites-enabled/$1" | awk '{print $2}')
@@ -38,7 +42,8 @@ then
     sudo hostnamectl set-hostname "$FQDOMAIN"
     # Change /etc/hosts as well
     sed -i "s|127.0.1.1.*|127.0.1.1       $FQDOMAIN $(hostname -s)|g" /etc/hosts
-fi
+    # And in the php-fpm pool conf
+    sed -i "s|env\[HOSTNAME\] = .*|env[HOSTNAME] = $(hostname -f)|g" "$PHP_POOL_DIR/www_wordpress.conf"
 
 add_crontab_le() {
 # shellcheck disable=SC2016
@@ -64,14 +69,14 @@ add_crontab_le
 chmod +x $SCRIPTS/letsencryptrenew.sh
 
 # Cleanup
-rm $SCRIPTS/test-new-config.sh ## Remove ??
-rm $SCRIPTS/activate-ssl.sh ## Remove ??
+rm -f $SCRIPTS/test-new-config.sh
+rm -f $SCRIPTS/activate-ssl.sh
 
 else
 # If it fails, revert changes back to normal
     rm -f /etc/nginx/sites-enabled/"$1"
     ln -s /etc/nginx/sites-available/wordpress_port_80.conf /etc/nginx/sites-enabled/ 
-    service nginx restart
+    restart_webserver
     printf "${ICyan}Couldn't load new config, reverted to old settings. Self-signed SSL is OK!${Color_Off}\n"
     any_key "Press any key to continue... "
     exit 1
