@@ -129,8 +129,8 @@ then
     cat << SSL_CREATE > "$ssl_conf"
 server {
         listen 80;
-        server_name $URL;
-        return 301 https://$URL$request_uri;
+        server_name $domain;
+        return 301 https://$domain\$request_uri;
 }
 
 server {
