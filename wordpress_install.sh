@@ -42,14 +42,14 @@ rm $SCRIPTS/adduser.sh
 print_text_in_color "$ICyan" "Checking server OS and version..."
 if [ "$OS" != 1 ]
 then
-    print_text_in_color "$ICyan" "Ubuntu Server is required to run this script."
-    print_text_in_color "$ICyan" "Please install that distro and try again."
+    print_text_in_color "$IRed" "Ubuntu Server is required to run this script."
+    print_text_in_color "$IRed" "Please install that distro and try again."
     exit 1
 fi
 
 
 if ! version 18.04 "$DISTRO" 18.04.4; then
-    print_text_in_color "$ICyan" "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
+    print_text_in_color "$IRed" "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
     exit
 fi
 
@@ -70,15 +70,14 @@ fi
 # Change DNS
 install_if_not resolvconf
 yes | dpkg-reconfigure --frontend=noninteractive resolvconf
-print_text_in_color "$ICyan" "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
-print_text_in_color "$ICyan" "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
+echo "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
+echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
 
 # Check network
 test_connection
 
 # Check where the best mirrors are and update
-print_text_in_color "$ICyan"
-printf "Your current server repository is:  ${Cyan}%s${Color_Off}\n" "$REPO"
+print_text_in_color "$ICyan" "Your current server repository is: $REPO"
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
     print_text_in_color "$ICyan" "Keeping $REPO as mirror..."
@@ -116,8 +115,8 @@ apt update -q4 & spinner_loading
 
 # Write MARIADB pass to file and keep it safe
 {
-print_text_in_color "$ICyan" "[client]"
-print_text_in_color "$ICyan" "password='$MARIADB_PASS'"
+echo "[client]"
+echo "password='$MARIADB_PASS'"
 } > "$MYCNF"
 chmod 0600 $MYCNF
 chown root:root $MYCNF
@@ -156,7 +155,7 @@ expect \"Reload privilege tables now?\"
 send \"y\r\"
 expect eof
 ")
-print_text_in_color "$ICyan" "$SECURE_MYSQL"
+echo "$SECURE_MYSQL"
 apt -y purge expect
 
 # Write a new MariaDB config
@@ -203,9 +202,9 @@ mv wp-cli.phar /usr/local/bin/wp
 
 # Add www-data in sudoers
 {
-print_text_in_color "$ICyan" "# WP-CLI" 
-print_text_in_color "$ICyan" "$SUDO_USER ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
-print_text_in_color "$ICyan" "root ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
+echo "# WP-CLI" 
+echo "$SUDO_USER ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
+echo "root ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
 } >> /etc/sudoers
 
 # Create dir
@@ -256,11 +255,11 @@ define( 'WP_DEBUG', false );
 PHP
 
 # Make sure the passwords are the same, this file will be deleted when Redis is run.
-print_text_in_color "$ICyan" "$REDIS_PASS" > /tmp/redis_pass.txt
+echo "$REDIS_PASS" > /tmp/redis_pass.txt
 
 # Install Wordpress
 check_command wp_cli_cmd core install --url=http://"$ADDRESS"/ --title=Wordpress --admin_user=$WPADMINUSER --admin_password="$WPADMINPASS" --admin_email=no-reply@hanssonit.se --skip-email
-print_text_in_color "$ICyan" "WP PASS: $WPADMINPASS" > /var/adminpass.txt
+echo "WP PASS: $WPADMINPASS" > /var/adminpass.txt
 chown wordpress:wordpress /var/adminpass.txt
 
 # Create welcome post
@@ -435,7 +434,7 @@ server {
      }
 }
 SSL_CREATE
-print_text_in_color "$ICyan" "$SSL_CONF was successfully created"
+print_text_in_color "$IGreen" "$SSL_CONF was successfully created"
 sleep 1
 fi
 
@@ -507,7 +506,7 @@ server {
      }
 }
 HTTP_CREATE
-print_text_in_color "$ICyan" "$HTTP_CONF was successfully created"
+print_text_in_color "$IGreen" "$HTTP_CONF was successfully created"
 sleep 1
 fi
 
@@ -612,7 +611,7 @@ http {
 #	}
 #}
 NGINX_CREATE
-print_text_in_color "$ICyan" "$NGINX_CONF was successfully created"
+print_text_in_color "$IGreen" "$NGINX_CONF was successfully created"
 sleep 1
 fi
 
@@ -680,7 +679,7 @@ server {
 	}
 }
 NGINX_DEFAULT
-print_text_in_color "$ICyan" "$NGINX_DEF was successfully created"
+print_text_in_color "$IGreen" "$NGINX_DEF was successfully created"
 sleep 1
 fi
 
@@ -703,15 +702,15 @@ done
 # Enable OPCache for PHP
 phpenmod opcache
 {
-print_text_in_color "$ICyan" "# OPcache settings for Wordpress"
-print_text_in_color "$ICyan" "opcache.enable=1"
-print_text_in_color "$ICyan" "opcache.enable_cli=1"
-print_text_in_color "$ICyan" "opcache.interned_strings_buffer=8"
-print_text_in_color "$ICyan" "opcache.max_accelerated_files=10000"
-print_text_in_color "$ICyan" "opcache.memory_consumption=128"
-print_text_in_color "$ICyan" "opcache.save_comments=1"
-print_text_in_color "$ICyan" "opcache.revalidate_freq=1"
-print_text_in_color "$ICyan" "opcache.validate_timestamps=1"
+echo "# OPcache settings for Wordpress"
+echo "opcache.enable=1"
+echo "opcache.enable_cli=1"
+echo "opcache.interned_strings_buffer=8"
+echo "opcache.max_accelerated_files=10000"
+echo "opcache.memory_consumption=128"
+echo "opcache.save_comments=1"
+echo "opcache.revalidate_freq=1"
+echo "opcache.validate_timestamps=1"
 } >> /etc/php/7.2/fpm/php.ini
 
 # Install Redis
@@ -765,5 +764,5 @@ sudo /usr/lib/update-notifier/update-motd-updates-available --force
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Reboot
-print_text_in_color "$ICyan" "Installation done, system will now reboot..."
+print_text_in_color "$IGreen" "Installation done, system will now reboot..."
 reboot
