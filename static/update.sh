@@ -16,7 +16,7 @@ debug_mode
 # Must be root
 if ! is_root
 then
-    print_text_in_color "$ICyan" "Must be root to run script, in Ubuntu type: sudo -i"
+    print_text_in_color "$IRed" "Must be root to run script, in Ubuntu type: sudo -i"
     exit 1
 fi
 
