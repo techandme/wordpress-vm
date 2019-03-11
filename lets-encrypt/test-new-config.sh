@@ -44,6 +44,7 @@ then
     sed -i "s|127.0.1.1.*|127.0.1.1       $FQDOMAIN $(hostname -s)|g" /etc/hosts
     # And in the php-fpm pool conf
     sed -i "s|env\[HOSTNAME\] = .*|env[HOSTNAME] = $(hostname -f)|g" "$PHP_POOL_DIR/www_wordpress.conf"
+fi
 
 add_crontab_le() {
 # shellcheck disable=SC2016
