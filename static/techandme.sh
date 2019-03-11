@@ -17,10 +17,9 @@ echo "WAN IPv4: $WANIP4"
 echo "WAN IPv6: $WANIP6"
 echo "LAN IPv4: $ADDRESS"
 echo
-echo "|WORDPRESS LOGIN|"
+echo "|Wordpress Login|"
 echo "USER:$WPADMINUSER"
 echo "PASS:************"
-echo
 echo
 echo "|MySQL/MariaDB|"
 echo "USER: root"
