@@ -58,8 +58,8 @@ network_ok() {
 check_command() {
   if ! "$@";
   then
-     print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
-	 print_text_in_color "$Red" "$* failed"
+     print_text_in_color "$IRed" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
+	 print_text_in_color "$IRed" "$* failed"
     exit 1
   fi
 }
@@ -117,9 +117,9 @@ cat << ENTERIP
 |    including the subnet. Example: 192.168.1.100/24       |
 +----------------------------------------------------------+
 ENTERIP
-    print_text_in_color "$ICyan"
+    echo
     read -r LANIP
-    print_text_in_color "$ICyan"
+    echo
 
     # Ask for gateway address
 cat << ENTERGATEWAY
@@ -128,9 +128,9 @@ cat << ENTERGATEWAY
 |    Example: 192.168.1.1                                  |
 +----------------------------------------------------------+
 ENTERGATEWAY
-    print_text_in_color "$ICyan"
+    echo
     read -r GATEWAYIP
-    print_text_in_color "$ICyan"
+    echo
 
     # Create the Static IP file
 cat <<-IPCONFIG > /etc/netplan/01-netcfg.yaml
@@ -177,7 +177,6 @@ unset WPDB
 DEBUG=0
 debug_mode
 
-print_text_in_color "$ICyan"
 print_text_in_color "$ICyan" "Getting scripts from GitHub to be able to run the first setup..."
 # All the shell scripts in static (.sh)
 download_static_script security
@@ -335,7 +334,6 @@ while true
 do
     sudo passwd "$(getent group sudo | cut -d: -f4 | cut -d, -f1)" && break
 done
-print_text_in_color "$ICyan"
 clear
 
 cat << LETSENC
@@ -349,7 +347,6 @@ if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
 then
     bash $SCRIPTS/activate-ssl.sh
 else
-    print_text_in_color "$ICyan"
     print_text_in_color "$ICyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
     any_key "Press any key to continue..."
 fi
@@ -370,21 +367,21 @@ do
 ENTERNEW
    print_text_in_color "$ICyan" "Enter FQDN (http(s)://yourdomain.com):"
    read -r FQDN
-   print_text_in_color "$ICyan"
+   echo
    print_text_in_color "$ICyan" "Enter username:"
    read -r USER
-   print_text_in_color "$ICyan"
+   echo
    print_text_in_color "$ICyan" "Enter password:"
    read -r NEWWPADMINPASS
-   print_text_in_color "$ICyan"
+   echo
    print_text_in_color "$ICyan" "Enter email address:"
    read -r EMAIL
-   print_text_in_color "$ICyan"
+   echo
    MYANSWER=$(ask_yes_or_no "Is this correct?  FQDN: $FQDN User: $USER Password: $NEWWPADMINPASS Email: $EMAIL") 
 done
 clear
 
-print_text_in_color "$ICyan" "$FQDN" > fqdn.txt
+echo "$FQDN" > fqdn.txt
 wp_cli_cmd option update siteurl < fqdn.txt --path="$WPATH"
 rm fqdn.txt
 
@@ -394,18 +391,18 @@ wp_cli_cmd search-replace "$OLDHOME" "$FQDN" --precise --all-tables --path="$WPA
 wp_cli_cmd user create "$USER" "$EMAIL" --role=administrator --user_pass="$NEWWPADMINPASS" --path="$WPATH"
 wp_cli_cmd user delete 1 --reassign="$USER" --path="$WPATH"
 {
-print_text_in_color "$ICyan" "WP USER: $USER"
-print_text_in_color "$ICyan" "WP PASS: $NEWWPADMINPASS"
+echo "WP USER: $USER"
+echo "WP PASS: $NEWWPADMINPASS"
 } > /var/adminpass.txt
 
 # Change servername in Nginx
-server_name=$(print_text_in_color "$ICyan" "$FQDN" | cut -d "/" -f3)
+echo "$FQDN" | cut -d "/" -f3)
 sed -i "s|# server_name .*|server_name $server_name;|g" /etc/nginx/sites-available/wordpress_port_80.conf
 sed -i "s|# server_name .*|server_name $server_name;|g" /etc/nginx/sites-available/wordpress_port_443.conf
 check_command service nginx restart
 
 # Show current administrators
-print_text_in_color "$ICyan"
+echo
 print_text_in_color "$ICyan" "This is the current administrator(s):"
 wp_cli_cmd user list --role=administrator --path="$WPATH"
 any_key "Press any key to continue..."
@@ -463,22 +460,24 @@ apt autoclean
 ADDRESS2=$(grep "server_name" /etc/nginx/sites-available/wordpress_port_80.conf | awk '$1 == "server_name" { print $2 }' | cut -d ";" -f1)
 # Success!
 clear
-printf "%s\n""${Green}"
-print_text_in_color "$ICyan"    "+--------------------------------------------------------------------+"
-print_text_in_color "$ICyan"    "|      Congratulations! You have successfully installed Wordpress!   |"
-print_text_in_color "$ICyan"    "|                                                                    |"
-printf "|         ${Color_Off}Login to Wordpress in your browser: ${Cyan}\"$ADDRESS2\"${Green}         |\n"
-print_text_in_color "$ICyan"    "|                                                                    |"
-printf "|         ${Color_Off}Publish your server online! ${Cyan}https://goo.gl/iUGE2U${Green}          |\n"
-print_text_in_color "$ICyan"    "|                                                                    |"
-printf "|         ${Color_Off}To login to MARIADB just type: ${Cyan}'mysql -u root'${Green}             |\n"
-print_text_in_color "$ICyan"    "|                                                                    |"
-printf "|         ${Color_Off}To update this VM just type: ${Green}                              |\n"
-printf "|         ${Cyan}'sudo bash /var/scripts/update.sh'${Green}                         |\n"
-print_text_in_color "$ICyan"    "|                                                                    |"
-printf "|    ${IRed}################ T&M Hansson IT AB - $(date +"%Y") ################${Green}      |\n"
-print_text_in_color "$ICyan"    "+--------------------------------------------------------------------+"
-printf "${Color_Off}\n"
+# Success!
+msg_box "Congratulations! You have successfully installed Wordpress!
+Login to Wordpress in your browser:
+- IP: $ADDRESS
+- Hostname: $(hostname -f)
+
+SUPPORT:
+Please ask for help in the forums, or visit our shop to buy support,
+https://shop.hanssonit.se/product/premium-support-per-30-minutes/
+
+BUGS:
+Please report any bugs here: https://github.com/techandme/wordpress-vm
+
+TIPS & TRICKS:
+1. Publish your server online: https://goo.gl/iUGE2U
+2. To update this VM just type: sudo bash /var/scripts/update.sh
+3. Change IP to something outside DHCP: sudo nano /etc/netplan/01-netcfg.yaml
+ ######################### T&M Hansson IT - $(date +"%Y") #########################  "
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
