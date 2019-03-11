@@ -37,8 +37,8 @@ elif [ -z "$MARIADBMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
 then
     regressionpw=$(cat /var/mysql_password.txt)
     {
-    print_text_in_color "$ICyan" "[client]"
-    print_text_in_color "$ICyan" "password='$regressionpw'"
+    echo "[client]"
+    echo "password='$regressionpw'"
     } >> "$MYCNF"
     print_text_in_color "$ICyan" "Please restart the upgrade process, we fixed the password file $MYCNF."
     exit 1
@@ -46,8 +46,8 @@ fi
 
 if [ -z "$MARIADBMYCNFPASS" ]
 then
-    print_text_in_color "$ICyan" "Something went wrong with copying your mysql password to $MYCNF."
-    print_text_in_color "$ICyan" "Please report this issue to $ISSUES, thanks!"
+    print_text_in_color "$IRed" "Something went wrong with copying your mysql password to $MYCNF."
+    print_text_in_color "$IRed" "Please report this issue to $ISSUES, thanks!"
     exit 1
 else
     rm -f /var/mysql_password.txt
@@ -124,9 +124,7 @@ wp_cli_cmd core update --force
 wp_cli_cmd plugin update --all
 wp_cli_cmd core update-db
 wp_cli_cmd db optimize
-print_text_in_color "$ICyan"
 print_text_in_color "$ICyan" "This is the current version installed:"
-print_text_in_color "$ICyan"
 wp_cli_cmd core version --extra
 
 # Cleanup un-used packages
@@ -138,7 +136,7 @@ update-grub
 
 # Write to log
 touch /var/log/cronjobs_success.log
-print_text_in_color "$ICyan" "WORDPRESS UPDATE success-$(date +%Y-%m-%d_%H:%M)" >> /var/log/cronjobs_success.log
+echo "WORDPRESS UPDATE success-$(date +%Y-%m-%d_%H:%M)" >> /var/log/cronjobs_success.log
 
 # Un-hash this if you want the system to reboot
 # reboot
