@@ -24,7 +24,7 @@ LOGIN
     chmod 0600 $MYCNF
     exit 0
 else
-    print_text_in_color "$ICyan" "Changing MARIADB root password failed."
+    print_text_in_color "$IRed" "Changing MARIADB root password failed."
     print_text_in_color "$ICyan" "Your old password is: $MARIADBMYCNFPASS"
     exit 1
 fi
