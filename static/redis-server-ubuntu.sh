@@ -19,14 +19,14 @@ root_check
 print_text_in_color "$ICyan" "Checking server OS and version..."
 if [ "$OS" != 1 ]
 then
-    print_text_in_color "$ICyan" "Ubuntu Server is required to run this script."
-    print_text_in_color "$ICyan" "Please install that distro and try again."
+    print_text_in_color "$IRed" "Ubuntu Server is required to run this script."
+    print_text_in_color "$IRed" "Please install that distro and try again."
     exit 1
 fi
 
 
 if ! version 18.04 "$DISTRO" 18.04.4; then
-    print_text_in_color "$ICyan" "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
+    print_text_in_color "$IRed" "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
     exit
 fi
 
@@ -53,29 +53,29 @@ install_if_not redis-server
 # print_text_in_color "$ICyan" 'extension=redis.so' > /etc/php/7.0/mods-available/redis.ini
 # phpenmod redis
 # Setting direct to apache2 works if 'libapache2-mod-php7.0' is installed
-print_text_in_color "$ICyan" 'extension=redis.so' >> /etc/php/7.2/fpm/php.ini
+echo 'extension=redis.so' >> /etc/php/7.2/fpm/php.ini
 service nginx restart
 
 # Install Redis
 if ! apt -y install redis-server
 then
-    print_text_in_color "$ICyan" "Installation failed."
+    print_text_in_color "$IRed" "Installation failed."
     sleep 3
     exit 1
 else
-    printf "${Green}\nRedis installation OK!${Color_Off}\n"
+    print_text_in_color "$IGreen" "Redis installation OK!"
 fi
 
 ## Redis performance tweaks ##
 if ! grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
 then
-    print_text_in_color "$ICyan" 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
+    echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 fi
 
 # Disable THP
 if ! grep -Fxq "never" /sys/kernel/mm/transparent_hugepage/enabled
 then
-    print_text_in_color "$ICyan" "never" > /sys/kernel/mm/transparent_hugepage/enabled
+    echo "never" > /sys/kernel/mm/transparent_hugepage/enabled
 fi
 
 sed -i "s|# unixsocket .*|unixsocket $REDIS_SOCK|g" $REDIS_CONF
