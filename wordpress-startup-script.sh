@@ -365,16 +365,16 @@ do
 |    installation will not work correctly!      |
 +-----------------------------------------------+
 ENTERNEW
-   print_text_in_color "$ICyan" "Enter FQDN (http(s)://yourdomain.com):"
+   print_text_in_color "$IGreen" "Enter FQDN (http(s)://yourdomain.com):"
    read -r FQDN
    echo
-   print_text_in_color "$ICyan" "Enter username:"
+   print_text_in_color "$IGreen" "Enter username:"
    read -r USER
    echo
-   print_text_in_color "$ICyan" "Enter password:"
+   print_text_in_color "$IGreen" "Enter password:"
    read -r NEWWPADMINPASS
    echo
-   print_text_in_color "$ICyan" "Enter email address:"
+   print_text_in_color "$IGreen" "Enter email address:"
    read -r EMAIL
    echo
    MYANSWER=$(ask_yes_or_no "Is this correct?  FQDN: $FQDN User: $USER Password: $NEWWPADMINPASS Email: $EMAIL") 
