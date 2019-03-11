@@ -327,7 +327,12 @@ check_command() {
 
 network_ok() {
     print_text_in_color "$ICyan" "Testing if network is OK..."
-    service networking restart
+    install_if_not network-manager
+    if ! service network-manager restart > /dev/null
+    then
+        service networking restart > /dev/null
+    fi
+    sleep 2
     if wget -q -T 20 -t 2 http://github.com -O /dev/null & spinner_loading
     then
         return 0
