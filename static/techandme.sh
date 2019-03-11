@@ -1,22 +1,27 @@
 #!/bin/bash
-WANIP=$(dig +short myip.opendns.com @resolver1.opendns.com)
-ADDRESS=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
+
+# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
+
+WANIP6=$(curl -s -k -m 5 https://ipv6bot.whatismyipaddress.com)
+WANIP4=$(curl -s -k -m 5 https://ipv4bot.whatismyipaddress.com)
+ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 WPADMINUSER=$(grep "WP USER:" /var/adminpass.txt)
-WPADMINPASS=$(grep "WP PASS:" /var/adminpass.txt)
+
 clear
 figlet -f small Wordpress
-print_text_in_color "$ICyan" "  https://www.hanssonit.se/wordpress-vm/"
-print_text_in_color "$ICyan"
-print_text_in_color "$ICyan"
-print_text_in_color "$ICyan" "|NETWORK|"
-print_text_in_color "$ICyan" "WAN IP: $WANIP"
-print_text_in_color "$ICyan" "LAN IP: $ADDRESS"
-print_text_in_color "$ICyan"
-print_text_in_color "$ICyan" "|WORDPRESS LOGIN|"
-print_text_in_color "$ICyan" "$WPADMINUSER"
-print_text_in_color "$ICyan" "$WPADMINPASS"
-print_text_in_color "$ICyan"
-print_text_in_color "$ICyan" "|MySQL|"
-print_text_in_color "$ICyan" "PASS: cat /root/.my.cnf"
-print_text_in_color "$ICyan"
-exit 0
+echo "https://www.hanssonit.se/wordpress-vm/"
+echo
+echo "|Network|"
+echo "Hostname: $(hostname -s)"
+echo "WAN IPv4: $WANIP4"
+echo "WAN IPv6: $WANIP6"
+echo "LAN IPv4: $ADDRESS"
+echo
+echo "|Wordpress Login|"
+echo "USER:$WPADMINUSER"
+echo "PASS: 'grep WP PASS: /var/adminpass.txt'"
+echo
+echo "|MySQL/MariaDB|"
+echo "USER: root"
+echo "PASS: 'cat /root/.my.cnf'"
+echo
