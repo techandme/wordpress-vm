@@ -31,7 +31,7 @@ then
     check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/
 fi
 
-print_text_in_color "$ICyan"
+echo
 while true
 do
 # Ask for domain name
@@ -41,16 +41,16 @@ cat << ENTERIP
 |    including the subnet. Like this: 192.168.1.100/24        |
 +-------------------------------------------------------------+
 ENTERIP
-print_text_in_color "$ICyan"
+echo
 read -r LANIP
-print_text_in_color "$ICyan"
+echo
 if [[ "yes" == $(ask_yes_or_no "Is this correct? $LANIP") ]]
 then
     break
 fi
 done
 
-print_text_in_color "$ICyan"
+echo
 while true
 do
 # Ask for domain name
@@ -60,9 +60,9 @@ cat << ENTERGATEWAY
 |    Like this: 192.168.1.1                                   |
 +-------------------------------------------------------------+
 ENTERGATEWAY
-print_text_in_color "$ICyan"
+echo
 read -r GATEWAYIP
-print_text_in_color "$ICyan"
+echo
 if [[ "yes" == $(ask_yes_or_no "Is this correct? $GATEWAYIP") ]]
 then
     break
