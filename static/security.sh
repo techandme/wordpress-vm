@@ -66,49 +66,49 @@ eDROP_ADD_TO_UFW="/usr/local/src/eDROP2.txt"
 DROP_ARCHIVE_FILE="/usr/local/src/DROP_{$EXEC_DATE}"
 eDROP_ARCHIVE_FILE="/usr/local/src/eDROP_{$EXEC_DATE}"
 # All credits for the following BLACKLISTS goes to "The Spamhaus Project" - https://www.spamhaus.org
-print_text_in_color "$ICyan" "Start time: $(date)"
-print_text_in_color "$ICyan" " "
-print_text_in_color "$ICyan" "Download daily DROP file:"
+echo "Start time: $(date)"
+echo " "
+echo "Download daily DROP file:"
 wget -q -O - "$URL" > $SPAMHAUS_DROP
 grep -v '^;' $SPAMHAUS_DROP | cut -d ' ' -f 1 > $DROP_ADD_TO_UFW
-print_text_in_color "$ICyan" " "
-print_text_in_color "$ICyan" "Extract DROP IP addresses and add to UFW:"
+echo " "
+echo "Extract DROP IP addresses and add to UFW:"
 cat $DROP_ADD_TO_UFW | while read line
 do
 /usr/sbin/ufw insert 1 deny from "$line" comment 'DROP_Blacklisted_IPs'
 done
-print_text_in_color "$ICyan" " "
-print_text_in_color "$ICyan" "Downloading eDROP list and import to UFW"
-print_text_in_color "$ICyan" " "
-print_text_in_color "$ICyan" "Download daily eDROP file:"
+echo " "
+echo "Downloading eDROP list and import to UFW"
+echo " "
+echo "Download daily eDROP file:"
 wget -q -O - "$eURL" > $SPAMHAUS_eDROP
 grep -v '^;' $SPAMHAUS_eDROP | cut -d ' ' -f 1 > $eDROP_ADD_TO_UFW
-print_text_in_color "$ICyan" " "
-print_text_in_color "$ICyan" "Extract eDROP IP addresses and add to UFW:"
+echo " "
+echo "Extract eDROP IP addresses and add to UFW:"
 cat $eDROP_ADD_TO_UFW | while read line
 do
 /usr/sbin/ufw insert 1 deny from "$line" comment 'eDROP_Blacklisted_IPs'
 done
-print_text_in_color "$ICyan" " "
+echo " "
 #####
 ## To remove or revert these rules, keep the list of IPs!
 ## Run a command like so to remove the rules:
 # while read line; do ufw delete deny from $line; done < $ARCHIVE_FILE
 #####
-print_text_in_color "$ICyan" "Backup DROP IP address list:"
+echo "Backup DROP IP address list:"
 mv $DROP_ADD_TO_UFW $DROP_ARCHIVE_FILE
-print_text_in_color "$ICyan" " "
-print_text_in_color "$ICyan" "Backup eDROP IP address list:"
+echo " "
+echo "Backup eDROP IP address list:"
 mv $eDROP_ADD_TO_UFW $eDROP_ARCHIVE_FILE
-print_text_in_color "$ICyan" " "
-print_text_in_color "$ICyan" End time: $(date)
+echo " "
+echo End time: $(date)
 SPAMHAUS_ENABLE
 
 # Make the file executable
 chmod +x "$SCRIPTS"/spamhaus_cronjob.sh
 
 # Add it to crontab
-(crontab -l ; print_text_in_color "$ICyan" "10 2 * * * $SCRIPTS/spamhaus_crontab.sh 2>&1") | crontab -u root -
+(crontab -l ; echo "10 2 * * * $SCRIPTS/spamhaus_crontab.sh 2>&1") | crontab -u root -
 
 # Run it for the first time
 check_command bash "$SCRIPTS"/spamhaus_cronjob.sh
