@@ -4,7 +4,6 @@ true
 # see https://github.com/koalaman/shellcheck/wiki/Directive
 
 ## variables
-somethi
 # Dirs
 SCRIPTS=/var/scripts
 WWW_ROOT=/var/www/html
