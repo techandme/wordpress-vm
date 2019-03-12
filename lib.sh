@@ -4,7 +4,7 @@ true
 # see https://github.com/koalaman/shellcheck/wiki/Directive
 
 ## variables
-
+somethi
 # Dirs
 SCRIPTS=/var/scripts
 WWW_ROOT=/var/www/html
@@ -322,7 +322,7 @@ fi
 check_command() {
   if ! "$@";
   then
-     print_text_in_color "${Red}" Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
+     print_text_in_color "${Red}" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
      print_text_in_color "$IRed" "$* failed"
     exit 1
   fi
