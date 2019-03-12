@@ -211,7 +211,7 @@ fi
 # Check if $1 is open using nmap, if not notify the user
 if [ "$(nmap -sS -p "$1" "$WANIP4" | grep -c "open")" == "1" ]
 then
-  printf "${Green}Port $1 is open on $WANIP4!${Color_Off}\n"
+  print_text_in_color "$ICyan" "Port $1 is open on $WANIP4!"
   if [ "$NMAPSTATUS" = "preinstalled" ]
   then
     print_text_in_color "$ICyan" "nmap was previously installed, not removing."
@@ -222,7 +222,7 @@ else
   whiptail --msgbox "Port $1 is not open on $WANIP4. We will do a second try on $2 instead." "$WT_HEIGHT" "$WT_WIDTH"
   if [[ "$(nmap -sS -PN -p "$1" "$2" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
   then
-      printf "${Green}Port $1 is open on $2!${Color_Off}\n"
+      print_text_in_color "$ICyan" "Port $1 is open on $2!"
       if [ "$NMAPSTATUS" = "preinstalled" ]
       then
         print_text_in_color "$ICyan" "nmap was previously installed, not removing."
@@ -284,19 +284,22 @@ If you think that this is a bug, please report it to https://github.com/nextclou
 fi
 }
 
-# Test RAM size 
+# Test RAM size
 # Call it like this: ram_check [amount of min RAM in GB] [for which program]
 # Example: ram_check 2 Wordpress
 ram_check() {
 mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
 if [ "${mem_available}" -lt "$((${1}*1002400))" ]
 then
-    printf "${Red}Error: ${1} GB RAM required to install ${2}!${Color_Off}\n" >&2
-    printf "${Red}Current RAM is: ("$((mem_available/1002400))" GB)${Color_Off}\n" >&2
+    print_text_in_color "${Red}" "Error: ${1} GB RAM required to install ${2}!" >&2
+    print_text_in_color "${Red}" "Current RAM is: ("$((mem_available/1002400))" GB)" >&2
     sleep 3
+    msg_box "If you want to bypass this check you could do so by commenting out (# before the line) 'ram_check X' in the script that you are trying to run.
+    In nextcloud_install_production.sh you can find the check somewhere around line #34.
+    Please notice that things may be veery slow and not work as expeced. YOU HAVE BEEN WARNED!"
     exit 1
 else
-    printf "${Green}RAM for ${2} OK! ("$((mem_available/1002400))" GB)${Color_Off}\n"
+    print_text_in_color "${IGreen}" "RAM for ${2} OK! ($((mem_available/1002400)) GB)"
 fi
 }
 
@@ -307,19 +310,19 @@ cpu_check() {
 nr_cpu="$(nproc)"
 if [ "${nr_cpu}" -lt "${1}" ]
 then
-    printf "${Red}Error: ${1} CPU required to install ${2}!${Color_Off}\n" >&2
-    printf "${Red}Current CPU: ("$((nr_cpu))")${Color_Off}\n" >&2
+    print_text_in_color "${Red}" "Error: ${1} CPU required to install ${2}!" >&2
+    print_text_in_color "${Red}" "Current CPU: ($((nr_cpu)))" >&2
     sleep 3
     exit 1
 else
-    printf "${Green}CPU for ${2} OK! ("$((nr_cpu))")${Color_Off}\n"
+    print_text_in_color "${IGreen}" "CPU for ${2} OK! ($((nr_cpu)))"
 fi
 }
 
 check_command() {
   if ! "$@";
   then
-     printf "${IRed}Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!${Color_Off}\n"
+     print_text_in_color "${Red}" Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
      print_text_in_color "$IRed" "$* failed"
     exit 1
   fi
