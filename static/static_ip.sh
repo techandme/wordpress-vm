@@ -24,6 +24,7 @@ clear
 
 # Copy old interfaces files
 msg_box "Copying old netplan.io config files file to:
+
 /tmp/netplan_io_backup/"
 if [ -d /etc/netplan/ ] 
 then
@@ -87,6 +88,7 @@ network:
 IPCONFIG
 
 msg_box "These are your settings, please make sure they are correct:
+
 $(cat /etc/netplan/01-netcfg.yaml)"
     netplan try
 else
@@ -104,6 +106,7 @@ network:
            addresses: [$DNS1,$DNS2] #name servers
 IPCONFIGnonvmware
 msg_box "These are your settings, please make sure they are correct:
+
 $(cat /etc/netplan/01-netcfg.yaml)"
     netplan try
 fi
