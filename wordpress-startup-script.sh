@@ -273,6 +273,7 @@ if bash "$SCRIPTS/change_mysql_pass.sh" && wait
 then
    rm "$SCRIPTS/change_mysql_pass.sh"
 fi
+clear
 
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
@@ -325,6 +326,7 @@ do
     esac
 done 9< results
 rm -f results
+clear
 
 # Change password
 printf "${Color_Off}\n"
