@@ -479,6 +479,7 @@ TIPS & TRICKS:
 1. Publish your server online: https://goo.gl/iUGE2U
 2. To update this VM just type: sudo bash /var/scripts/update.sh
 3. Change IP to something outside DHCP: sudo nano /etc/netplan/01-netcfg.yaml
+
  ######################### T&M Hansson IT - $(date +"%Y") #########################  "
 
 # Prefer IPv6
