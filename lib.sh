@@ -23,7 +23,7 @@ WGET="/usr/bin/wget"
 WANIP4=$(curl -s -m 5 ipinfo.io/ip)
 [ ! -z "$LOAD_IP6" ] && WANIP6=$(curl -s -k -m 7 https://6.ifcfg.me)
 IFCONFIG="/sbin/ifconfig"
-INTERFACES="/etc/network/interfaces"
+INTERFACES="/etc/netplan/01-netcfg.yaml"
 NETMASK=$($IFCONFIG | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2)
 GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
 
