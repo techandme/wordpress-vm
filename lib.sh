@@ -26,6 +26,8 @@ IFCONFIG="/sbin/ifconfig"
 INTERFACES="/etc/netplan/01-netcfg.yaml"
 NETMASK=$($IFCONFIG | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2)
 GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
+DNS1="9.9.9.9"
+DNS2="149.112.112.112"
 
 # Repo
 GITHUB_REPO="https://raw.githubusercontent.com/techandme/wordpress-vm/master"
