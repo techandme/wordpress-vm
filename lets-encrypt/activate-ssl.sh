@@ -154,7 +154,7 @@ server {
 #    real_ip_recursive on;
     
     # certs sent to the client in SERVER HELLO are concatenated in ssl_certificate
-    ssl_certificate $CERTFILES/$domain/cert.pem;
+    ssl_certificate $CERTFILES/$domain/fullchain.pem;
     ssl_certificate_key $CERTFILES/$domain/privkey.pem;
     ssl_session_timeout 1d;
     ssl_session_cache shared:SSL:50m;
