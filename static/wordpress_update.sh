@@ -76,7 +76,13 @@ then
     pecl channel-update pecl.php.net
     yes no | pecl install redis
     service redis-server restart
-    systemctl restart nginx
+    if nginx -v 2> /dev/null
+    then
+        service nginx restart
+    elif apache2 -v 2> /dev/null
+    then
+        service apache2 restart
+    fi
 elif pecl list | grep redis >/dev/null 2>&1
 then
     if dpkg -l | grep php7.2 > /dev/null 2>&1
@@ -88,7 +94,13 @@ then
     pecl channel-update pecl.php.net
     yes no | pecl upgrade redis
     service redis-server restart
-    systemctl restart nginx
+    if nginx -v 2> /dev/null
+    then
+        service nginx restart
+    elif apache2 -v 2> /dev/null
+    then
+        service apache2 restart
+    fi
 fi
 
 # Update adminer
