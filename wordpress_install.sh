@@ -336,7 +336,11 @@ POOL_CONF
 mv $PHP_POOL_DIR/www.conf $PHP_POOL_DIR/default_www.config
 
 # Force wp-cron.php (updates WooCommerce Services and run Scheluded Tasks)
-crontab -u www-data -l | { cat; echo "14 */1 * * * php -f $WPATH/wp-cron.php > /dev/null 2>&1"; } | crontab -u www-data -
+if [ -f $WPATH/wp-cron.php ]
+then
+    chmod +x $WPATH/wp-cron.php
+    crontab -u www-data -l | { cat; echo "14 */1 * * * php -f $WPATH/wp-cron.php > /dev/null 2>&1"; } | crontab -u www-data -
+fi
 
 # Install Figlet
 apt install figlet -y
