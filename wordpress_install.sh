@@ -248,10 +248,15 @@ define( 'WP_REDIS_SCHEME', 'unix' );
 define( 'WP_REDIS_PATH', '$REDIS_SOCK' );
 /** REDIS SALT */
 define('WP_REDIS_MAXTTL', 9600);
+
 /** AUTO UPDATE */
 define( 'WP_AUTO_UPDATE_CORE', true );
+
 /** WP DEBUG? */
 define( 'WP_DEBUG', false );
+
+/** WP MEMORY SETTINGS*/
+define( 'WP_MEMORY_LIMIT', '128M' );
 PHP
 
 # Make sure the passwords are the same, this file will be deleted when Redis is run.
