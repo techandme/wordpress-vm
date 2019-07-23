@@ -215,7 +215,8 @@ SSL_CREATE
 fi
 
 # Methods
-default_le="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
+# https://certbot.eff.org/docs/using.html#certbot-command-line-options
+default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos --uir --hsts --server https://acme-v02.api.letsencrypt.org/directory -d $domain"
 
 standalone() {
 # Generate certs
@@ -235,7 +236,7 @@ else
 fi
 }
 dns() {
-if eval "certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns --server https://acme-v02.api.letsencrypt.org/directory  $default_le"
+if eval "certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns $default_le"
 then
     echo "success" > /tmp/le_test
 else
@@ -266,11 +267,11 @@ attempts_left() {
 local method="$1"
 if [ "$method" == "standalone" ]
 then
-    printf "%b" "${ICyan}It seems like no certs were generated, we will do 2 more tries.\n${Color_Off}"
+    printf "%b" "${ICyan}It seems like no certs were generated, we will do 1 more try.\n${Color_Off}"
     any_key "Press any key to continue..."
 #elif [ "$method" == "tls-alpn-01" ]
 #then
-#    printf "%b" "${ICyan}It seems like no certs were generated, we will do 1 more tries.\n${Color_Off}"
+#    printf "%b" "${ICyan}It seems like no certs were generated, we will do 1 more try.\n${Color_Off}"
 #    any_key "Press any key to continue..."
 elif [ "$method" == "dns" ]
 then
