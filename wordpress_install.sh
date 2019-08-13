@@ -314,6 +314,22 @@ allow from all
 </Files>
 EOL
 
+# Secure wp-includes
+# https://wordpress.org/support/article/hardening-wordpress/#securing-wp-includes
+{
+echo "# Block wp-includes folder and files"
+echo "<IfModule mod_rewrite.c>"
+echo "RewriteEngine On"
+echo "RewriteBase /"
+echo "RewriteRule ^wp-admin/includes/ - [F,L]"
+echo "RewriteRule !^wp-includes/ - [S=3]"
+echo "RewriteRule ^wp-includes/[^/]+\.php$ - [F,L]"
+echo "RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F,L]"
+echo "RewriteRule ^wp-includes/theme-compat/ - [F,L]"
+echo "# RewriteRule ^wp-includes/* - [F,L]" # Block EVERYTHING
+echo "</IfModule>"
+} >> $WPATH/.htaccess
+
 # Set up a php-fpm pool with a unixsocket
 cat << POOL_CONF > "$PHP_POOL_DIR/www_wordpress.conf"
 [www_wordpress]
