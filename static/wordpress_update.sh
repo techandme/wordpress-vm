@@ -65,9 +65,9 @@ apt dist-upgrade -y
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extenstion..."
 if ! pecl list | grep redis >/dev/null 2>&1
 then
-    if dpkg -l | grep php7.2 > /dev/null 2>&1
+    if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
     then
-        install_if_not php7.2-dev
+        install_if_not php"$PHPVER"-dev
     else
         install_if_not php7.0-dev
     fi
@@ -85,9 +85,9 @@ then
     fi
 elif pecl list | grep redis >/dev/null 2>&1
 then
-    if dpkg -l | grep php7.2 > /dev/null 2>&1
+    if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
     then
-        install_if_not php7.2-dev
+        install_if_not php"$PHPVER"-dev
     else
         install_if_not php7.0-dev
     fi

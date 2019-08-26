@@ -44,9 +44,9 @@ UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
 
 # PHP-FPM
-PHP_INI=/etc/php/7.2/fpm/php.ini
-PHP_POOL_DIR=/etc/php/7.2/fpm/pool.d
-PHP_FPM_SOCK=/var/run/php7.2-fpm-wordpress.sock
+PHP_INI=/etc/php/"$PHPVER"/fpm/php.ini
+PHP_POOL_DIR=/etc/php/"$PHPVER"/fpm/pool.d
+PHP_FPM_SOCK=/var/run/php"$PHPVER"-fpm-wordpress.sock
 
 # MARIADB
 SHUF=$(shuf -i 25-29 -n 1)
@@ -168,9 +168,9 @@ ask_yes_or_no() {
 
 restart_webserver() {
 check_command systemctl restart nginx
-if php7.2-fpm -v > /dev/null
+if php"$PHPVER"-fpm -v > /dev/null
 then
-    check_command systemctl restart php7.2-fpm.service
+    check_command systemctl restart php"$PHPVER"-fpm.service
 fi
 }
 

@@ -174,26 +174,26 @@ sudo systemctl enable nginx.service
 # Install PHP 7.2
 apt install -y \
         php \
-	php7.2-fpm \
-	php7.2-common \
-	php7.2-mbstring \
-	php7.2-xmlrpc \
-	php7.2-gd \
-	php7.2-xml \
-	php7.2-mysql \
-	php7.2-cli \
-	php7.2-zip \
-	php7.2-curl
+	php"$PHPVER"-fpm \
+	php"$PHPVER"-common \
+	php"$PHPVER"-mbstring \
+	php"$PHPVER"-xmlrpc \
+	php"$PHPVER"-gd \
+	php"$PHPVER"-xml \
+	php"$PHPVER"-mysql \
+	php"$PHPVER"-cli \
+	php"$PHPVER"-zip \
+	php"$PHPVER"-curl
 	
 # Configure PHP
-sed -i "s|allow_url_fopen =.*|allow_url_fopen = On|g" /etc/php/7.2/fpm/php.ini
-sed -i "s|max_execution_time =.*|max_execution_time = 360|g" /etc/php/7.2/fpm/php.ini
-sed -i "s|file_uploads =.*|file_uploads = On|g" /etc/php/7.2/fpm/php.ini
-sed -i "s|upload_max_filesize =.*|upload_max_filesize = 100M|g" /etc/php/7.2/fpm/php.ini
-sed -i "s|memory_limit =.*|memory_limit = 256M|g" /etc/php/7.2/fpm/php.ini
-sed -i "s|post_max_size =.*|post_max_size = 110M|g" /etc/php/7.2/fpm/php.ini
-sed -i "s|cgi.fix_pathinfo =.*|cgi.fix_pathinfo=0|g" /etc/php/7.2/fpm/php.ini
-sed -i "s|date.timezone =.*|date.timezone = Europe/Stockholm|g" /etc/php/7.2/fpm/php.ini
+sed -i "s|allow_url_fopen =.*|allow_url_fopen = On|g" /etc/php/"$PHPVER"/fpm/php.ini
+sed -i "s|max_execution_time =.*|max_execution_time = 360|g" /etc/php/"$PHPVER"/fpm/php.ini
+sed -i "s|file_uploads =.*|file_uploads = On|g" /etc/php/"$PHPVER"/fpm/php.ini
+sed -i "s|upload_max_filesize =.*|upload_max_filesize = 100M|g" /etc/php/"$PHPVER"/fpm/php.ini
+sed -i "s|memory_limit =.*|memory_limit = 256M|g" /etc/php/"$PHPVER"/fpm/php.ini
+sed -i "s|post_max_size =.*|post_max_size = 110M|g" /etc/php/"$PHPVER"/fpm/php.ini
+sed -i "s|cgi.fix_pathinfo =.*|cgi.fix_pathinfo=0|g" /etc/php/"$PHPVER"/fpm/php.ini
+sed -i "s|date.timezone =.*|date.timezone = Europe/Stockholm|g" /etc/php/"$PHPVER"/fpm/php.ini
 
 # Install Redis
 run_static_script redis-server-ubuntu
@@ -667,7 +667,7 @@ http {
 	include /etc/nginx/sites-enabled/*;
 
 	upstream php {
-        server unix:/run/php/php7.2-fpm.sock;
+        server unix:/run/php/php"$PHPVER"-fpm.sock;
         }
 }
 
@@ -792,7 +792,7 @@ echo "opcache.memory_consumption=128"
 echo "opcache.save_comments=1"
 echo "opcache.revalidate_freq=1"
 echo "opcache.validate_timestamps=1"
-} >> /etc/php/7.2/fpm/php.ini
+} >> /etc/php/"$PHPVER"/fpm/php.ini
 
 # Set secure permissions final
 run_static_script wp-permissions

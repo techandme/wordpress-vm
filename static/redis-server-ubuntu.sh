@@ -37,7 +37,7 @@ then
 fi
     
 # Install Redis
-install_if_not php7.2-dev
+install_if_not php"$PHPVER"-dev
 pecl channel-update pecl.php.net
 if ! yes no | pecl install -Z redis
 then
@@ -53,7 +53,7 @@ install_if_not redis-server
 # print_text_in_color "$ICyan" 'extension=redis.so' > /etc/php/7.0/mods-available/redis.ini
 # phpenmod redis
 # Setting direct to apache2 works if 'libapache2-mod-php7.0' is installed
-echo 'extension=redis.so' >> /etc/php/7.2/fpm/php.ini
+echo 'extension=redis.so' >> /etc/php/"$PHPVER"/fpm/php.ini
 service nginx restart
 
 # Install Redis
