@@ -195,6 +195,59 @@ sed -i "s|post_max_size =.*|post_max_size = 110M|g" /etc/php/7.2/fpm/php.ini
 sed -i "s|cgi.fix_pathinfo =.*|cgi.fix_pathinfo=0|g" /etc/php/7.2/fpm/php.ini
 sed -i "s|date.timezone =.*|date.timezone = Europe/Stockholm|g" /etc/php/7.2/fpm/php.ini
 
+# Install Redis
+run_static_script redis-server-ubuntu
+
+# Enable igbinary for PHP 
+# https://github.com/igbinary/igbinary
+if is_this_installed "php$PHPVER"-dev
+then
+    if ! yes no | pecl install -Z igbinary
+    then
+        msg_box "igbinary PHP module installation failed"
+        exit
+    else
+        print_text_in_color "$IGreen" "igbinary PHP module installation OK!"
+    fi
+{
+echo "# igbinary for PHP"
+echo "extension=igbinary.so"
+echo "session.serialize_handler=igbinary"
+echo "igbinary.compact_strings=On"
+} >> $PHP_INI
+restart_webserver
+fi
+
+# APCu (local cache)
+if is_this_installed "php$PHPVER"-dev
+then
+    if ! yes no | pecl install -Z apcu
+    then
+        msg_box "APCu PHP module installation failed"
+        exit
+    else 
+        print_text_in_color "$IGreen" "APCu PHP module installation OK!"
+    fi
+{
+echo "# APCu settings for Nextcloud"
+echo "extension=apcu.so"
+echo "apc.enabled=1"
+echo "apc.shm_segments=1"
+echo "apc.shm_size=32M"
+echo "apc.entries_hint=4096"
+echo "apc.ttl=0"
+echo "apc.gc_ttl=3600"
+echo "apc.mmap_file_mask=NULL"
+echo "apc.slam_defense=1"
+echo "apc.enable_cli=1"
+echo "apc.use_request_time=1"
+echo "apc.serializer=igbinary"
+echo "apc.coredump_unmap=0"
+echo "apc.preload_path"
+} >> $PHP_INI
+restart_webserver
+fi
+
 # Download wp-cli.phar to be able to install Wordpress
 check_command curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 chmod +x wp-cli.phar
@@ -740,9 +793,6 @@ echo "opcache.save_comments=1"
 echo "opcache.revalidate_freq=1"
 echo "opcache.validate_timestamps=1"
 } >> /etc/php/7.2/fpm/php.ini
-
-# Install Redis
-run_static_script redis-server-ubuntu
 
 # Set secure permissions final
 run_static_script wp-permissions
