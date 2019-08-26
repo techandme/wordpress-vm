@@ -44,6 +44,7 @@ UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
 
 # PHP-FPM
+PHPVER=7.2
 PHP_INI=/etc/php/"$PHPVER"/fpm/php.ini
 PHP_POOL_DIR=/etc/php/"$PHPVER"/fpm/pool.d
 PHP_FPM_SOCK=/var/run/php"$PHPVER"-fpm-wordpress.sock
