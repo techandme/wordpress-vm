@@ -103,6 +103,33 @@ then
     fi
 fi
 
+# Upgrade APCu and igbinary
+if dpkg -l | grep php"$PHPVER"-dev > /dev/null 2>&1
+then
+    if [ -f "$PHP_INI" ]
+    then
+        print_text_in_color "$ICyan" "Trying to upgrade igbinary and APCu..."
+        if pecl list | grep igbinary >/dev/null 2>&1
+        then
+            yes no | pecl upgrade igbinary
+            # Check if igbinary.so is enabled
+            if ! grep -qFx extension=igbinary.so "$PHP_INI"
+            then
+                echo "extension=igbinary.so" >> "$PHP_INI"
+            fi
+        fi
+        if pecl list | grep apcu >/dev/null 2>&1
+        then
+            yes no | pecl upgrade apcu
+            # Check if apcu.so is enabled
+            if ! grep -qFx extension=apcu.so "$PHP_INI"
+            then
+                echo "extension=apcu.so" >> "$PHP_INI"
+            fi
+        fi
+    fi
+fi
+
 # Update adminer
 if [ -d $ADMINERDIR ]
 then
