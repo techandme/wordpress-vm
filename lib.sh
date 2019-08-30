@@ -218,8 +218,8 @@ local PROMPT="$1"
     whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
 }
 
-# Check if program is installed (is_this_installed apache2)
-is_this_installed() {
+# Check if program is installed (stop_if_installed apache2)
+stop_if_installed() {
 if [ "$(dpkg-query -W -f='${Status}' "${1}" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     print_text_in_color "$IRed" "${1} is installed, it must be a clean server."
@@ -227,9 +227,19 @@ then
 fi
 }
 
+# Check if program is installed (is_this_installed apache2)
+is_this_installed() {
+if dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
+then
+    return 0
+else
+    return 1
+fi
+}
+
 # Install_if_not program
 install_if_not () {
-if [[ "$(is_this_installed "${1}")" != "${1} is installed, it must be a clean server." ]]
+if [[ "$(stop_if_installed "${1}")" != "${1} is installed, it must be a clean server." ]]
 then
     apt update -q4 & spinner_loading && apt install "${1}" -y
 fi
