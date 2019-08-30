@@ -239,7 +239,7 @@ fi
 
 # Install_if_not program
 install_if_not () {
-if [[ "$(is_this_installed "${1}")" != "${1} is installed, it must be a clean server." ]]
+if [[ "$(stop_if_installed "${1}")" != "${1} is installed, it must be a clean server." ]]
 then
     apt update -q4 & spinner_loading && apt install "${1}" -y
 fi
