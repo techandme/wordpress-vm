@@ -195,6 +195,9 @@ sed -i "s|post_max_size =.*|post_max_size = 110M|g" /etc/php/"$PHPVER"/fpm/php.i
 sed -i "s|cgi.fix_pathinfo =.*|cgi.fix_pathinfo=0|g" /etc/php/"$PHPVER"/fpm/php.ini
 sed -i "s|date.timezone =.*|date.timezone = Europe/Stockholm|g" /etc/php/"$PHPVER"/fpm/php.ini
 
+# Make sure the passwords are the same, this file will be deleted when Redis is run.
+check_command echo "$REDIS_PASS" > $REDISPTXT
+
 # Install Redis
 run_static_script redis-server-ubuntu
 
@@ -311,9 +314,6 @@ define( 'WP_DEBUG', false );
 /** WP MEMORY SETTINGS*/
 define( 'WP_MEMORY_LIMIT', '128M' );
 PHP
-
-# Make sure the passwords are the same, this file will be deleted when Redis is run.
-check_command echo "$REDIS_PASS" > $REDISPTXT
 
 # Install Wordpress
 check_command wp_cli_cmd core install --url=http://"$ADDRESS"/ --title=Wordpress --admin_user=$WPADMINUSER --admin_password="$WPADMINPASS" --admin_email=no-reply@hanssonit.se --skip-email
