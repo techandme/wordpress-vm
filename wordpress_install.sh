@@ -229,7 +229,7 @@ then
         print_text_in_color "$IGreen" "APCu PHP module installation OK!"
     fi
 {
-echo "# APCu settings for Nextcloud"
+echo "# APCu settings for Wordpress"
 echo "extension=apcu.so"
 echo "apc.enabled=1"
 echo "apc.shm_segments=1"
@@ -313,7 +313,7 @@ define( 'WP_MEMORY_LIMIT', '128M' );
 PHP
 
 # Make sure the passwords are the same, this file will be deleted when Redis is run.
-echo "$REDIS_PASS" > /tmp/redis_pass.txt
+check_command echo "$REDIS_PASS" > $REDISPTXT
 
 # Install Wordpress
 check_command wp_cli_cmd core install --url=http://"$ADDRESS"/ --title=Wordpress --admin_user=$WPADMINUSER --admin_password="$WPADMINPASS" --admin_email=no-reply@hanssonit.se --skip-email
