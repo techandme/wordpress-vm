@@ -313,7 +313,7 @@ define( 'WP_MEMORY_LIMIT', '128M' );
 PHP
 
 # Make sure the passwords are the same, this file will be deleted when Redis is run.
-check_command echo "$REDIS_PASS" > /tmp/redis_pass.txt
+check_command echo "$REDIS_PASS" > $REDISPTXT
 
 # Install Wordpress
 check_command wp_cli_cmd core install --url=http://"$ADDRESS"/ --title=Wordpress --admin_user=$WPADMINUSER --admin_password="$WPADMINPASS" --admin_email=no-reply@hanssonit.se --skip-email
