@@ -220,10 +220,11 @@ local PROMPT="$1"
 
 # Check if program is installed (is_this_installed apache2)
 is_this_installed() {
-if [ "$(dpkg-query -W -f='${Status}' "${1}" 2>/dev/null | grep -c "ok installed")" == "1" ]
+if dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
 then
-    print_text_in_color "$IRed" "${1} is installed, it must be a clean server."
-    exit 1
+    return 0
+else
+    return 1
 fi
 }
 
