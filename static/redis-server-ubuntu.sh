@@ -81,10 +81,10 @@ fi
 sed -i "s|# unixsocket .*|unixsocket $REDIS_SOCK|g" $REDIS_CONF
 sed -i "s|# unixsocketperm .*|unixsocketperm 777|g" $REDIS_CONF
 sed -i "s|^port.*|port 0|" $REDIS_CONF
-sed -i "s|# requirepass .*|requirepass $(cat /tmp/redis_pass.txt)|g" $REDIS_CONF
+sed -i "s|# requirepass .*|requirepass $(cat $REDISPTXT)|g" $REDIS_CONF
 sed -i 's|# rename-command CONFIG ""|rename-command CONFIG ""|' $REDIS_CONF
 redis-cli SHUTDOWN
-rm -f /tmp/redis_pass.txt
+rm -f $REDISPTXT
 
 # Secure Redis
 chown redis:root /etc/redis/redis.conf
