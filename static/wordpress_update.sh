@@ -65,9 +65,9 @@ apt dist-upgrade -y
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extenstion..."
 if ! pecl list | grep redis >/dev/null 2>&1
 then
-    if dpkg -l | grep php7.2 > /dev/null 2>&1
+    if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
     then
-        install_if_not php7.2-dev
+        install_if_not php"$PHPVER"-dev
     else
         install_if_not php7.0-dev
     fi
@@ -85,9 +85,9 @@ then
     fi
 elif pecl list | grep redis >/dev/null 2>&1
 then
-    if dpkg -l | grep php7.2 > /dev/null 2>&1
+    if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
     then
-        install_if_not php7.2-dev
+        install_if_not php"$PHPVER"-dev
     else
         install_if_not php7.0-dev
     fi
@@ -100,6 +100,33 @@ then
     elif apache2 -v 2> /dev/null
     then
         service apache2 restart
+    fi
+fi
+
+# Upgrade APCu and igbinary
+if dpkg -l | grep php"$PHPVER"-dev > /dev/null 2>&1
+then
+    if [ -f "$PHP_INI" ]
+    then
+        print_text_in_color "$ICyan" "Trying to upgrade igbinary and APCu..."
+        if pecl list | grep igbinary >/dev/null 2>&1
+        then
+            yes no | pecl upgrade igbinary
+            # Check if igbinary.so is enabled
+            if ! grep -qFx extension=igbinary.so "$PHP_INI"
+            then
+                echo "extension=igbinary.so" >> "$PHP_INI"
+            fi
+        fi
+        if pecl list | grep apcu >/dev/null 2>&1
+        then
+            yes no | pecl upgrade apcu
+            # Check if apcu.so is enabled
+            if ! grep -qFx extension=apcu.so "$PHP_INI"
+            then
+                echo "extension=apcu.so" >> "$PHP_INI"
+            fi
+        fi
     fi
 fi
 
