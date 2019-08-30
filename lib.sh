@@ -170,7 +170,7 @@ ask_yes_or_no() {
 
 restart_webserver() {
 check_command systemctl restart nginx
-if php"$PHPVER"-fpm -v > /dev/null
+if is_this_installed php"$PHPVER"-fpm
 then
     check_command systemctl restart php"$PHPVER"-fpm.service
 fi
