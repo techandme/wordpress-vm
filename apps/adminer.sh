@@ -67,7 +67,7 @@ server {
 
     location / {
            index   index.php;
-           allow   $WANIP4;
+           allow   $GATEWAY/24;
            deny    all;
        }
 
