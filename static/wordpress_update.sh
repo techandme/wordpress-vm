@@ -65,7 +65,7 @@ apt dist-upgrade -y
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extenstion..."
 if ! pecl list | grep redis >/dev/null 2>&1
 then
-    if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
+    if is_this_installed php"$PHPVER"
     then
         install_if_not php"$PHPVER"-dev
     else
@@ -85,7 +85,7 @@ then
     fi
 elif pecl list | grep redis >/dev/null 2>&1
 then
-    if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
+    if is_this_installed php"$PHPVER"
     then
         install_if_not php"$PHPVER"-dev
     else
@@ -104,7 +104,7 @@ then
 fi
 
 # Upgrade APCu and igbinary
-if dpkg -l | grep php"$PHPVER"-dev > /dev/null 2>&1
+if is_this_installed php"$PHPVER"
 then
     if [ -f "$PHP_INI" ]
     then
