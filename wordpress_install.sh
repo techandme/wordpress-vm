@@ -54,12 +54,12 @@ if ! version 18.04 "$DISTRO" 18.04.4; then
 fi
 
 # Check if it's a clean server
-is_this_installed postgresql
-is_this_installed apache2
-is_this_installed nginx
-is_this_installed php
-is_this_installed mysql-common
-is_this_installed mariadb-server
+stop_if_installed postgresql
+stop_if_installed apache2
+stop_if_installed nginx
+stop_if_installed php
+stop_if_installed mysql-common
+stop_if_installed mariadb-server
 
 # Create $SCRIPTS dir
 if [ ! -d "$SCRIPTS" ]
