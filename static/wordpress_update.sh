@@ -139,6 +139,31 @@ then
     ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 fi
 
+# Check if Wordpress is installed in the regular path or try to find it
+if [ ! -d "$WPATH" ]
+then
+    export WPATH="/var/www/$(find /var/www/* -type d | grep wp | head -1 | cut -d "/" -f4)"
+    if ! ls -l $WPATH | grep "wp"
+    then
+        export WPATH="/var/www/$(find /var/www/* -type d | grep wp | tail -1 | cut -d "/" -f4)"
+        if ! ls -l $WPATH | grep "wp"
+        then
+            export WPATH="/var/www/html/$(find /var/www/html/* -type d | grep wp | head -1 | cut -d "/" -f5)"
+            if ! ls -l $WPATH | grep "wp"
+            then
+                export WPATH="/var/www/html/$(find /var/www/html/* -type d | grep wp | tail -1 | cut -d "/" -f5)"
+                if ! ls -l $WPATH | grep "wp"
+                then
+                    msg_box "Wordpress doesn't seem to be installed in the regular path. We tried to find it, but didn't suceed.
+
+                    The script will now exit."
+                    exit 1
+                fi
+            fi
+        fi
+    fi
+fi
+
 # Set secure permissions
 if [ ! -f "$SECURE" ]
 then
