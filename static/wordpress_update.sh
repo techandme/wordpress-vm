@@ -5,8 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-MYCNFPW=1 . <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
-unset MYCNFPW
+. <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -19,38 +18,6 @@ if ! is_root
 then
     printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/wordpress_update.sh\n" "$SCRIPTS"
     exit 1
-fi
-
-# Make sure old instaces can upgrade as well
-if [ ! -f "$MYCNF" ] && [ -f /var/mysql_password.txt ]
-then
-    regressionpw=$(grep "New MySQL ROOT password:" /var/mysql_password.txt | awk '{print $5}')
-cat << LOGIN > "$MYCNF"
-[client]
-password='$regressionpw'
-LOGIN
-    chmod 0600 $MYCNF
-    chown root:root $MYCNF
-    print_text_in_color "$ICyan" "Please restart the upgrade process, we fixed the password file $MYCNF."
-    exit 1
-elif [ -z "$MARIADBMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
-then
-    regressionpw=$(cat /var/mysql_password.txt)
-    {
-    echo "[client]"
-    echo "password='$regressionpw'"
-    } >> "$MYCNF"
-    print_text_in_color "$ICyan" "Please restart the upgrade process, we fixed the password file $MYCNF."
-    exit 1
-fi
-
-if [ -z "$MARIADBMYCNFPASS" ]
-then
-    print_text_in_color "$IRed" "Something went wrong with copying your mysql password to $MYCNF."
-    print_text_in_color "$IRed" "Please report this issue to $ISSUES, thanks!"
-    exit 1
-else
-    rm -f /var/mysql_password.txt
 fi
 
 # Check if dpkg or apt is running
@@ -143,20 +110,20 @@ fi
 if [ ! -d "$WPATH" ]
 then
     export WPATH="/var/www/$(find /var/www/* -type d | grep wp | head -1 | cut -d "/" -f4)"
-    if ! ls -l $WPATH | grep "wp"
+    if ! ls -l $WPATH | grep -q "wp"
     then
         export WPATH="/var/www/$(find /var/www/* -type d | grep wp | tail -1 | cut -d "/" -f4)"
-        if ! ls -l $WPATH | grep "wp"
+        if ! ls -l $WPATH | grep -q "wp"
         then
             export WPATH="/var/www/html/$(find /var/www/html/* -type d | grep wp | head -1 | cut -d "/" -f5)"
-            if ! ls -l $WPATH | grep "wp"
+            if ! ls -l $WPATH | grep -q "wp"
             then
                 export WPATH="/var/www/html/$(find /var/www/html/* -type d | grep wp | tail -1 | cut -d "/" -f5)"
-                if ! ls -l $WPATH | grep "wp"
+                if ! ls -l $WPATH | grep -q "wp"
                 then
-                    msg_box "Wordpress doesn't seem to be installed in the regular path. We tried to find it, but didn't suceed.
+msg_box "Wordpress doesn't seem to be installed in the regular path. We tried to find it, but didn't suceed.
 
-                    The script will now exit."
+The script will now exit."
                     exit 1
                 fi
             fi
