@@ -125,7 +125,7 @@ then
                 export WPATH
                 if [ ! -d "$WPATH"/wp-admin ]
                 then
-msg_box "Wordpress doesn't seem to be installed in the regular path. We tried to find it, but didn't suceed.
+msg_box "Wordpress doesn't seem to be installed in the regular path. We tried to find it, but didn't succeed.
 
 The script will now exit."
                     exit 1
