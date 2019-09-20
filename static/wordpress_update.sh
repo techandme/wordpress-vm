@@ -110,16 +110,16 @@ fi
 if [ ! -d "$WPATH" ]
 then
     export WPATH="/var/www/$(find /var/www/* -type d | grep wp | head -1 | cut -d "/" -f4)"
-    if ! ls -l $WPATH | grep -q "wp"
+    if [ ! -d "$WPATH/wp-admin" ]
     then
         export WPATH="/var/www/$(find /var/www/* -type d | grep wp | tail -1 | cut -d "/" -f4)"
-        if ! ls -l $WPATH | grep -q "wp"
+        if [ ! -d "$WPATH/wp-admin" ]
         then
             export WPATH="/var/www/html/$(find /var/www/html/* -type d | grep wp | head -1 | cut -d "/" -f5)"
-            if ! ls -l $WPATH | grep -q "wp"
+            if [ ! -d "$WPATH/wp-admin" ]
             then
                 export WPATH="/var/www/html/$(find /var/www/html/* -type d | grep wp | tail -1 | cut -d "/" -f5)"
-                if ! ls -l $WPATH | grep -q "wp"
+                if [ ! -d "$WPATH/wp-admin" ]
                 then
 msg_box "Wordpress doesn't seem to be installed in the regular path. We tried to find it, but didn't suceed.
 
