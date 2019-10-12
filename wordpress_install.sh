@@ -384,7 +384,7 @@ echo "</IfModule>"
 } >> $WPATH/.htaccess
 
 # Set up a php-fpm pool with a unixsocket
-cat << POOL_CONF > "$PHP_POOL_DIR/www_wordpress.conf"
+cat << POOL_CONF > "$PHP_POOL_DIR/Wordpress.conf"
 [www_wordpress]
 user = www-data
 group = www-data
