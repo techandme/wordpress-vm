@@ -176,6 +176,10 @@ sudo systemctl stop nginx.service
 sudo systemctl start nginx.service
 sudo systemctl enable nginx.service
 
+# Download TLSv 1.3 modified nginx.conf
+rm -f /etc/nginx/nginx.conf
+check_command wget -q $STATIC/nginx.conf -P /etc/nginx/
+
 # Install PHP 7.2
 apt install -y \
         php \
