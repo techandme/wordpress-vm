@@ -113,6 +113,10 @@ fi
 # Update system
 apt update -q4 & spinner_loading
 
+# Install dependencies for GEO-block in Nginx
+install_if_not geoip-database
+install_if_not libgeoip1
+
 # Write MARIADB pass to file and keep it safe
 {
 echo "[client]"
