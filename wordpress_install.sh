@@ -165,6 +165,7 @@ run_static_script new_etc_mycnf
 apt install open-vm-tools -y
 
 # Install Nginx
+check_command yes | add-apt-repository ppa:nginx/stable
 apt update -q4 && spinner_loading
 check_command apt install nginx -y
 sudo systemctl stop nginx.service
