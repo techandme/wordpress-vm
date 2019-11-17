@@ -171,7 +171,7 @@ apt install open-vm-tools -y
 # Install Nginx
 check_command yes | add-apt-repository ppa:nginx/stable
 apt update -q4 && spinner_loading
-check_command apt install nginx -y
+install_if_not nginx
 sudo systemctl stop nginx.service
 sudo systemctl start nginx.service
 sudo systemctl enable nginx.service
