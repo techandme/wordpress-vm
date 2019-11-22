@@ -173,7 +173,15 @@ server {
     ssl_stapling_verify on;
     
     location / {
-        try_files \$uri \$uri/ /index.php?\$args;        
+        try_files \$uri \$uri/ /index.php?\$args;
+            # https://veerasundar.com/blog/2014/09/setting-expires-header-for-assets-nginx/
+            if ($request_uri ~* ".(ico|css|js|gif|jpe?g|png)$") {
+                expires 15d;
+                access_log off;
+                add_header Pragma public;
+                add_header Cache-Control "public";
+                break;
+            }
     }
     location /.well-known {
         root /usr/share/nginx/html;
