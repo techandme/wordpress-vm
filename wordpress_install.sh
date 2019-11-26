@@ -113,6 +113,10 @@ fi
 # Update system
 apt update -q4 & spinner_loading
 
+# Install dependencies for GEO-block in Nginx
+install_if_not geoip-database
+install_if_not libgeoip1
+
 # Write MARIADB pass to file and keep it safe
 {
 echo "[client]"
@@ -165,11 +169,16 @@ run_static_script new_etc_mycnf
 apt install open-vm-tools -y
 
 # Install Nginx
+check_command yes | add-apt-repository ppa:nginx/stable
 apt update -q4 && spinner_loading
-check_command apt install nginx -y
+install_if_not nginx
 sudo systemctl stop nginx.service
 sudo systemctl start nginx.service
 sudo systemctl enable nginx.service
+
+# Download TLSv 1.3 modified nginx.conf
+rm -f /etc/nginx/nginx.conf
+check_command wget -q $STATIC/nginx.conf -P /etc/nginx/
 
 # Install PHP 7.2
 apt install -y \
