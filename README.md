@@ -6,7 +6,7 @@
 
 - Ubuntu 18.04
 - MariaDB 10.2
-- NGINX 1.14
+- NGINX 1.16
 - PHP-FPM 7.2
 - Latest Wordpress (updates automatically)
 - WP-CLI
