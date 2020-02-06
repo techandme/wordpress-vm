@@ -200,8 +200,16 @@ server {
                 log_not_found off;
                 access_log off;
     }
-    location ~* \\.php$ {
-                #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+    location ~* \.php$ {
+        location ~ \wp-login.php$ {
+                    allow $GATEWAY/24;
+		            allow $ADDRESS;
+		            allow $WAN4IP;
+                    deny all;
+                    include fastcgi.conf;
+                    fastcgi_intercept_errors on;
+                    fastcgi_pass unix:/var/run/php/php7.2-fpm-wordpress.sock; 
+        }
                 fastcgi_split_path_info ^(.+\.php)(/.+)$;
                 try_files \$uri =404;
                 fastcgi_index index.php;
