@@ -505,13 +505,13 @@ server {
 
     location ~* \.php$ {
         location ~ \wp-login.php$ {
-                allow $GATEWAY/24;
-		allow $ADDRESS;
-		allow $WAN4IP;
-                deny all;
-                include fastcgi.conf;
-                fastcgi_intercept_errors on;
-                fastcgi_pass unix:/var/run/php/php7.2-fpm-wordpress.sock; 
+                    allow $GATEWAY/24;
+		    allow $ADDRESS;
+		    allow $WAN4IP;
+                    deny all;
+                    include fastcgi.conf;
+                    fastcgi_intercept_errors on;
+                    fastcgi_pass unix:/var/run/php/php7.2-fpm-wordpress.sock; 
         }
                 fastcgi_split_path_info ^(.+\.php)(/.+)$;
                 try_files \$uri =404;
@@ -584,13 +584,13 @@ server {
     
     location ~* \.php$ {
         location ~ \wp-login.php$ {
-                allow $GATEWAY/24;
-		allow $ADDRESS;
-		allow $WAN4IP;
-                deny all;
-                include fastcgi.conf;
-                fastcgi_intercept_errors on;
-                fastcgi_pass unix:/var/run/php/php7.2-fpm-wordpress.sock; 
+                    allow $GATEWAY/24;
+		    allow $ADDRESS;
+		    allow $WAN4IP;
+                    deny all;
+                    include fastcgi.conf;
+                    fastcgi_intercept_errors on;
+                    fastcgi_pass unix:/var/run/php/php7.2-fpm-wordpress.sock; 
         }
                 fastcgi_split_path_info ^(.+\.php)(/.+)$;
                 try_files \$uri =404;
