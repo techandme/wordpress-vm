@@ -203,8 +203,8 @@ server {
     location ~* \.php$ {
         location ~ \wp-login.php$ {
                     allow $GATEWAY/24;
-		            allow $ADDRESS;
-		            allow $WAN4IP;
+		    #allow $ADDRESS;
+		    #allow $WAN4IP;
                     deny all;
                     include fastcgi.conf;
                     fastcgi_intercept_errors on;
