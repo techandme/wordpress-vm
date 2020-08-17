@@ -48,12 +48,11 @@ else
 fi
 install_if_not redis-server
 
-# Set globally doesn't work for some reason
-# touch /etc/php/7.0/mods-available/redis.ini
-# print_text_in_color "$ICyan" 'extension=redis.so' > /etc/php/7.0/mods-available/redis.ini
-# phpenmod redis
-# Setting direct to apache2 works if 'libapache2-mod-php7.0' is installed
+# FPM is needed for frontend
 echo 'extension=redis.so' >> /etc/php/"$PHPVER"/fpm/php.ini
+# CLI is needed for backend
+echo 'extension=redis.so' >> /etc/php/"$PHPVER"/cli/php.ini
+service php"$PHPVER"-fpm restart
 service nginx restart
 
 # Install Redis
