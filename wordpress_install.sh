@@ -204,7 +204,7 @@ sed -i "s|post_max_size =.*|post_max_size = 110M|g" /etc/php/"$PHPVER"/fpm/php.i
 sed -i "s|cgi.fix_pathinfo =.*|cgi.fix_pathinfo=0|g" /etc/php/"$PHPVER"/fpm/php.ini
 sed -i "s|date.timezone =.*|date.timezone = Europe/Stockholm|g" /etc/php/"$PHPVER"/fpm/php.ini
 
-# Make sure the passwords are the same, this file will be deleted when Redis is run.
+# Make sure the passwords are the same, this file will be deleted when redis is run.
 check_command echo "$REDIS_PASS" > $REDISPTXT
 
 # Install Redis
@@ -311,8 +311,10 @@ define( 'WP_REDIS_CLIENT', 'pecl' );
 define( 'WP_REDIS_SCHEME', 'unix' );
 /** REDIS PATH TO SOCKET */
 define( 'WP_REDIS_PATH', '$REDIS_SOCK' );
-/** REDIS SALT */
+/** REDIS TTL */
 define('WP_REDIS_MAXTTL', 9600);
+/** REDIS SALT */
+define('WP_REDIS_PREFIX', change_this_redis_salt_to_your_domain_name);
 
 /** AUTO UPDATE */
 define( 'WP_AUTO_UPDATE_CORE', true );
