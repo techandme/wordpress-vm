@@ -306,7 +306,7 @@ wp_cli_cmd core config --dbname=$WPDBNAME --dbuser=$WPDBUSER --dbpass="$WPDBPASS
 /** REDIS PASSWORD */
 define( 'WP_REDIS_PASSWORD', '$REDIS_PASS' );
 /** REDIS CLIENT */
-define( 'WP_REDIS_CLIENT', 'pecl' );
+define( 'WP_REDIS_CLIENT', 'phpredis' );
 /** REDIS SOCKET */
 define( 'WP_REDIS_SCHEME', 'unix' );
 /** REDIS PATH TO SOCKET */
