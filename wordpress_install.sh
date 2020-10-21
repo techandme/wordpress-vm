@@ -1,16 +1,60 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-# Prefer IPv4
-sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+# Prefer IPv4 for apt
+echo 'Acquire::ForceIPv4 "true";' >> /etc/apt/apt.conf.d/99force-ipv4
+
+# Install curl if not existing
+if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    echo "curl OK"
+else
+    apt update -q4
+    apt install curl -y
+fi
+
+# shellcheck disable=2034,2059
+true
+SCRIPT_NAME="Wordpress Install Script"
+# shellcheck source=lib.sh
+source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
+
+# Check if dpkg or apt is running
+is_process_running apt
+is_process_running dpkg
+
+# Install lshw if not existing
+if [ "$(dpkg-query -W -f='${Status}' "lshw" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    print_text_in_color "$IGreen" "lshw OK"
+else
+    apt update -q4 & spinner_loading
+    apt install lshw -y
+fi
+
+# Install net-tools if not existing
+if [ "$(dpkg-query -W -f='${Status}' "net-tools" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    print_text_in_color "$IGreen" "net-tools OK"
+else
+    apt update -q4 & spinner_loading
+    apt install net-tools -y
+fi
+
+# Install whiptail if not existing
+if [ "$(dpkg-query -W -f='${Status}' "whiptail" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    print_text_in_color "$IGreen" "whiptail OK"
+else
+    apt update -q4 & spinner_loading
+    apt install whiptail -y
+fi
 
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
-unset FIRST_IFACE
-unset CHECK_CURRENT_REPO
+source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -19,38 +63,66 @@ DEBUG=0
 debug_mode
 
 # Check if root
-if ! is_root
-then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/wordpress_install.sh\n" "$SCRIPTS"
-    exit 1
-fi
+root_check
 
 # Test RAM size (2GB min) + CPUs (min 1)
-ram_check 1 Wordpress
+ram_check 2 Wordpress
 cpu_check 1 Wordpress
 
+# Download needed libraries before execution of the first script
+mkdir -p "$SCRIPTS"
+download_script GITHUB_REPO lib
+download_script STATIC fetch_lib
+
 # Set locales
-apt install language-pack-en-base -y
-sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+run_script ADDONS locales
 
-# Show current user
-download_static_script adduser
+# Create new current user
+download_script STATIC adduser
 bash $SCRIPTS/adduser.sh "wordpress_install.sh"
-rm $SCRIPTS/adduser.sh
+rm -f $SCRIPTS/adduser.sh
 
-# Check Ubuntu version
-print_text_in_color "$ICyan" "Checking server OS and version..."
-if [ "$OS" != 1 ]
+# Check distribution and version
+if ! version 20.04 "$DISTRO" 20.04.6
 then
-    print_text_in_color "$IRed" "Ubuntu Server is required to run this script."
-    print_text_in_color "$IRed" "Please install that distro and try again."
+    msg_box "This script can only be run on Ubuntu 20.04 (server)."
     exit 1
 fi
+# Use this when Ubuntu 18.04 is deprecated from the function:
+#check_distro_version
+check_universe
+check_multiverse
 
+# Fix LVM on BASE image
+if grep -q "LVM" /etc/fstab
+then
+    if yesno_box_yes "Do you want to make all free space available to your root partition?"
+    then
+    # Resize LVM (live installer is &%¤%/!
+    # VM
+    print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
+    lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
 
-if ! version 18.04 "$DISTRO" 18.04.4; then
-    print_text_in_color "$IRed" "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
-    exit
+    # Run it again manually just to be sure it's done
+    while :
+    do
+        lvdisplay | grep "Size" | awk '{print $3}'
+        if ! lvextend -L +10G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+        then
+            if ! lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+            then
+                if ! lvextend -L +100M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+                then
+                    if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+                    then
+                        resize2fs /dev/ubuntu-vg/ubuntu-lv
+                        break
+                    fi
+                fi
+            fi
+        fi
+    done
+    fi
 fi
 
 # Check if it's a clean server
@@ -58,6 +130,12 @@ stop_if_installed postgresql
 stop_if_installed apache2
 stop_if_installed nginx
 stop_if_installed php
+stop_if_installed php-fpm
+stop_if_installed php"$PHPVER"-fpm
+stop_if_installed php7.0-fpm
+stop_if_installed php7.1-fpm
+stop_if_installed php7.2-fpm
+stop_if_installed php7.3-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
 
@@ -67,51 +145,56 @@ then
     mkdir -p "$SCRIPTS"
 fi
 
-# Change DNS
-install_if_not resolvconf
-yes | dpkg-reconfigure --frontend=noninteractive resolvconf
-echo "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
-echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
-
-# Check network
-test_connection
-
-# Check where the best mirrors are and update
-print_text_in_color "$ICyan" "Your current server repository is: $REPO"
-if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
+# Create $VMLOGS dir
+if [ ! -d "$VMLOGS" ]
 then
-    print_text_in_color "$ICyan" "Keeping $REPO as mirror..."
-    sleep 1
-else
-   print_text_in_color "$ICyan" "Locating the best mirrors..."
-   apt update -q4 & spinner_loading
-   apt install python-pip -y
-   pip install \
-       --upgrade pip \
-       apt-select
-    apt-select -m up-to-date -t 5 -c
-    sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
-    if [ -f sources.list ]
+    mkdir -p "$VMLOGS"
+fi
+
+# Install needed network
+install_if_not netplan.io
+
+# Install build-essentials to get make
+install_if_not build-essential
+
+# Set DNS resolver
+# https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f    
+while :
+do
+choice=$(whiptail --title "$TITLE - Set DNS Resolver" --menu \
+"Which DNS provider should this Wordpress server use?
+$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Quad9" "(https://www.quad9.net/)" \
+"Cloudflare" "(https://www.cloudflare.com/dns/)" \
+"Local" "($GATEWAY) - DNS on gateway" 3>&1 1>&2 2>&3)
+
+    case "$choice" in
+        "Quad9")
+            sed -i "s|^#\?DNS=.*$|DNS=9.9.9.9 149.112.112.112 2620:fe::fe 2620:fe::9|g" /etc/systemd/resolved.conf
+        ;;
+        "Cloudflare")
+            sed -i "s|^#\?DNS=.*$|DNS=1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001|g" /etc/systemd/resolved.conf
+        ;;
+        "Local")
+            sed -i "s|^#\?DNS=.*$|DNS=$GATEWAY|g" /etc/systemd/resolved.conf
+            if network_ok
+            then
+                break
+            else
+                msg_box "Could not validate the local DNS server. Pick an Internet DNS server and try again."
+                continue
+            fi
+        ;;
+        *)
+        ;;
+    esac
+    if test_connection
     then
-        sudo mv sources.list /etc/apt/
+        break
+    else
+        msg_box "Could not validate the DNS server. Please try again."
     fi
-fi
-clear
-
-# Set keyboard layout
-print_text_in_color "$ICyan" "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
-if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
-then
-    print_text_in_color "$ICyan" "Not changing keyboard layout..."
-    sleep 1
-    clear
-else
-    dpkg-reconfigure keyboard-configuration
-    clear
-fi
-
-# Update system
-apt update -q4 & spinner_loading
+done
 
 # Install dependencies for GEO-block in Nginx
 install_if_not geoip-database
@@ -128,11 +211,11 @@ chown root:root $MYCNF
 # Install MARIADB
 apt install software-properties-common -y
 sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://ftp.ddg.lth.se/mariadb/repo/10.2/ubuntu xenial main'
-sudo debconf-set-selections <<< "mariadb-server-10.2 mysql-server/root_password password $MARIADB_PASS"
-sudo debconf-set-selections <<< "mariadb-server-10.2 mysql-server/root_password_again password $MARIADB_PASS"
+sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://ftp.ddg.lth.se/mariadb/repo/10.5/ubuntu xenial main'
+sudo debconf-set-selections <<< "mariadb-server-10.5 mysql-server/root_password password $MARIADB_PASS"
+sudo debconf-set-selections <<< "mariadb-server-10.5 mysql-server/root_password_again password $MARIADB_PASS"
 apt update -q4 & spinner_loading
-check_command apt install mariadb-server-10.2 -y
+check_command apt install mariadb-server-10.5 -y
 
 # Prepare for Wordpress installation
 # https://blog.v-gar.de/2017/02/en-solved-error-1698-28000-in-mysqlmariadb/
@@ -180,7 +263,7 @@ sudo systemctl enable nginx.service
 rm -f /etc/nginx/nginx.conf
 check_command wget -q $STATIC/nginx.conf -P /etc/nginx/
 
-# Install PHP 7.2
+# Install PHP 7.4
 apt install -y \
         php \
 	php"$PHPVER"-fpm \
@@ -195,22 +278,60 @@ apt install -y \
 	php"$PHPVER"-curl
 	
 # Configure PHP
-sed -i "s|allow_url_fopen =.*|allow_url_fopen = On|g" /etc/php/"$PHPVER"/fpm/php.ini
-sed -i "s|max_execution_time =.*|max_execution_time = 360|g" /etc/php/"$PHPVER"/fpm/php.ini
-sed -i "s|file_uploads =.*|file_uploads = On|g" /etc/php/"$PHPVER"/fpm/php.ini
-sed -i "s|upload_max_filesize =.*|upload_max_filesize = 100M|g" /etc/php/"$PHPVER"/fpm/php.ini
-sed -i "s|memory_limit =.*|memory_limit = 256M|g" /etc/php/"$PHPVER"/fpm/php.ini
-sed -i "s|post_max_size =.*|post_max_size = 110M|g" /etc/php/"$PHPVER"/fpm/php.ini
-sed -i "s|cgi.fix_pathinfo =.*|cgi.fix_pathinfo=0|g" /etc/php/"$PHPVER"/fpm/php.ini
-sed -i "s|date.timezone =.*|date.timezone = Europe/Stockholm|g" /etc/php/"$PHPVER"/fpm/php.ini
+sed -i "s|allow_url_fopen =.*|allow_url_fopen = On|g" "$PHP_INI"
+sed -i "s|max_execution_time =.*|max_execution_time = 360|g" "$PHP_INI"
+sed -i "s|file_uploads =.*|file_uploads = On|g" "$PHP_INI"
+sed -i "s|upload_max_filesize =.*|upload_max_filesize = 100M|g" "$PHP_INI"
+sed -i "s|memory_limit =.*|memory_limit = 256M|g" "$PHP_INI"
+sed -i "s|post_max_size =.*|post_max_size = 110M|g" "$PHP_INI"
+sed -i "s|cgi.fix_pathinfo =.*|cgi.fix_pathinfo=0|g" "$PHP_INI"
+sed -i "s|date.timezone =.*|date.timezone = Europe/Stockholm|g" "$PHP_INI"
 
-# Make sure the passwords are the same, this file will be deleted when Redis is run.
+# Make sure the passwords are the same, this file will be deleted when redis is run.
 check_command echo "$REDIS_PASS" > $REDISPTXT
 
 # Install Redis
 run_static_script redis-server-ubuntu
 
-# Enable igbinary for PHP 
+# Enable OPCache for PHP
+phpenmod opcache
+{
+echo "# OPcache settings for Wordpress"
+echo "opcache.enable=1"
+echo "opcache.enable_cli=1"
+echo "opcache.interned_strings_buffer=8"
+echo "opcache.max_accelerated_files=10000"
+echo "opcache.memory_consumption=256"
+echo "opcache.save_comments=1"
+echo "opcache.revalidate_freq=1"
+echo "opcache.validate_timestamps=1"
+} >> "$PHP_INI"
+
+# PHP-FPM optimization
+# https://geekflare.com/php-fpm-optimization/
+sed -i "s|;emergency_restart_threshold.*|emergency_restart_threshold = 10|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
+sed -i "s|;emergency_restart_interval.*|emergency_restart_interval = 1m|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
+sed -i "s|;process_control_timeout.*|process_control_timeout = 10|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
+
+# Install Redis (distrubuted cache)
+run_script ADDONS redis-server-ubuntu
+
+# Install smbclient
+# php"$PHPVER"-smbclient does not yet work in PHP 7.4
+install_if_not libsmbclient-dev
+yes no | pecl install smbclient
+if [ ! -f $PHP_MODS_DIR/smbclient.ini ]
+then
+    touch $PHP_MODS_DIR/smbclient.ini
+fi
+if ! grep -qFx extension=smbclient.so $PHP_MODS_DIR/smbclient.ini
+then
+    echo "# PECL smbclient" > $PHP_MODS_DIR/smbclient.ini
+    echo "extension=smbclient.so" >> $PHP_MODS_DIR/smbclient.ini
+    check_command phpenmod -v ALL smbclient
+fi
+
+# Enable igbinary for PHP
 # https://github.com/igbinary/igbinary
 if is_this_installed "php$PHPVER"-dev
 then
@@ -226,7 +347,7 @@ echo "# igbinary for PHP"
 echo "extension=igbinary.so"
 echo "session.serialize_handler=igbinary"
 echo "igbinary.compact_strings=On"
-} >> $PHP_INI
+} >> "$PHP_INI"
 restart_webserver
 fi
 
@@ -237,18 +358,19 @@ then
     then
         msg_box "APCu PHP module installation failed"
         exit
-    else 
+    else
         print_text_in_color "$IGreen" "APCu PHP module installation OK!"
     fi
 {
 echo "# APCu settings for Wordpress"
 echo "extension=apcu.so"
 echo "apc.enabled=1"
+echo "apc.max_file_size=5M"
 echo "apc.shm_segments=1"
-echo "apc.shm_size=32M"
+echo "apc.shm_size=128M"
 echo "apc.entries_hint=4096"
-echo "apc.ttl=0"
-echo "apc.gc_ttl=3600"
+echo "apc.ttl=3600"
+echo "apc.gc_ttl=7200"
 echo "apc.mmap_file_mask=NULL"
 echo "apc.slam_defense=1"
 echo "apc.enable_cli=1"
@@ -256,7 +378,7 @@ echo "apc.use_request_time=1"
 echo "apc.serializer=igbinary"
 echo "apc.coredump_unmap=0"
 echo "apc.preload_path"
-} >> $PHP_INI
+} >> "$PHP_INI"
 restart_webserver
 fi
 
@@ -306,13 +428,15 @@ wp_cli_cmd core config --dbname=$WPDBNAME --dbuser=$WPDBUSER --dbpass="$WPDBPASS
 /** REDIS PASSWORD */
 define( 'WP_REDIS_PASSWORD', '$REDIS_PASS' );
 /** REDIS CLIENT */
-define( 'WP_REDIS_CLIENT', 'pecl' );
+define( 'WP_REDIS_CLIENT', 'phpredis' );
 /** REDIS SOCKET */
 define( 'WP_REDIS_SCHEME', 'unix' );
 /** REDIS PATH TO SOCKET */
 define( 'WP_REDIS_PATH', '$REDIS_SOCK' );
-/** REDIS SALT */
+/** REDIS TTL */
 define('WP_REDIS_MAXTTL', 9600);
+/** REDIS SALT */
+define('WP_REDIS_PREFIX', $(gen_passwd "$SHUF" "a-zA-Z0-9@#*="));
 
 /** AUTO UPDATE */
 define( 'WP_AUTO_UPDATE_CORE', true );
@@ -357,7 +481,7 @@ wp_cli_cmd plugin delete akismet
 wp_cli_cmd plugin delete hello
 
 # Secure permissions
-run_static_script wp-permissions
+run_script wp-permissions
 
 # Hardening security
 # create .htaccess to protect uploads directory
@@ -393,19 +517,19 @@ echo "</IfModule>"
 } >> $WPATH/.htaccess
 
 # Set up a php-fpm pool with a unixsocket
-cat << POOL_CONF > "$PHP_POOL_DIR/Wordpress.conf"
-[www_wordpress]
+cat << POOL_CONF > "$PHP_POOL_DIR"/wordpress.conf
+[Wordpress]
 user = www-data
 group = www-data
-listen = $PHP_FPM_SOCK
+listen = /run/php/php"$PHPVER"-fpm.wordpress.sock
 listen.owner = www-data
 listen.group = www-data
 pm = dynamic
-pm.max_children = 17
-pm.start_servers = 5
+; max_children is set dynamically with calculate_php_fpm()
+pm.max_children = 22
+pm.start_servers = 9
 pm.min_spare_servers = 2
-pm.max_spare_servers = 10
-pm.max_requests = 500
+pm.max_spare_servers = 11
 env[HOSTNAME] = $(hostname -f)
 env[PATH] = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 env[TMP] = /tmp
@@ -413,10 +537,16 @@ env[TMPDIR] = /tmp
 env[TEMP] = /tmp
 security.limit_extensions = .php
 php_admin_value [cgi.fix_pathinfo] = 1
+
+; Optional
+; pm.max_requests = 2000
 POOL_CONF
 
-# Disable regular pool
-mv $PHP_POOL_DIR/www.conf $PHP_POOL_DIR/default_www.config
+# Disable the idling example pool.
+mv "$PHP_POOL_DIR"/www.conf "$PHP_POOL_DIR"/www.conf.backup
+
+# Enable the new php-fpm config
+restart_webserver
 
 # Force wp-cron.php (updates WooCommerce Services and run Scheluded Tasks)
 if [ -f $WPATH/wp-cron.php ]
@@ -431,10 +561,10 @@ apt install figlet -y
 # Generate $SSL_CONF
 install_if_not ssl-cert
 systemctl stop nginx.service && wait
-if [ ! -f $SSL_CONF ];
-        then
-        touch $SSL_CONF
-        cat << SSL_CREATE > $SSL_CONF
+if [ ! -f $SITES_AVAILABLE/$TLS_CONF ]
+then
+    touch "$SITES_AVAILABLE/$TLS_CONF"
+    cat << TLS_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
@@ -531,16 +661,16 @@ server {
                 log_not_found off;
      }
 }
-SSL_CREATE
-print_text_in_color "$IGreen" "$SSL_CONF was successfully created"
+TLS_CREATE
+print_text_in_color "$IGreen" "$TLS_CONF was successfully created"
 sleep 1
 fi
 
 # Generate $HTTP_CONF
-if [ ! -f $HTTP_CONF ];
-        then
-        touch $HTTP_CONF
-        cat << HTTP_CREATE > $HTTP_CONF
+if [ ! -f $SITES_AVAILABLE/$HTTP_CONF ]
+then
+    touch "$SITES_AVAILABLE/$HTTP_CONF"
+    cat << HTTP_CREATE > "$SITES_AVAILABLE/$HTTP_CONF"
 server {
     listen 80;
     listen [::]:80;
@@ -724,7 +854,7 @@ fi
 if [ -f "$NGINX_DEF" ];
 then
     rm -f $NGINX_DEF
-    rm -f /etc/nginx/sites-enabled/default
+    rm -f "$SITES_ENABLED"/default
     touch $NGINX_DEF
     cat << NGINX_DEFAULT > "$NGINX_DEF"
 ##
@@ -790,9 +920,9 @@ fi
 
 # Enable new config
 ln -s "$NGINX_DEF" /etc/nginx/sites-enabled/
-ln -s "$SSL_CONF" /etc/nginx/sites-enabled/
+ln -s "$TLS_CONF" /etc/nginx/sites-enabled/
 ln -s "$HTTP_CONF" /etc/nginx/sites-enabled/
-systemctl restart nginx.service
+restart_webserver
 
 # Enable UTF8mb4 (4-byte support)
 databases=$(mysql -u root -p"$MARIADB_PASS" -e "SHOW DATABASES;" | tr -d "| " | grep -v Database)
@@ -804,67 +934,46 @@ for db in $databases; do
     fi
 done
 
-# Enable OPCache for PHP
-phpenmod opcache
-{
-echo "# OPcache settings for Wordpress"
-echo "opcache.enable=1"
-echo "opcache.enable_cli=1"
-echo "opcache.interned_strings_buffer=8"
-echo "opcache.max_accelerated_files=10000"
-echo "opcache.memory_consumption=128"
-echo "opcache.save_comments=1"
-echo "opcache.revalidate_freq=1"
-echo "opcache.validate_timestamps=1"
-} >> /etc/php/"$PHPVER"/fpm/php.ini
+# Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
+bash $SECURE & spinner_loading
 
-# Set secure permissions final
-run_static_script wp-permissions
-
-# Prepare for first mount
-download_static_script instruction
-download_static_script history
-run_static_script change-root-profile
-run_static_script change-wordpress-profile
-if [ ! -f "$SCRIPTS"/wordpress-startup-script.sh ]
+# Put IP adress in /etc/issue (shown before the login)
+if [ -f /etc/issue ]
 then
-check_command wget -q "$GITHUB_REPO"/wordpress-startup-script.sh -P "$SCRIPTS"
+    echo "\4" >> /etc/issue
 fi
+
+# Force MOTD to show correct number of updates
+if is_this_installed update-notifier-common
+then
+    sudo /usr/lib/update-notifier/update-motd-updates-available --force
+fi
+
+# It has to be this order:
+# Download scripts
+# chmod +x
+# Set permissions for ncadmin in the change scripts
+
+# Get needed scripts for first bootup
+download_script GITHUB_REPO wordpress-startup-script
+download_script STATIC instruction
+download_script STATIC history
+download_script NETWORK static_ip
 
 # Make $SCRIPTS excutable
 chmod +x -R "$SCRIPTS"
 chown root:root -R "$SCRIPTS"
 
-# Allow wordpress to run theese scripts
-chown wordpress:wordpress "$SCRIPTS/instruction.sh"
-chown wordpress:wordpress "$SCRIPTS/history.sh"
+# Prepare first bootup
+check_command run_script STATIC change-wordpress-profile
+check_command run_script STATIC change-root-profile
 
-# Upgrade
-apt dist-upgrade -y
-
-# Remove LXD (always shows up as failed during boot)
-apt purge lxd -y
-
-# Cleanup
-apt autoremove -y
-apt autoclean
-find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
-
-# Install virtual kernels for Hyper-V
-# Kernel 4.15
-apt install -y --install-recommends \
-linux-virtual \
-linux-tools-virtual \
-linux-cloud-tools-virtual \
-linux-image-virtual \
-linux-image-extra-virtual
-
-# Force MOTD to show correct number of updates
-sudo /usr/lib/update-notifier/update-motd-updates-available --force
-
-# Prefer IPv6
-sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+# Disable hibernation
+print_text_in_color "$ICyan" "Disable hibernation..."
+systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 
 # Reboot
-print_text_in_color "$IGreen" "Installation done, system will now reboot..."
+msg_box "Installation almost done, system will reboot when you hit OK. 
+
+Please log in again once rebooted to run the setup script."
 reboot
