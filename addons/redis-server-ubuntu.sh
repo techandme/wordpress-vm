@@ -49,27 +49,11 @@ install_if_not redis-server
 
 # Setting direct to PHP-FPM as it's installed with PECL (globally doesn't work)
 print_text_in_color "$ICyan" "Adding extension=redis.so to $PHP_INI..."
-echo 'extension=redis.so' >> "$PHP_INI"
-
-# Prepare for adding redis configuration
-sed -i "s|);||g" $NCPATH/config/config.php
-
-# Add the needed config to Nextclouds config.php
-cat <<ADD_TO_CONFIG >> $NCPATH/config/config.php
-  'memcache.local' => '\\OC\\Memcache\\APCu',
-  'filelocking.enabled' => true,
-  'memcache.distributed' => '\\OC\\Memcache\\Redis',
-  'memcache.locking' => '\\OC\\Memcache\\Redis',
-  'redis' =>
-  array (
-    'host' => '$REDIS_SOCK',
-    'port' => 0,
-    'timeout' => 0.5,
-    'dbindex' => 0,
-    'password' => '$REDIS_PASS',
-  ),
-);
-ADD_TO_CONFIG
+# FPM is needed for frontend
+echo 'extension=redis.so' >> /etc/php/"$PHPVER"/fpm/php.ini
+# CLI is needed for backend
+echo 'extension=redis.so' >> /etc/php/"$PHPVER"/cli/php.ini
+restart_webserver
 
 ## Redis performance tweaks ##
 if ! grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
