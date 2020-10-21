@@ -331,6 +331,7 @@ something is wrong here. Please report this to $ISSUES"
 wp_cli_cmd() {
 export WP_CLI_CACHE_DIR=$WPATH/.wp-cli/cache
 check_command sudo -u www-data /usr/local/bin/wp "$@";
+}
 
 # Check if process is runnnig: is_process_running dpkg
 is_process_running() {
