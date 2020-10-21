@@ -12,7 +12,7 @@ signs -- too many password failures, seeking for exploits, etc.
 Generally Fail2Ban is then used to update firewall rules to \
 reject the IP addresses for a specified amount of time."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/20.04_testing/lib.sh)
 
 # Get all needed variables from the library
 nc_update

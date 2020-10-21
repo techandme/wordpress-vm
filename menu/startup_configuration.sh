@@ -6,7 +6,7 @@
 true
 SCRIPT_NAME="Startup Configuration Menu"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/20.04_testing/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
