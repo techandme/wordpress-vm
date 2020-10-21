@@ -151,6 +151,7 @@ REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
 RSHUF=$(shuf -i 30-35 -n 1)
 REDIS_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+REDISPTXT=/tmp/redispasstxt
 
 ## FUNCTIONS
 
