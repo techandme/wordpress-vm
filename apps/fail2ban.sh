@@ -1,11 +1,21 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# Inspired by https://github.com/nextcloud/nextcloudpi/blob/master/etc/nextcloudpi-config.d/fail2ban.sh
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Fail2ban"
+SCRIPT_EXPLAINER="Fail2ban provides extra Brute Force protextion for Nextcloud.
+It scans the Nextcloud and SSH log files and bans IPs that show malicious \
+signs -- too many password failures, seeking for exploits, etc. 
+Generally Fail2Ban is then used to update firewall rules to \
+reject the IP addresses for a specified amount of time."
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Get all needed variables from the library
+nc_update
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -14,24 +24,35 @@ DEBUG=0
 debug_mode
 
 # Check if root
-if ! is_root
+root_check
+
+# Check if fail2ban is already installed
+if ! is_this_installed fail2ban
 then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/fail2ban.sh\n" "$SCRIPTS"
-    sleep 3
-    exit 1
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+else
+    # Ask for removal or reinstallation
+    reinstall_remove_menu "$SCRIPT_NAME"
+    # Removal
+    print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
+    fail2ban-client unban --all
+    rm /etc/fail2ban/filter.d/wordpress.conf
+    rm /etc/fail2ban/jail.local
+    check_command apt-get purge fail2ban -y
+    # Show successful uninstall if applicable
+    removal_popup "$SCRIPT_NAME"
 fi
 
 ### Local variables ###
 # location of logs
 AUTHLOG="/var/log/auth.log"
 # time to ban an IP that exceeded attempts
-BANTIME_=600000
+BANTIME_=1209600
 # cooldown time for incorrect passwords
 FINDTIME_=1800
-#bad attempts before banning an IP
-MAXRETRY_=10
-
-print_text_in_color "$ICyan" "Installing Fail2ban..."
+# failed attempts before banning an IP
+MAXRETRY_=20
 
 apt update -q4 & spinner_loading
 check_command apt install fail2ban -y
@@ -59,6 +80,14 @@ cat << FCONF > /etc/fail2ban/jail.d/wordpress.conf
 # defined using space separator.
 ignoreip = 127.0.0.1/8 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8
 
+# "bantime" is the number of seconds that a host is banned.
+bantime  = $BANTIME_
+
+# A host is banned if it has generated "maxretry" during the last "findtime"
+# seconds.
+findtime = $FINDTIME_
+maxretry = $MAXRETRY_
+
 #
 # ACTIONS
 #
@@ -69,6 +98,15 @@ action_ = %(banaction)s[name=%(__name__)s, port="%(port)s", protocol="%(protocol
 action_mw = %(banaction)s[name=%(__name__)s, port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
 action_mwl = %(banaction)s[name=%(__name__)s, port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
 action = %(action_)s
+
+#
+# SSH
+#
+
+[sshd]
+
+enabled  = true
+maxretry = $MAXRETRY_
 
 #
 # HTTP servers
@@ -87,11 +125,12 @@ FCONF
 # Update settings
 check_command update-rc.d fail2ban defaults
 check_command update-rc.d fail2ban enable
-check_command service fail2ban restart
+check_command systemctl restart fail2ban.service
 
 # The End
 msg_box "Fail2ban is now sucessfully installed.
-Please use 'fail2ban-client set wordpress unbanip <Banned IP>' to unban certain IPs
+
+Please use 'fail2ban-client set nextcloud unbanip <Banned IP>' to unban certain IPs
 You can also use 'iptables -L -n' to check which IPs that are banned"
 
-clear
+exit
