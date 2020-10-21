@@ -77,7 +77,7 @@ fi
 sed -i "s|# unixsocket .*|unixsocket $REDIS_SOCK|g" $REDIS_CONF
 sed -i "s|# unixsocketperm .*|unixsocketperm 777|g" $REDIS_CONF
 sed -i "s|^port.*|port 0|" $REDIS_CONF
-sed -i "s|# requirepass .*|requirepass $REDIS_PASS|g" $REDIS_CONF
+sed -i "s|# requirepass .*|requirepass $(cat $REDISPTXT)|g" $REDIS_CONF
 sed -i 's|# rename-command CONFIG ""|rename-command CONFIG ""|' $REDIS_CONF
 redis-cli SHUTDOWN
 
@@ -88,5 +88,6 @@ chmod 600 /etc/redis/redis.conf
 apt update -q4 & spinner_loading
 apt autoremove -y
 apt autoclean
+rm -f "$REDISPTXT"
 
 exit
