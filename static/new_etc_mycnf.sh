@@ -1,3 +1,27 @@
+#!/bin/bash
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/20.04_testing/lib.sh)
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
+# Check if root
+if ! is_root
+then
+    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/wordpress_install_production.sh\n" "$SCRIPTS"
+    exit 1
+fi
+
+# MariaDB recomends this
+mv -f /etc/mysql/my.cnf /etc/mysql/my.cnf.old
+ln -sf mariadb.cnf $ETCMYCNF
+
+/bin/cat <<WRITENEW >"$ETCMYCNF"
 # MariaDB database server configuration file.
 #
 # You can copy this file to one of:
@@ -195,3 +219,12 @@ key_buffer		= 16M
 #   The files must end with '.cnf', otherwise they'll be ignored.
 #
 !includedir /etc/mysql/conf.d/
+WRITENEW
+
+# Restart MariaDB
+check_command systemctl stop mariadb & spinner_loading
+# mysqladmin shutdown --force & spinner_loading
+wait
+check_command systemctl restart mariadb & spinner_loading
+
+exit
