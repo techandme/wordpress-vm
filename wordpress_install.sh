@@ -223,12 +223,14 @@ mysql -u root mysql -p"$MARIADB_PASS" -e "UPDATE user SET password=PASSWORD('$MA
 mysql -u root -p"$MARIADB_PASS" -e "flush privileges;"
 
 # mysql_secure_installation
-apt -y install expect
+install_if_not expect
 SECURE_MYSQL=$(expect -c "
 set timeout 10
 spawn mysql_secure_installation
 expect \"Enter current password for root (enter for none):\"
 send \"$MARIADB_PASS\r\"
+expect \"Switch to unix_socket authentication?\"
+send \"y\r\"
 expect \"Change the root password?\"
 send \"n\r\"
 expect \"Remove anonymous users?\"
