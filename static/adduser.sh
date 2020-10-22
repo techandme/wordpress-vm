@@ -1,10 +1,11 @@
 #!/bin/bash
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Add CLI User"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/20.04_testing/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/20.04_testing/lib.sh)
 
-# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -14,13 +15,14 @@ debug_mode
 
 if [[ $UNIXUSER != "wordpress" ]]
 then
-msg_box "Current user with sudo permissions is: $UNIXUSER.
+    msg_box "Current user with sudo permissions is: $UNIXUSER.
 This script will set up everything with that user.
 If the field after ':' is blank you are probably running as a pure root user.
 It's possible to install with root, but there will be minor errors.
+
 Please create a user with sudo permissions if you want an optimal installation.
-The preferred user is 'wordpress'."
-    if [[ "no" == $(ask_yes_or_no "Do you want to create a new user?") ]]
+The preferred user is 'ncadmin'."
+    if ! yesno_box_yes "Do you want to create a new user?"
     then
         print_text_in_color "$ICyan" "Not adding another user..."
         sleep 1
@@ -29,7 +31,7 @@ The preferred user is 'wordpress'."
         adduser --disabled-password --gecos "" "$NEWUSER"
         sudo usermod -aG sudo "$NEWUSER"
         usermod -s /bin/bash "$NEWUSER"
-        while true
+        while :
         do
             sudo passwd "$NEWUSER" && break
         done
