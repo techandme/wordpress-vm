@@ -430,9 +430,9 @@ define( 'WP_REDIS_SCHEME', 'unix' );
 /** REDIS PATH TO SOCKET */
 define( 'WP_REDIS_PATH', '$REDIS_SOCK' );
 /** REDIS TTL */
-define('WP_REDIS_MAXTTL', 9600);
+define('WP_REDIS_MAXTTL', 9600 );
 /** REDIS SALT */
-define('WP_REDIS_PREFIX', $(gen_passwd "$SHUF" "a-zA-Z0-9@#*="));
+define('WP_REDIS_PREFIX', '$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")' );
 
 /** AUTO UPDATE */
 define( 'WP_AUTO_UPDATE_CORE', true );
