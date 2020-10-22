@@ -275,7 +275,7 @@ apt install -y \
 	php"$PHPVER"-cli \
 	php"$PHPVER"-zip \
 	php"$PHPVER"-curl
-	
+
 # Configure PHP
 sed -i "s|allow_url_fopen =.*|allow_url_fopen = On|g" "$PHP_INI"
 sed -i "s|max_execution_time =.*|max_execution_time = 360|g" "$PHP_INI"
@@ -291,7 +291,7 @@ sed -i "s|date.timezone =.*|date.timezone = Europe/Stockholm|g" "$PHP_INI"
 check_command echo "$REDIS_PASS" > $REDISPTXT
 
 # Install Redis
-run_script STATIC redis-server-ubuntu
+run_script ADDONS redis-server-ubuntu
 
 # Enable OPCache for PHP
 phpenmod opcache
