@@ -481,7 +481,7 @@ wp_cli_cmd plugin delete akismet
 wp_cli_cmd plugin delete hello
 
 # Secure permissions
-run_script wp-permissions
+run_script STATIC wp-permissions
 
 # Hardening security
 # create .htaccess to protect uploads directory
@@ -568,7 +568,7 @@ then
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
-    
+
     ## Your website name goes here.
     # server_name example.com;
     ## Your only path reference.
@@ -577,14 +577,14 @@ server {
     index index.php;
 
     resolver $GATEWAY;
-    
+
      ## Show real IP behind proxy (change to the proxy IP)
 #    set_real_ip_from  $GATEWAY/24;
 #    set_real_ip_from  $GATEWAY;
 #    set_real_ip_from  2001:0db8::/32;
 #    real_ip_header    X-Forwarded-For;
 #    real_ip_recursive on;
-    
+
     # certs sent to the client in SERVER HELLO are concatenated in ssl_certificate
     ssl_certificate /etc/ssl/certs/ssl-cert-snakeoil.pem;
     ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
@@ -611,14 +611,13 @@ server {
     ## verify chain of trust of OCSP response using Root CA and Intermediate certs
     # ssl_trusted_certificate /path/to/root_CA_cert_plus_intermediates;
 
-    
     location / {
-        try_files \$uri \$uri/ /index.php?\$args;        
+        try_files \$uri \$uri/ /index.php?\$args;
     }
-    
+
     location ~ /\\. {
         access_log off;
-        log_not_found off; 
+        log_not_found off;
         deny all;
     }
 
@@ -674,7 +673,7 @@ then
 server {
     listen 80;
     listen [::]:80;
-    
+
     ## Your website name goes here.
     # server_name example.com;
     ## Your only path reference.
@@ -683,18 +682,18 @@ server {
     index index.php;
 
     resolver $GATEWAY;
-    
+
     ## Show real IP behind proxy (change to the proxy IP)
 #    set_real_ip_from  $GATEWAY/24;
 #    set_real_ip_from  $GATEWAY;
 #    set_real_ip_from  2001:0db8::/32;
 #    real_ip_header    X-Forwarded-For;
 #    real_ip_recursive on;
-    
+
     location / {
-        try_files \$uri \$uri/ /index.php?\$args;        
+        try_files \$uri \$uri/ /index.php?\$args;
     }
-    
+
     location ~ /\\. {
         access_log off;
         log_not_found off; 
@@ -711,7 +710,7 @@ server {
                 log_not_found off;
                 access_log off;
     }
-    
+
     location ~* \.php$ {
         location ~ \wp-login.php$ {
                     allow $GATEWAY/24;
@@ -762,7 +761,7 @@ events {
 	multi_accept on;
 	use epoll;
 }
-	
+
 http {
 
 	##
@@ -810,7 +809,7 @@ http {
 	# gzip_proxied any;
 	# gzip_comp_level 6;
 	  gzip_buffers 16 4k;
-	# gzip_http_version 1.1;	
+	# gzip_http_version 1.1;
 	# gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
 
 	##
@@ -828,17 +827,17 @@ http {
 #mail {
 #	# See sample authentication script at:
 #	# http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
-# 
+#
 #	# auth_http localhost/auth.php;
 #	# pop3_capabilities "TOP" "USER";
 #	# imap_capabilities "IMAP4rev1" "UIDPLUS";
-# 
+#
 #	server {
 #		listen     localhost:110;
 #		protocol   pop3;
 #		proxy      on;
 #	}
-# 
+#
 #	server {
 #		listen     localhost:143;
 #		protocol   imap;
@@ -919,9 +918,9 @@ sleep 1
 fi
 
 # Enable new config
-ln -s "$NGINX_DEF" /etc/nginx/sites-enabled/
-ln -s "$TLS_CONF" /etc/nginx/sites-enabled/
-ln -s "$HTTP_CONF" /etc/nginx/sites-enabled/
+ln -s "$SITES_AVAILABLE"/"$NGINX_DEF" /etc/nginx/sites-enabled/
+ln -s "$SITES_AVAILABLE"/"$TLS_CONF" /etc/nginx/sites-enabled/
+ln -s "$SITES_AVAILABLE"/"$HTTP_CONF" /etc/nginx/sites-enabled/
 restart_webserver
 
 # Enable UTF8mb4 (4-byte support)
@@ -965,8 +964,8 @@ chmod +x -R "$SCRIPTS"
 chown root:root -R "$SCRIPTS"
 
 # Prepare first bootup
-check_command run_script STATIC change-wordpress-profile
-check_command run_script STATIC change-root-profile
+run_script STATIC change-wordpress-profile
+run_script STATIC change-root-profile
 
 # Disable hibernation
 print_text_in_color "$ICyan" "Disable hibernation..."
