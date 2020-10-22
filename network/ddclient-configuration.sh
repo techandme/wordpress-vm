@@ -40,7 +40,7 @@ else
 fi
 
 # install needed tool
-DEBIAN_FRONTEND=noninteractive apt install ddclient -y
+DEBIAN_FRONTEND=noninteractive install_if_not ddclient
 
 # Test if file exists
 if [ ! -f /etc/ddclient.conf ]

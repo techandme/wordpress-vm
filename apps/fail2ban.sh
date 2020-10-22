@@ -55,7 +55,7 @@ FINDTIME_=1800
 MAXRETRY_=20
 
 apt update -q4 & spinner_loading
-check_command apt install fail2ban -y
+install_if_not fail2ban
 check_command update-rc.d fail2ban disable
 
 # Install WP-Fail2ban and activate conf

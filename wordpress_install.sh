@@ -197,8 +197,9 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 done
 
 # Install dependencies for GEO-block in Nginx
-install_if_not geoip-database
-install_if_not libgeoip1
+# TODO: https://linuxhint.com/nginx_block_geo_location/
+#install_if_not geoip-database
+#install_if_not libgeoip1
 
 # Write MARIADB pass to file and keep it safe
 {
