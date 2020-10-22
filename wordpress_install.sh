@@ -521,7 +521,7 @@ cat << POOL_CONF > "$PHP_POOL_DIR"/wordpress.conf
 [Wordpress]
 user = www-data
 group = www-data
-listen = /run/php/php"$PHPVER"-fpm.wordpress.sock
+listen = $PHP_FPM_SOCK
 listen.owner = www-data
 listen.group = www-data
 pm = dynamic
@@ -640,7 +640,7 @@ server {
                     deny all;
                     include fastcgi.conf;
                     fastcgi_intercept_errors on;
-                    fastcgi_pass unix:/var/run/php/php7.2-fpm-wordpress.sock; 
+                    fastcgi_pass unix:$PHP_FPM_SOCK;
         }
                 fastcgi_split_path_info ^(.+\.php)(/.+)$;
                 try_files \$uri =404;
@@ -696,7 +696,7 @@ server {
 
     location ~ /\\. {
         access_log off;
-        log_not_found off; 
+        log_not_found off;
         deny all;
     }
 
@@ -719,7 +719,7 @@ server {
                     deny all;
                     include fastcgi.conf;
                     fastcgi_intercept_errors on;
-                    fastcgi_pass unix:/var/run/php/php7.2-fpm-wordpress.sock; 
+                    fastcgi_pass unix:$PHP_FPM_SOCK;
         }
                 fastcgi_split_path_info ^(.+\.php)(/.+)$;
                 try_files \$uri =404;
