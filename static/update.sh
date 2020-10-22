@@ -23,6 +23,6 @@ fi
 mkdir -p "$SCRIPTS"
 
 # Delete, download, run
-run_static_script wordpress_update
+run_script STATIC wordpress_update
 
 exit

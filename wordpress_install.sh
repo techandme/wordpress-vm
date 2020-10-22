@@ -245,7 +245,7 @@ echo "$SECURE_MYSQL"
 apt -y purge expect
 
 # Write a new MariaDB config
-run_static_script new_etc_mycnf
+run_script STATIC new_etc_mycnf
 
 # Install VM-tools
 install_if_not open-vm-tools
@@ -291,7 +291,7 @@ sed -i "s|date.timezone =.*|date.timezone = Europe/Stockholm|g" "$PHP_INI"
 check_command echo "$REDIS_PASS" > $REDISPTXT
 
 # Install Redis
-run_static_script redis-server-ubuntu
+run_script STATIC redis-server-ubuntu
 
 # Enable OPCache for PHP
 phpenmod opcache
