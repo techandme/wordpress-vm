@@ -286,13 +286,6 @@ sed -i "s|post_max_size =.*|post_max_size = 110M|g" "$PHP_INI"
 sed -i "s|cgi.fix_pathinfo =.*|cgi.fix_pathinfo=0|g" "$PHP_INI"
 sed -i "s|date.timezone =.*|date.timezone = Europe/Stockholm|g" "$PHP_INI"
 
-
-# Make sure the passwords are the same, this file will be deleted when redis is run.
-check_command echo "$REDIS_PASS" > $REDISPTXT
-
-# Install Redis
-run_script ADDONS redis-server-ubuntu
-
 # Enable OPCache for PHP
 phpenmod opcache
 {
@@ -312,6 +305,9 @@ echo "opcache.validate_timestamps=1"
 sed -i "s|;emergency_restart_threshold.*|emergency_restart_threshold = 10|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
 sed -i "s|;emergency_restart_interval.*|emergency_restart_interval = 1m|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
 sed -i "s|;process_control_timeout.*|process_control_timeout = 10|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
+
+# Make sure the passwords are the same, this file will be deleted when redis is run.
+check_command echo "$REDIS_PASS" > $REDISPTXT
 
 # Install Redis (distrubuted cache)
 run_script ADDONS redis-server-ubuntu
