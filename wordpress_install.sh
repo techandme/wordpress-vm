@@ -918,9 +918,9 @@ sleep 1
 fi
 
 # Enable new config
-ln -s "$SITES_AVAILABLE"/"$NGINX_DEF" /etc/nginx/sites-enabled/
-ln -s "$SITES_AVAILABLE"/"$TLS_CONF" /etc/nginx/sites-enabled/
-ln -s "$SITES_AVAILABLE"/"$HTTP_CONF" /etc/nginx/sites-enabled/
+ln -s "$SITES_AVAILABLE"/"$NGINX_DEF" "$SITES_ENABLED"/"$NGINX_DEF"
+ln -s "$SITES_AVAILABLE"/"$TLS_CONF" "$SITES_ENABLED"/"$TLS_CONF"
+ln -s "$SITES_AVAILABLE"/"$HTTP_CONF" "$SITES_ENABLED"/"$HTTP_CONF"
 restart_webserver
 
 # Enable UTF8mb4 (4-byte support)
