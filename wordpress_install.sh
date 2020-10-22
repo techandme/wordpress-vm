@@ -916,7 +916,7 @@ sleep 1
 fi
 
 # Enable new config
-ln -s "$SITES_AVAILABLE"/"$NGINX_DEF" "$SITES_ENABLED"/"$NGINX_DEF"
+ln -s "$NGINX_DEF" "$SITES_ENABLED"/default
 ln -s "$SITES_AVAILABLE"/"$TLS_CONF" "$SITES_ENABLED"/"$TLS_CONF"
 ln -s "$SITES_AVAILABLE"/"$HTTP_CONF" "$SITES_ENABLED"/"$HTTP_CONF"
 restart_webserver
