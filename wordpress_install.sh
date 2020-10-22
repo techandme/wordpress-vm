@@ -209,13 +209,12 @@ chmod 0600 $MYCNF
 chown root:root $MYCNF
 
 # Install MARIADB
-apt install software-properties-common -y
-sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://ftp.ddg.lth.se/mariadb/repo/10.5/ubuntu xenial main'
+install_if_not software-properties-common
+curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash -s -- --mariadb-server-version="mariadb-10.5" --skip-maxscale
 sudo debconf-set-selections <<< "mariadb-server-10.5 mysql-server/root_password password $MARIADB_PASS"
 sudo debconf-set-selections <<< "mariadb-server-10.5 mysql-server/root_password_again password $MARIADB_PASS"
 apt update -q4 & spinner_loading
-check_command apt install mariadb-server-10.5 -y
+install_if_not mariadb-server-10.5
 
 # Prepare for Wordpress installation
 # https://blog.v-gar.de/2017/02/en-solved-error-1698-28000-in-mysqlmariadb/
@@ -249,7 +248,7 @@ apt -y purge expect
 run_static_script new_etc_mycnf
 
 # Install VM-tools
-apt install open-vm-tools -y
+install_if_not open-vm-tools
 
 # Install Nginx
 check_command yes | add-apt-repository ppa:nginx/stable
@@ -557,7 +556,7 @@ then
 fi
 
 # Install Figlet
-apt install figlet -y
+install_if_not figlet
 
 # Generate $SSL_CONF
 install_if_not ssl-cert
