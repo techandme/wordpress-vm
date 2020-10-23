@@ -88,7 +88,6 @@ ADDONS="$GITHUB_REPO/addons"
 MENU="$GITHUB_REPO/menu"
 DISK="$GITHUB_REPO/disk"
 NETWORK="$GITHUB_REPO/network"
-WPDOWNLOADLATEST="https://wordpress.org/latest.zip"
 ISSUES="https://github.com/techandme/wordpress-vm/vm/issues"
 
 # User information
@@ -103,15 +102,19 @@ SHUF=$(shuf -i 25-29 -n 1)
 PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 WPDBNAME=wordpress_by_www_hanssonit_se
-WPADMINUSER=change_this_user
+WPADMINUSER=wordpress_db_user
 MARIADB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 WPDBPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 NEWMARIADBPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 WPDBUSER=wordpress_user
 WPADMINPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-[ -n "$WPDB" ] && WPCONFIGDB=$(grep "DB_PASSWORD" /var/www/html/wordpress/wp-config.php | awk '{print $3}' | cut -d "'" -f2)
 MYCNF=/root/.my.cnf
-[ -n "$MYCNFPW" ] && MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
+wpdb() {
+WPCONFIGDB=$(grep "DB_PASSWORD" /var/www/html/wordpress/wp-config.php | awk '{print $3}' | cut -d "'" -f2)
+}
+mycnfpw() {
+MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
+}
 
 # Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
 AUT_UPDATES_TIME="18"
