@@ -98,10 +98,6 @@ SCRIPT_NAME="Wordpress startup script"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh 
 
-# Get all needed variables from the library
-mycnfpw
-wpdb
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -191,7 +187,7 @@ rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
 
 # Generate new MariaDB password
-print_text_in_color "$ICyan" "Generating new PostgreSQL password..."
+print_text_in_color "$ICyan" "Generating new MariaDB password..."
 check_command bash "$SCRIPTS/change_db_pass.sh"
 sleep 3
 
@@ -267,8 +263,8 @@ echo "WP PASS: $NEWWPADMINPASS"
 
 # Change servername in Nginx
 server_name=$(echo "$FQDN" | cut -d "/" -f3)
-sed -i "s|# server_name .*|server_name $server_name;|g" "$HTTP_CONF"
-sed -i "s|# server_name .*|server_name $server_name;|g" "$TLS_CONF"
+sed -i "s|# server_name .*|server_name $server_name;|g" "$SITES_ENABLED"/"$HTTP_CONF"
+sed -i "s|# server_name .*|server_name $server_name;|g" "$SITES_ENABLED"/"$TLS_CONF"
 restart_webserver
 
 # Show current administrators
@@ -287,9 +283,9 @@ rm -f "$SCRIPTS/server_configuration.sh"
 rm -f "$SCRIPTS/wordpress_configuration.sh"
 rm -f "$SCRIPTS/additional_apps.sh"
 rm -f "$SCRIPTS/adduser.sh"
-find /root "/home/$SUDO_USER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete
+find /root /home/"$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete
 find "WPATH" -type f \( -name 'results' -o -name '*.sh*' \) -delete
-sed -i "s|instruction.sh|wordpress.sh|g" "/home/$SUDO_USER/.bash_profile"
+sed -i "s|instruction.sh|wordpress.sh|g" /home/"$UNIXUSER"/.bash_profile
 
 truncate -s 0 \
     /root/.bash_history \
@@ -341,7 +337,7 @@ Please hit OK in all the following prompts and let the server reboot to complete
 msg_box "TIPS & TRICKS:
 1. Publish your server online: https://goo.gl/iUGE2U
 3. To update this server just type: sudo bash /var/scripts/update.sh
-4. Install apps, configure Wordpress, and server: sudo bash $SCRIPTS/menu.sh"
+4. Install apps, configure Wordpress, and server: sudo bash $SCRIPTS/menu.sh
 5. To allow access to wp-login.php, please edit your nginx virtual hosts file.
    You can find it here: $HTTP_CONF"
 
