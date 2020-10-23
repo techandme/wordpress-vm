@@ -82,29 +82,6 @@ fi
 if network_ok
 then
     print_text_in_color "$IGreen" "Online!"
-elif home_sme_server
-then
-    msg_box "It seems like the last try failed as well using LAN ethernet.
-
-Since the Home/SME server is equipped with a WIFI module, you will now be asked to enable it to get connectivity.
-
-Please note: It's not recomended to run a server on WIFI. Using an ethernet cable is always the best."
-    if yesno_box_yes "Do you want to enable WIFI on this server?"
-    then
-        nmtui
-    fi
-        if network_ok
-        then
-            print_text_in_color "$IGreen" "Online!"
-	else
-        msg_box "Network NOT OK. You must have a working network connection to run this script.
-
-Please contact us for support:
-https://shop.hanssonit.se/product/premium-support-per-30-minutes/
-
-Please also post this issue on: https://github.com/nextcloud/vm/issues"
-        exit 1
-        fi
 else
     msg_box "Network NOT OK. You must have a working network connection to run this script.
 
@@ -117,7 +94,7 @@ fi
 
 # shellcheck disable=2034,2059,1091
 true
-SCRIPT_NAME="Wordpress Startup Script"
+SCRIPT_NAME="Wordpress startup script"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh 
 
@@ -137,7 +114,7 @@ run_script MENU startup_configuration
 ######## The first setup is OK to run to this point several times, but not any further ########
 if [ -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times" ]
 then
-    msg_box "$SCRIPT_NAME script that handles the first setup \
+    msg_box "The $SCRIPT_NAME that handles the first setup \
 (this one) is desinged to be run once, not several times in a row.
 
 If you feel uncertain about adding some extra features during this setup, \
