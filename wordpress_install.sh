@@ -389,17 +389,17 @@ mv wp-cli.phar /usr/local/bin/wp
 # Add www-data in sudoers
 {
 echo "# WP-CLI" 
-echo "$SUDO_USER ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
+echo "$UNIXUSER ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
 echo "root ALL=(www-data) NOPASSWD: /usr/local/bin/wp"
 } >> /etc/sudoers
 
 # Create dir
 mkdir -p "$WPATH"
 chown -R www-data:www-data "$WPATH"
-if [ ! -d /home/"$SUDO_USER"/.wp-cli ]
+if [ ! -d /home/"$UNIXUSER"/.wp-cli ]
 then
-    mkdir -p /home/"$SUDO_USER"/.wp-cli/
-    chown -R www-data:www-data /home/"$SUDO_USER"/.wp-cli/
+    mkdir -p /home/"$UNIXUSER"/.wp-cli/
+    chown -R www-data:www-data /home/"$UNIXUSER"/.wp-cli/
 fi
 
 # Create wp-cli.yml

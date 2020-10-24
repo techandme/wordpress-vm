@@ -18,7 +18,7 @@ debug_mode
 root_check
 
 # Set the startup switch
-if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
+if [ -f "$SCRIPTS/wordpress-startup-script.sh" ]
 then
     STARTUP_SWITCH="ON"
 else
@@ -28,7 +28,7 @@ fi
 choice=$(whiptail --title "$TITLE" --checklist \
 "Automatically install and configure Fail2ban.
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Install-Fail2ban" "(Install Fail2ban and protect Nextcloud + SSH)" "$STARTUP_SWITCH" \
+"Install-Fail2ban" "(Install Fail2ban and protect Wordpress + SSH)" "$STARTUP_SWITCH" \
 "Fail2ban-Statuscheck" "(Check status of currently blocked attacks)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -40,7 +40,7 @@ case "$choice" in
         SUBTITLE="Fail2ban Statuscheck"
         if is_this_installed fail2ban && [ -f "/etc/fail2ban/filter.d/nextcloud.conf" ]
         then
-            msg_box "$(fail2ban-client status nextcloud && fail2ban-client status sshd && iptables -L -n)" "$SUBTITLE"
+            msg_box "$(fail2ban-client status wordpress && fail2ban-client status sshd && iptables -L -n)" "$SUBTITLE"
         else
             msg_box "Fail2ban isn't installed. Please run 'sudo bash /var/scripts/menu.sh' to install it." "$SUBTITLE"
         fi

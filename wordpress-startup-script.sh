@@ -143,7 +143,7 @@ chmod +x -R $SCRIPTS
 chown root:root -R $SCRIPTS
 
 # Allow wordpress to run figlet script
-chown "$SUDO_USER":"$SUDO_USER" $SCRIPTS/wordpress.sh
+chown "$UNIXUSER":"$UNIXUSER" $SCRIPTS/wordpress.sh
 
 clear
 msg_box"This script will do the final setup for you
@@ -165,7 +165,7 @@ msg_box "PLEASE NOTE:
 [#] Please read the on-screen instructions carefully, they will guide you through the setup.
 [#] When complete it will delete all the *.sh, *.html, *.tar, *.zip inside:
     /root
-    /home/$SUDO_USER
+    /home/$UNIXUSER
 [#] Please consider donating if you like the product:
     https://shop.hanssonit.se/product-category/donate/
 [#] You can also ask for help here:
