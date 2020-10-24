@@ -79,7 +79,7 @@ else
 
 # If it fails, revert changes back to normal
     rm -f "$SITES_ENABLED"/"$1"
-    ln -s "$$SITES_AVAILABLE"/"$HTTP_CONF" "$SITES_ENABLED"
+    ln -s "$$SITES_AVAILABLE/$HTTP_CONF" "$SITES_ENABLED"
     restart_webserver
     msg_box "Couldn't load new config, reverted to old settings. Self-signed TLS is OK!"
     exit 1
