@@ -238,8 +238,11 @@ then
     # Send email
     send_mail \
 "Wordpress update finished!" \
-"Please the maintenance mode will now be deactivated. $(date +%T)"
-    wp_cli_cmd maintenance-mode deactivate
+"Wordpress update is now complete. Please visit your site to check that everything looks alright. $(date +%T)"
+    if wp_cli_cmd maintenance-mode status | grep -q "is active"
+    then
+        wp_cli_cmd maintenance-mode deactivate
+    fi
 fi
 
 # Un-hash this if you want the system to reboot
