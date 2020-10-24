@@ -37,6 +37,7 @@ fi
 # Ubuntu 16.04 is deprecated
 check_distro_version
 
+cd "$WPATH"
 send_mail \
 "Wordpress update started!" \
 "Please don't shutdown or reboot your server during the update! $(date +%T)"
