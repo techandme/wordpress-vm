@@ -99,8 +99,6 @@ ROOT_PROFILE="/root/.bash_profile"
 
 # Database
 SHUF=$(shuf -i 25-29 -n 1)
-PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 WPDBNAME=wordpress_by_www_hanssonit_se
 WPADMINUSER=wordpress_db_user
 MARIADB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
@@ -136,7 +134,7 @@ HTTP_CONF="wordpress_http_domain_self_signed.conf"
 SECURE="$SCRIPTS/wp-permissions.sh"
 ETCMYCNF="/etc/mysql/my.cnf"
 NGINX_CONF="/etc/nginx/nginx.conf"
-NGINX_DEF="/etc/nginx/sites-available/default"
+NGINX_DEF="$SITES_AVAILABLE/default"
 
 # PHP-FPM
 PHPVER=7.4
