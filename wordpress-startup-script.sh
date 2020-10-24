@@ -38,7 +38,7 @@ is_process_running dpkg
 
 # shellcheck disable=2034,2059,1091
 true
-SCRIPT_NAME="Nextcloud Startup Script"
+SCRIPT_NAME="Wordpress Startup Script"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
@@ -135,7 +135,7 @@ download_script STATIC change_db_pass
 download_script STATIC wordpress
 download_script MENU menu
 download_script MENU server_configuration
-download_script MENU nextcloud_configuration
+download_script MENU wordpress_configuration
 download_script MENU additional_apps
 
 # Make $SCRIPTS excutable
@@ -152,9 +152,8 @@ msg_box"This script will do the final setup for you
 - Set static IP
 - Create a new WP user
 - Upgrade the system
-- Activate SSL (Let's Encrypt)
+- Activate TLS (Let's Encrypt)
 - Install Adminer
-- Change keyboard setup (current is Swedish)
 - Change system timezone
 - Set new password to the Linux system (user: wordpress)
 
