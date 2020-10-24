@@ -283,7 +283,7 @@ rm -f "$SCRIPTS/wordpress_configuration.sh"
 rm -f "$SCRIPTS/additional_apps.sh"
 rm -f "$SCRIPTS/adduser.sh"
 find /root /home/"$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete
-find "WPATH" -type f \( -name 'results' -o -name '*.sh*' \) -delete
+find "$WPATH" -type f \( -name 'results' -o -name '*.sh*' \) -delete
 sed -i "s|instruction.sh|wordpress.sh|g" /home/"$UNIXUSER"/.bash_profile
 
 truncate -s 0 \
