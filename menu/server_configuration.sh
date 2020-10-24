@@ -51,7 +51,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "DDclient Configuration" "(Use ddclient for automatic DDNS updates)" OFF \
 "Activate TLS" "(Enable HTTPS with Let's Encrypt)" "$ACTIVATE_TLS_SWITCH" \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
-"SMTP Mail" "(Enable beeing notified by mail from your server)" OFF \
+"SMTP Mail" "(Enable beeing notified by mail from your server)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Static IP"*)
