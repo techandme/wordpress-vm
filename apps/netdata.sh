@@ -24,7 +24,7 @@ debug_mode
 root_check
 
 # Can't be run as pure root user
-if [ -z $UNIXUSER ]
+if [ -z "$UNIXUSER" ]
 then
     msg_box "You can't run this script as a pure root user. You need to issue the following command:
 sudo -u regular_user sudo bash $SCRIPTS/menu.sh
