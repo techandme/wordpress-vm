@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="SMTP Relay with msmtp"
-SCRIPT_EXPLAINER="This script will setup an SMTP Relay (Mail Server) in your Nextcloud Server \
+SCRIPT_EXPLAINER="This script will setup an SMTP Relay (Mail Server) in your Wordpress Server \
 that will be used to send emails about failed cronjob's and such."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/20.04_testing/lib.sh)
@@ -144,7 +144,7 @@ fi
 # Check if auth should be set or not
 if [ -z "$MAIL_USERNAME" ]
 then
-    MAIL_USERNAME="no-reply@nextcloudvm.com"
+    MAIL_USERNAME="no-reply@hanssonit.com"
 
 # Without AUTH (Username and Password)
 cat << MSMTP_CONF > /etc/msmtprc
@@ -166,7 +166,7 @@ from            $MAIL_USERNAME
 
 account default : $MAIL_USERNAME
 
-### DO NOT REMOVE THIS LINE (it's used in one of the functions in on the Nextcloud Server)
+### DO NOT REMOVE THIS LINE (it's used in one of the functions in on the Wordpress Server)
 # recipient=$RECIPIENT
 MSMTP_CONF
 else
@@ -192,7 +192,7 @@ password        $MAIL_PASSWORD
 
 account default : $MAIL_USERNAME
 
-### DO NOT REMOVE THIS LINE (it's used in one of the functions in on the Nextcloud Server)
+### DO NOT REMOVE THIS LINE (it's used in one of the functions in on the Wordpress Server)
 # recipient=$RECIPIENT
 
 MSMTP_CONF
@@ -226,8 +226,8 @@ $(grep -v password /etc/msmtprc)
 -------------------------------------------
 
 Best regards
-The NcVM team
-https://nextcloudvm.com"
+The Wordpress VM team
+https://www.hanssonit.com"
 
 # Define the mail-program
 echo 'set sendmail="/usr/bin/msmtp -t"' > /etc/mail.rc
