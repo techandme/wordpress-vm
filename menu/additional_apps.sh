@@ -44,8 +44,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
 "Midnight Commander" "(CLI file manager)" OFF \
-"Webmin" "(Server GUI like Cpanel)" "$STARTUP_SWITCH" \
-
+"Webmin" "(Server GUI like Cpanel)" "$STARTUP_SWITCH" 3>&1 1>&2 2>&3)
 case "$choice" in
     *"Fail2ban  "*)
         print_text_in_color "$ICyan" "Downloading the Fail2ban Menu..."
