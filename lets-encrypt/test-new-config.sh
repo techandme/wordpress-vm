@@ -15,9 +15,9 @@ debug_mode
 
 # Activate the new config
 msg_box "We will now test that everything is OK"
-ln -s "$SITES_AVALIABLE"/"$1" "$SITES_ENABLED"/"$1"
-rm -f "$SITES_AVALIABLE"/"$HTTP_CONF"
-rm -f "$SITES_AVALIABLE"/"$TLS_CONF"
+ln -s "$SITES_AVAILABLE"/"$1" "$SITES_ENABLED"/"$1"
+rm -f "$SITES_AVAILABLE"/"$HTTP_CONF"
+rm -f "$SITES_AVAILABLE"/"$TLS_CONF"
 rm -f "$NGINX_DEF"
 rm -f "$SITES_ENABLED"/default
 if restart_webserver

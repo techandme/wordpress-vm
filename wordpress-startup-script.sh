@@ -333,7 +333,7 @@ msg_box "TIPS & TRICKS:
 3. To update this server just type: sudo bash /var/scripts/update.sh
 4. Install apps, configure Wordpress, and server: sudo bash $SCRIPTS/menu.sh
 5. To allow access to wp-login.php, please edit your nginx virtual hosts file.
-   You can find it here: $HTTP_CONF"
+   You can find it here: $HTTP_CONF
 
 BUGS & SUPPORT:
 - SUPPORT: https://shop.hanssonit.se/product/premium-support-per-30-minutes/
