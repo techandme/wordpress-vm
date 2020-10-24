@@ -102,7 +102,7 @@ if [ -d $ADMINERDIR ]
 then
     print_text_in_color "$ICyan" "Updating Adminer..."
     rm -f "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
-    wget -q "http://www.adminer.org/latest.php" -O "$ADMINERDIR"/latest.php
+    curl_to_dir "http://www.adminer.org" "latest.php" "$ADMINERDIR"
     ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 fi
 

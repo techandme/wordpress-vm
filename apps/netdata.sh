@@ -30,6 +30,7 @@ then
 sudo -u regular_user sudo bash $SCRIPTS/menu.sh
 
 Then choose Additional Apps --> Netdata"
+fi
 
 # Check if netdata is already installed
 if ! [ -d /etc/netdata ]

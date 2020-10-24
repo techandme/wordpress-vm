@@ -263,7 +263,7 @@ sudo systemctl enable nginx.service
 
 # Download TLSv 1.3 modified nginx.conf
 rm -f /etc/nginx/nginx.conf
-check_command wget -q $STATIC/nginx.conf -P /etc/nginx/
+curl_to_dir $STATIC nginx.conf /etc/nginx/
 
 # Install PHP 7.4
 apt install -y \
@@ -438,11 +438,11 @@ echo "WP PASS: $WPADMINPASS" > /var/adminpass.txt
 chown wordpress:wordpress /var/adminpass.txt
 
 # Create welcome post
-check_command wget -q $STATIC/welcome.txt
-sed -i "s|wordpress_user_login|$WPADMINUSER|g" welcome.txt
-sed -i "s|wordpress_password_login|$WPADMINPASS|g" welcome.txt
+curl_to_dir "$STATIC" welcome.txt "$SCRIPTS"
+sed -i "s|wordpress_user_login|$WPADMINUSER|g" "$SCRIPTS"/welcome.txt
+sed -i "s|wordpress_password_login|$WPADMINPASS|g" "$SCRIPTS"/welcome.txt
 wp_cli_cmd post create ./welcome.txt --post_title='T&M Hansson IT AB - Welcome' --post_status=publish --path=$WPATH
-rm -f welcome.txt
+rm -f "$SCRIPTS"/welcome.txt
 wp_cli_cmd post delete 1 --force
 
 # Show version
