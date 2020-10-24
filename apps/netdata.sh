@@ -29,7 +29,7 @@ then
     msg_box "You can't run this script as a pure root user. You need to issue the following command:
 sudo -u regular_user sudo bash $SCRIPTS/menu.sh
 
-Then choose "Additional Apps --> Netdata"
+Then choose Additional Apps --> Netdata"
 
 # Check if netdata is already installed
 if ! [ -d /etc/netdata ]
