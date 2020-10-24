@@ -237,7 +237,7 @@ then
     # Send email
     send_mail \
 "Wordpress update finished!" \
-"Please don't shutdown or reboot your server during the update! $(date +%T)"
+"Please the maintenance mode will now be deactivated. $(date +%T)"
     wp_cli_cmd maintenance-mode deactivate
 fi
 
