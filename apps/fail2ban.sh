@@ -6,16 +6,13 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Fail2ban"
-SCRIPT_EXPLAINER="Fail2ban provides extra Brute Force protextion for Nextcloud.
-It scans the Nextcloud and SSH log files and bans IPs that show malicious \
-signs -- too many password failures, seeking for exploits, etc. 
+SCRIPT_EXPLAINER="Fail2ban provides extra Brute Force protextion for Wordpress.
+It scans the Wordpress and SSH log files and bans IPs that show malicious \
+signs -- too many password failures, seeking for exploits, etc.
 Generally Fail2Ban is then used to update firewall rules to \
 reject the IP addresses for a specified amount of time."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/20.04_testing/lib.sh)
-
-# Get all needed variables from the library
-nc_update
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
