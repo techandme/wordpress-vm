@@ -917,9 +917,6 @@ for db in $databases; do
     fi
 done
 
-# Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
-bash $SECURE & spinner_loading
-
 # Put IP adress in /etc/issue (shown before the login)
 if [ -f /etc/issue ]
 then
