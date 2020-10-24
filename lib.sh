@@ -100,11 +100,11 @@ ROOT_PROFILE="/root/.bash_profile"
 # Database
 SHUF=$(shuf -i 25-29 -n 1)
 WPDBNAME=wordpress_by_www_hanssonit_se
-WPADMINUSER=wordpress_db_user
+WPADMINUSER=wordpress_gui_admin_user
 MARIADB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 WPDBPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 NEWMARIADBPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-WPDBUSER=wordpress_user
+WPDBUSER=wordpress_db_user
 WPADMINPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 MYCNF=/root/.my.cnf
 wpdb() {

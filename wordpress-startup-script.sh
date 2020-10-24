@@ -135,7 +135,6 @@ download_script STATIC change_db_pass
 download_script STATIC wordpress
 download_script MENU menu
 download_script MENU server_configuration
-download_script MENU wordpress_configuration
 download_script MENU additional_apps
 
 # Make $SCRIPTS excutable
@@ -193,9 +192,6 @@ sleep 3
 # Server configurations
 bash $SCRIPTS/server_configuration.sh
 
-# Nextcloud configuration
-bash $SCRIPTS/wordpress_configuration.sh
-
 # Install apps
 bash $SCRIPTS/additional_apps.sh
 
@@ -217,7 +213,7 @@ done
 if check_command echo "$UNIXUSER:$UNIX_PASSWORD" | sudo chpasswd
 then
     msg_box "The new password for the current CLI user in Ubuntu ($UNIXUSER) is now set to: $UNIX_PASSWORD
-    
+
 This is used when you login to the Ubuntu CLI."
 fi
 unset UNIX_PASSWORD
@@ -279,7 +275,6 @@ rm -f "$SCRIPTS/instruction.sh"
 rm -f "$SCRIPTS/static_ip.sh"
 rm -f "$SCRIPTS/lib.sh"
 rm -f "$SCRIPTS/server_configuration.sh"
-rm -f "$SCRIPTS/wordpress_configuration.sh"
 rm -f "$SCRIPTS/additional_apps.sh"
 rm -f "$SCRIPTS/adduser.sh"
 find /root /home/"$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete

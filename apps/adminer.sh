@@ -47,7 +47,7 @@ apt update -q4 & spinner_loading
 install_if_not adminer
 curl_to_dir "http://www.adminer.org" "latest.php" "$ADMINERDIR"
 curl_to_dir "https://raw.githubusercontent.com/Niyko/Hydra-Dark-Theme-for-Adminer/master" "adminer.css" "$ADMINERDIR"
-ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
+check_command mv "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 
 # Only add TLS 1.3 on Ubuntu later than 20.04
 if version 20.04 "$DISTRO" 20.04.10
