@@ -106,12 +106,6 @@ WPDBPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 NEWMARIADBPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 WPDBUSER=wordpress_db_user
 WPADMINPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-wpdb() {
-WPCONFIGDB=$(grep "DB_PASSWORD" /var/www/html/wordpress/wp-config.php | awk '{print $3}' | cut -d "'" -f2)
-}
-mycnfpw() {
-MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
-}
 
 # Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
 AUT_UPDATES_TIME="18"
