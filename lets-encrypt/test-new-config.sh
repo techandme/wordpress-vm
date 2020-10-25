@@ -15,6 +15,8 @@ debug_mode
 
 # Activate the new config
 msg_box "We will now test that everything is OK"
+rm -f "$SITES_AVAILABLE"/"$1"
+rm -f "$SITES_ENABLED"/"$1"
 ln -s "$SITES_AVAILABLE"/"$1" "$SITES_ENABLED"/"$1"
 rm -f "$SITES_AVAILABLE"/"$HTTP_CONF"
 rm -f "$SITES_AVAILABLE"/"$TLS_CONF"
