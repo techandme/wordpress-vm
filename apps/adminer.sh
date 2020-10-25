@@ -56,8 +56,8 @@ fi
 
 cat << ADMINER_CREATE > "$ADMINER_CONF"
 server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
+    listen 444 ssl http2;
+    listen [::]:444 ssl http2;
 
     ## Your website name goes here.
     # server_name example.com;
