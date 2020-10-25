@@ -27,10 +27,9 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    check_external_ip # Check that the script can see the external IP (apache fails otherwise)
+    check_command apt-get purge adminer -y
     rm -f $ADMINER_CONF
     rm -rf $ADMINERDIR
-    check_command apt-get purge adminer -y
     restart_webserver
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
@@ -130,10 +129,7 @@ server {
 }
 ADMINER_CREATE
 
-# Enable config
-ln -s /etc/nginx/sites-available/adminer.conf /etc/nginx/sites-enabled/adminer.conf
-
-if ! service nginx restart
+if ! systemctl restart nginx.service
 then
 msg_box "Nginx could not restart...
 The script will exit."

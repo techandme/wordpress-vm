@@ -146,7 +146,7 @@ PHP_FPM_SOCK=/var/run/php"$PHPVER"-fpm-wordpress.sock
 
 # Adminer
 ADMINERDIR=/usr/share/adminer
-ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
+ADMINER_CONF="$SITES_ENABLED/adminer.conf"
 
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
