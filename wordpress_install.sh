@@ -429,7 +429,7 @@ chown wordpress:wordpress /var/adminpass.txt
 curl_to_dir "$STATIC" welcome.txt "$SCRIPTS"
 sed -i "s|wordpress_user_login|$WPADMINUSER|g" "$SCRIPTS"/welcome.txt
 sed -i "s|wordpress_password_login|$WPADMINPASS|g" "$SCRIPTS"/welcome.txt
-wp_cli_cmd post create ./welcome.txt --post_title='T&M Hansson IT AB - Welcome' --post_status=publish
+wp_cli_cmd post create "$SCRIPTS"/welcome.txt --post_title='T&M Hansson IT AB - Welcome' --post_status=publish
 rm -f "$SCRIPTS"/welcome.txt
 wp_cli_cmd post delete 1 --force
 
