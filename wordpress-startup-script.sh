@@ -258,8 +258,14 @@ echo "WP PASS: $NEWWPADMINPASS"
 
 # Change servername in Nginx
 server_name=$(echo "$FQDN" | cut -d "/" -f3)
-sed -i "s|# server_name .*|server_name $server_name;|g" "$SITES_ENABLED"/"$HTTP_CONF"
-sed -i "s|# server_name .*|server_name $server_name;|g" "$SITES_ENABLED"/"$TLS_CONF"
+if [ -f $SITES_ENABLED"/"$HTTP_CONF" ]
+then
+    sed -i "s|# server_name .*|server_name $server_name;|g" "$SITES_ENABLED"/"$HTTP_CONF"
+fi
+if [ -f $SITES_ENABLED"/"$TLS_CONF" ]
+then
+    sed -i "s|# server_name .*|server_name $server_name;|g" "$SITES_ENABLED"/"$TLS_CONF"
+fi
 restart_webserver
 
 # Show current administrators
