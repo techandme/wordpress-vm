@@ -388,7 +388,7 @@ then
 fi
 
 # Create wp-cli.yml
-touch $WPATH/wp-cli.yml
+touch "$WPATH/wp-cli.yml"
 cat << YML_CREATE > "$WPATH/wp-cli.yml"
 nginx_modules:
   - mod_rewrite
@@ -398,8 +398,7 @@ YML_CREATE
 wp_cli_cmd --info
 
 # Download Wordpress
-cd "$WPATH"
-check_command wp_cli_cmd core download --force --debug --path="$WPATH"
+check_command wp_cli_cmd core download --force --debug
 
 # Populate DB
 mysql -uroot -p"$MARIADB_PASS" <<MYSQL_SCRIPT
@@ -441,7 +440,7 @@ chown wordpress:wordpress /var/adminpass.txt
 curl_to_dir "$STATIC" welcome.txt "$SCRIPTS"
 sed -i "s|wordpress_user_login|$WPADMINUSER|g" "$SCRIPTS"/welcome.txt
 sed -i "s|wordpress_password_login|$WPADMINPASS|g" "$SCRIPTS"/welcome.txt
-wp_cli_cmd post create ./welcome.txt --post_title='T&M Hansson IT AB - Welcome' --post_status=publish --path=$WPATH
+wp_cli_cmd post create ./welcome.txt --post_title='T&M Hansson IT AB - Welcome' --post_status=publish
 rm -f "$SCRIPTS"/welcome.txt
 wp_cli_cmd post delete 1 --force
 
@@ -469,7 +468,7 @@ run_script STATIC wp-permissions
 
 # Hardening security
 # create .htaccess to protect uploads directory
-cat > $WPATH/wp-content/uploads/.htaccess <<'EOL'
+cat > "$WPATH/wp-content/uploads/.htaccess" <<'EOL'
 # Protect this file
 <Files .htaccess>
 Order Deny,Allow
@@ -498,7 +497,7 @@ echo "RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F,L]"
 echo "RewriteRule ^wp-includes/theme-compat/ - [F,L]"
 echo "# RewriteRule ^wp-includes/* - [F,L]" # Block EVERYTHING
 echo "</IfModule>"
-} >> $WPATH/.htaccess
+} >> "$WPATH/.htaccess"
 
 # Set up a php-fpm pool with a unixsocket
 cat << POOL_CONF > "$PHP_POOL_DIR"/wordpress.conf
@@ -533,9 +532,9 @@ mv "$PHP_POOL_DIR"/www.conf "$PHP_POOL_DIR"/www.conf.backup
 restart_webserver
 
 # Force wp-cron.php (updates WooCommerce Services and run Scheluded Tasks)
-if [ -f $WPATH/wp-cron.php ]
+if [ -f "$WPATH/wp-cron.php" ]
 then
-    chmod +x $WPATH/wp-cron.php
+    chmod +x "$WPATH/wp-cron.php"
     crontab -u www-data -l | { cat; echo "14 */1 * * * php -f $WPATH/wp-cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 fi
 
