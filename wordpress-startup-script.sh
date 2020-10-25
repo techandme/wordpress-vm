@@ -96,7 +96,7 @@ fi
 true
 SCRIPT_NAME="Wordpress startup script"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh 
+source /var/scripts/fetch_lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -152,8 +152,7 @@ msg_box"This script will do the final setup for you
 - Create a new WP user
 - Upgrade the system
 - Activate TLS (Let's Encrypt)
-- Install Adminer
-- Change system timezone
+- Install different apps of your liking
 - Set new password to the Linux system (user: wordpress)
 
 ############### T&M Hansson IT AB -  $(date +"%Y") ###############"
