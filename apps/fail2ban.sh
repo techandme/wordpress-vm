@@ -36,6 +36,7 @@ else
     fail2ban-client unban --all
     check_command apt-get purge fail2ban -y
     rm -Rf /etc/fail2ban/
+    wp_cli_cmd plugin remove wp-fail2ban
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -58,7 +59,7 @@ check_command update-rc.d fail2ban disable
 wp_cli_cmd plugin install wp-fail2ban --activate
 curl https://plugins.svn.wordpress.org/wp-fail2ban/trunk/filters.d/wordpress-hard.conf > /etc/fail2ban/filter.d/wordpress.conf
 
-if [ ! -f $AUTHLOG ]
+if [ ! -f "$AUTHLOG" ]
 then
     print_text_in_color "$IRed" "$AUTHLOG not found"
     exit 1
@@ -76,12 +77,12 @@ cat << FCONF > /etc/fail2ban/jail.d/wordpress.conf
 ignoreip = 127.0.0.1/8 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8
 
 # "bantime" is the number of seconds that a host is banned.
-bantime  = $BANTIME_
+bantime  = "$BANTIME_"
 
 # A host is banned if it has generated "maxretry" during the last "findtime"
 # seconds.
-findtime = $FINDTIME_
-maxretry = $MAXRETRY_
+findtime = "$FINDTIME_"
+maxretry = "$MAXRETRY_"
 
 #
 # ACTIONS
@@ -101,7 +102,7 @@ action = %(action_)s
 [sshd]
 
 enabled  = true
-maxretry = $MAXRETRY_
+maxretry = "$MAXRETRY_"
 
 #
 # HTTP servers
@@ -111,10 +112,10 @@ maxretry = $MAXRETRY_
 enabled  = true
 port     = http,https
 filter   = wordpress
-logpath  = $AUTHLOG
-maxretry = $MAXRETRY_
-findtime = $FINDTIME_
-bantime  = $BANTIME_
+logpath  = "$AUTHLOG"
+maxretry = "$MAXRETRY_"
+findtime = "$FINDTIME_"
+bantime  = "$BANTIME_"
 FCONF
 
 # Update settings
