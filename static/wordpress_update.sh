@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/20.04_testing/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/20.04_testing/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -36,12 +36,6 @@ fi
 
 # Ubuntu 16.04 is deprecated
 check_distro_version
-
-cd "$WPATH"
-send_mail \
-"Wordpress update started!" \
-"Please don't shutdown or reboot your server during the update! $(date +%T)"
-wp_cli_cmd maintenance-mode activate
 
 # Hold PHP if Ondrejs PPA is used
 print_text_in_color "$ICyan" "Fetching latest packages with apt..."
@@ -176,34 +170,10 @@ then
    fi
 fi
 
-# Check if Wordpress is installed in the regular path or try to find it
-if [ ! -d "$WPATH" ]
-then
-    WPATH="/var/www/$(find /var/www/* -type d | grep wp | head -1 | cut -d "/" -f4)"
-    export WPATH
-    if [ ! -d "$WPATH"/wp-admin ]
-    then
-        WPATH="/var/www/$(find /var/www/* -type d | grep wp | tail -1 | cut -d "/" -f4)"
-        export WPATH
-        if [ ! -d "$WPATH"/wp-admin ]
-        then
-            WPATH="/var/www/html/$(find /var/www/html/* -type d | grep wp | head -1 | cut -d "/" -f5)"
-            export WPATH
-            if [ ! -d "$WPATH"/wp-admin ]
-            then
-                WPATH="/var/www/html/$(find /var/www/html/* -type d | grep wp | tail -1 | cut -d "/" -f5)"
-                export WPATH
-                if [ ! -d "$WPATH"/wp-admin ]
-                then
-msg_box "Wordpress doesn't seem to be installed in the regular path. We tried to find it, but didn't succeed.
-
-The script will now exit."
-                    exit 1
-                fi
-            fi
-        fi
-    fi
-fi
+send_mail \
+"Wordpress update started!" \
+"Please don't shutdown or reboot your server during the update! $(date +%T)"
+wp_cli_cmd maintenance-mode activate
 
 # Set secure permissions
 if [ ! -f "$SECURE" ]
@@ -221,7 +191,6 @@ fi
 wp cli update
 
 # Upgrade Wordpress and apps
-cd "$WPATH"
 wp_cli_cmd db export mysql_backup.sql
 mv "$WPATH"/mysql_backup.sql /var/www/mysql_backup.sql
 chown root:root /var/www/mysql_backup.sql
