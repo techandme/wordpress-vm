@@ -136,7 +136,7 @@ The script will exit."
     exit 1
 else
 msg_box "Adminer was sucessfully installed and can be reached here:
-http://$ADDRESS:81
+https://$ADDRESS:444
 You can download more plugins and get more information here:
 https://www.adminer.org
 Your MariaDB connection information can be found in $WPATH/wp-config.php
