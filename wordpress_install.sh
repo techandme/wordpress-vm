@@ -423,7 +423,7 @@ PHP
 # Install Wordpress
 check_command wp_cli_cmd core install --url=http://"$ADDRESS"/ --title=Wordpress --admin_user=$WPADMINUSER --admin_password="$WPADMINPASS" --admin_email=no-reply@hanssonit.se --skip-email
 echo "WP PASS: $WPADMINPASS" > /var/adminpass.txt
-chown wordpress:wordpress /var/adminpass.txt
+chown "$UNIXUSER":"$UNIXUSER" /var/adminpass.txt
 
 # Create welcome post
 curl_to_dir "$STATIC" welcome.txt "$SCRIPTS"

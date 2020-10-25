@@ -21,7 +21,7 @@ Please keep it somewhere safe.
 
 To login to MariaDB,, simply type 'mysql -u root' from your CLI.
 Authentication happens with the UNIX socket. In other words,
-no password is needed as long as you have access to the root account"
+no password is needed as long as you have access to the root account."
     exit 0
 else
     print_text_in_color "$IRed" "Changing MARIADB root password failed."
