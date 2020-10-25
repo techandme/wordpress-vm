@@ -37,6 +37,11 @@ fi
 # Ubuntu 16.04 is deprecated
 check_distro_version
 
+send_mail \
+"Wordpress update started!" \
+"Please don't shutdown or reboot your server during the update! $(date +%T)"
+wp_cli_cmd maintenance-mode activate
+
 # Hold PHP if Ondrejs PPA is used
 print_text_in_color "$ICyan" "Fetching latest packages with apt..."
 apt update -q4 & spinner_loading
@@ -169,11 +174,6 @@ then
        sed -i "s|techandme|wordpress|g" /home/"$CURRUSR"/.profile
    fi
 fi
-
-send_mail \
-"Wordpress update started!" \
-"Please don't shutdown or reboot your server during the update! $(date +%T)"
-wp_cli_cmd maintenance-mode activate
 
 # Set secure permissions
 if [ ! -f "$SECURE" ]
