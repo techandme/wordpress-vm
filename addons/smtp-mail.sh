@@ -233,13 +233,13 @@ https://www.hanssonit.com"
 echo 'set sendmail="/usr/bin/msmtp -t"' > /etc/mail.rc
 
 # Test mail
-if ! echo -e "$TEST_MAIL" | mail -s "Test email from your NcVM" "$RECIPIENT" >> /var/log/msmtp 2>&1
+if ! echo -e "$TEST_MAIL" | mail -s "Test email from your Wordpress Server" "$RECIPIENT" >> /var/log/msmtp 2>&1
 then
     # Test another version
     echo 'set sendmail="/usr/bin/msmtp"' > /etc/mail.rc
 
     # Second try
-    if ! echo -e "$TEST_MAIL" | mail -s "Test email from your NcVM" "$RECIPIENT" >> /var/log/msmtp 2>&1
+    if ! echo -e "$TEST_MAIL" | mail -s "Test email from your Wordpress Server" "$RECIPIENT" >> /var/log/msmtp 2>&1
     then
         # Fail message
         msg_box "It seems like something has failed.
