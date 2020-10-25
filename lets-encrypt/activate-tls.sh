@@ -94,57 +94,51 @@ install_certbot
 #Fix issue #28
 tls_conf="$SITES_AVAILABLE/$TLSDOMAIN.conf"
 
-# Check if "$tls.conf" exists, and if, then delete
-if [ -f "$tls_conf" ]
+# Check if "$TLS.conf" exists, and if, then delete
+if [ -f "$TLS_CONF" ]
 then
-    rm -f "$tls_conf"
+    rm -f "$TLS_CONF"
 fi
 
 # Check current PHP version --> PHPVER
-# To get the correct version for the Apache conf file
+# To get the correct version for the Nginx conf file
 check_php
 
-# Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 20.04.10
-then
-    TLS13="+TLSv1.3"
-fi
-
 # Generate wordpress_tls_domain.conf
-if [ ! -f "$tls_conf" ]
+if [ ! -f "$TLS_CONF" ]
 then
-    touch "$tls_conf"
-    print_text_in_color "$IGreen" "$tls_conf was successfully created."
+    touch "$TLS_CONF"
+    print_text_in_color "$IGreen" "$TLS_CONF was successfully created."
     sleep 2
-    cat << TLS_CREATE > "$tls_conf"
+    cat << TLS_CREATE > "$TLS_CONF"
 server {
         listen 80;
-        server_name $domain;
-        return 301 https://$domain\$request_uri;
+        server_name $TLSDOMAIN;
+        return 301 https://$TLSDOMAIN\$request_uri;
 }
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
-    
+
     ## Your website name goes here.
-    server_name $domain;
+    server_name $TLSDOMAIN;
     ## Your only path reference.
     root $WPATH;
     ## This should be in your http block and if it is, it's not needed here.
     index index.php;
-    
+
     resolver $GATEWAY;
-    
+
      ## Show real IP behind proxy (change to the proxy IP)
 #    set_real_ip_from  $GATEWAY/24;
 #    set_real_ip_from  $GATEWAY;
 #    set_real_ip_from  2001:0db8::/32;
 #    real_ip_header    X-Forwarded-For;
 #    real_ip_recursive on;
-    
+
     # certs sent to the client in SERVER HELLO are concatenated in ssl_certificate
-    ssl_certificate $CERTFILES/$domain/fullchain.pem;
-    ssl_certificate_key $CERTFILES/$domain/privkey.pem;
+    ssl_certificate $CERTFILES/$TLSDOMAIN/fullchain.pem;
+    ssl_certificate_key $CERTFILES/$TLSDOMAIN/privkey.pem;
     ssl_session_timeout 1d;
     ssl_session_cache shared:SSL:50m;
     ssl_session_tickets off;
@@ -160,7 +154,7 @@ server {
     # fetch OCSP records from URL in ssl_certificate and cache them
     ssl_stapling on;
     ssl_stapling_verify on;
-    
+
     location / {
         try_files \$uri \$uri/ /index.php?\$args;
             # https://veerasundar.com/blog/2014/09/setting-expires-header-for-assets-nginx/
@@ -177,7 +171,7 @@ server {
     }
     location ~ /\\. {
         access_log off;
-        log_not_found off; 
+        log_not_found off;
         deny all;
     }
     location = /favicon.ico {
