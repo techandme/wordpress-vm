@@ -137,9 +137,9 @@ The script will exit."
 else
 msg_box "Adminer was sucessfully installed and can be reached here:
 http://$ADDRESS:81
-You can download more plugins and get more information here: 
+You can download more plugins and get more information here:
 https://www.adminer.org
-Your MariaDB connection information can be found in /root/.my.cnf
+Your MariaDB connection information can be found in $WPATH/wp-config.php
 In case you try to access Adminer and get 'Forbidden' you need to change the IP in:
 $ADMINER_CONF"
 fi

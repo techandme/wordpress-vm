@@ -201,14 +201,6 @@ done
 #install_if_not geoip-database
 #install_if_not libgeoip1
 
-# Write MARIADB pass to file and keep it safe
-{
-echo "[client]"
-echo "password='$MARIADB_PASS'"
-} > "$MYCNF"
-chmod 0600 $MYCNF
-chown root:root $MYCNF
-
 # Install MariDB repos
 install_if_not software-properties-common
 curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash -s -- --mariadb-server-version="mariadb-10.5" --skip-maxscale
@@ -219,12 +211,6 @@ sudo debconf-set-selections <<< "mariadb-server-10.5 mysql-server/root_password 
 sudo debconf-set-selections <<< "mariadb-server-10.5 mysql-server/root_password_again password $MARIADB_PASS"
 apt update -q4 & spinner_loading
 install_if_not mariadb-server-10.5
-
-# Prepare for Wordpress installation
-# https://blog.v-gar.de/2017/02/en-solved-error-1698-28000-in-mysqlmariadb/
-mysql -u root mysql -p"$MARIADB_PASS" -e "UPDATE user SET plugin='' WHERE user='root';"
-mysql -u root mysql -p"$MARIADB_PASS" -e "UPDATE user SET password=PASSWORD('$MARIADB_PASS') WHERE user='root';"
-mysql -u root -p"$MARIADB_PASS" -e "flush privileges;"
 
 # mysql_secure_installation
 install_if_not expect

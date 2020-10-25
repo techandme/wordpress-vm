@@ -18,14 +18,14 @@ DEBUG=0
 debug_mode
 
 # Change MARIADB Password
-if mysqladmin -u root -p"$MARIADBMYCNFPASS" password "$NEWMARIADBPASS" > /dev/null 2>&1
+if mysqladmin -u root password "$NEWMARIADBPASS" > /dev/null 2>&1
 then
-    print_text_in_color "$IGreen" "Your new MARIADB root password is: $NEWMARIADBPASS"
-    cat << LOGIN > "$MYCNF"
-[client]
-password='$NEWMARIADBPASS'
-LOGIN
-    chmod 0600 $MYCNF
+    msg_box "Your new MARIADB root password is: $NEWMARIADBPASS
+Please keep it somewhere safe.
+
+To login to MariaDB,, simply type 'mysql -u root' from your CLI.
+Authentication happens with the UNIX socket. In other words,
+no password is needed as long as you have access to the root account"
     exit 0
 else
     print_text_in_color "$IRed" "Changing MARIADB root password failed."
