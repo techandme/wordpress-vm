@@ -350,6 +350,10 @@ LOGIN:
 Login to Wordpress in your browser:
 - IP: $ADDRESS
 - Hostname: $(hostname -f)
+
+If you get access 'Forbidden' while accessing wp-login.php, please allow your IP in:
+$SITES_ENABLED/your_active.conf
+
 ### PLEASE HIT OK TO REBOOT ###"
 
 # Reboot
