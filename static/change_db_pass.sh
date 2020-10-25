@@ -16,7 +16,7 @@ debug_mode
 # Change MARIADB Password
 if mysqladmin -u root password "$NEWMARIADBPASS" > /dev/null 2>&1
 then
-    msg_box "Your new MARIADB root password is: $NEWMARIADBPASS
+    msg_box "Your new MariaDB root password is: $NEWMARIADBPASS
 Please keep it somewhere safe.
 
 To login to MariaDB,, simply type 'mysql -u root' from your CLI.
