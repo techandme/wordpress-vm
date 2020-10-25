@@ -717,11 +717,9 @@ sleep 1
 fi
 
 # Generate $NGINX_CONF
-if [ -f $NGINX_CONF ];
-        then
-        rm $NGINX_CONF
-	touch $NGINX_CONF
-        cat << NGINX_CREATE > $NGINX_CONF
+rm -f $NGINX_CONF
+touch $NGINX_CONF
+cat << NGINX_CREATE > $NGINX_CONF
 user www-data;
 worker_processes 2;
 pid /run/nginx.pid;
@@ -819,15 +817,12 @@ http {
 NGINX_CREATE
 print_text_in_color "$IGreen" "$NGINX_CONF was successfully created"
 sleep 1
-fi
 
-# Generate $NGINX_CONF
-if [ -f "$NGINX_DEF" ];
-then
-    rm -f $NGINX_DEF
-    rm -f "$SITES_ENABLED"/default
-    touch $NGINX_DEF
-    cat << NGINX_DEFAULT > "$NGINX_DEF"
+# Generate $NGINX_DEF
+rm -f $NGINX_DEF
+rm -f "$SITES_ENABLED"/default
+touch $NGINX_DEF
+cat << NGINX_DEFAULT > "$NGINX_DEF"
 ##
 # You should look at the following URL's in order to grasp a solid understanding
 # of Nginx configuration files in order to fully unleash the power of Nginx.
@@ -887,7 +882,6 @@ server {
 NGINX_DEFAULT
 print_text_in_color "$IGreen" "$NGINX_DEF was successfully created"
 sleep 1
-fi
 
 # Enable new config
 ln -s "$NGINX_DEF" "$SITES_ENABLED"/default
