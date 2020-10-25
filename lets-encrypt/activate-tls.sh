@@ -20,7 +20,7 @@ root_check
 # Information
 msg_box "Before we begin the installation of your TLS certificate you need to:
 
-1. Have a domain like: cloud.example.com
+1. Have a domain like: wordpress.example.com
 If you want to get a domain at a fair price, please check this out: https://store.binero.se/?lang=en-US
 
 2. Open port 80 and 443 against this servers IP address: $ADDRESS.
@@ -117,82 +117,105 @@ then
     print_text_in_color "$IGreen" "$tls_conf was successfully created."
     sleep 2
     cat << TLS_CREATE > "$tls_conf"
-<VirtualHost *:80>
-    RewriteEngine On
-    RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
-</VirtualHost>
-
-<VirtualHost *:443>
-### YOUR SERVER ADDRESS ###
-
-    ServerAdmin admin@$TLSDOMAIN
-    ServerName $TLSDOMAIN
-
-### SETTINGS ###
-    <FilesMatch "\.php$">
-        SetHandler "proxy:unix:$PHP_FPM_SOCK|fcgi://localhost"
-    </FilesMatch>
-
-    # Intermediate configuration
-    Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
-    SSLEngine               on
-    SSLCompression          off
-    SSLProtocol             -all +TLSv1.2 $TLS13
-    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384 
-    SSLHonorCipherOrder     off
-    SSLSessionTickets       off
-    ServerSignature         off
-
-    # Logs
-    LogLevel warn
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
-    ErrorLog ${APACHE_LOG_DIR}/error.log
-
-    DocumentRoot $NCPATH
-
-    <Directory $NCPATH>
-    Options Indexes FollowSymLinks
-    AllowOverride All
-    Require all granted
-    Satisfy Any
-    </Directory>
-
-    <IfModule mod_dav.c>
-    Dav off
-    </IfModule>
-
-    SetEnv HOME $NCPATH
-    SetEnv HTTP_HOME $NCPATH
-
-    # The following lines prevent .htaccess and .htpasswd files from being
-    # viewed by Web clients.
-    <Files ".ht*">
-    Require all denied
-    </Files>
-
-    # Disable HTTP TRACE method.
-    TraceEnable off
-    # Disable HTTP TRACK method.
-    RewriteEngine On
-    RewriteCond %{REQUEST_METHOD} ^TRACK
-    RewriteRule .* - [R=405,L]
-
-    # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
-    <IfModule mod_reqtimeout.c>
-    RequestReadTimeout body=0
-    </IfModule>
-
-### LOCATION OF CERT FILES ###
-
-    SSLCertificateChainFile $CERTFILES/$TLSDOMAIN/chain.pem
-    SSLCertificateFile $CERTFILES/$TLSDOMAIN/cert.pem
-    SSLCertificateKeyFile $CERTFILES/$TLSDOMAIN/privkey.pem
-    SSLOpenSSLConfCmd DHParameters $DHPARAMS_TLS
-</VirtualHost>
-
-### EXTRAS ###
-    SSLUseStapling On
-    SSLStaplingCache "shmcb:logs/ssl_stapling(32768)"
+server {
+        listen 80;
+        server_name $domain;
+        return 301 https://$domain\$request_uri;
+}
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    
+    ## Your website name goes here.
+    server_name $domain;
+    ## Your only path reference.
+    root $WPATH;
+    ## This should be in your http block and if it is, it's not needed here.
+    index index.php;
+    
+    resolver $GATEWAY;
+    
+     ## Show real IP behind proxy (change to the proxy IP)
+#    set_real_ip_from  $GATEWAY/24;
+#    set_real_ip_from  $GATEWAY;
+#    set_real_ip_from  2001:0db8::/32;
+#    real_ip_header    X-Forwarded-For;
+#    real_ip_recursive on;
+    
+    # certs sent to the client in SERVER HELLO are concatenated in ssl_certificate
+    ssl_certificate $CERTFILES/$domain/fullchain.pem;
+    ssl_certificate_key $CERTFILES/$domain/privkey.pem;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:50m;
+    ssl_session_tickets off;
+    # Diffie-Hellman parameter for DHE ciphersuites, recommended 4096 bits
+    ssl_dhparam $DHPARAMS;
+    # intermediate configuration. tweak to your needs.
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers on;
+    # HSTS (ngx_http_headers_module is required) (15768000 seconds = 6 months)
+    add_header Strict-Transport-Security max-age=15768000;
+    # OCSP Stapling ---
+    # fetch OCSP records from URL in ssl_certificate and cache them
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    
+    location / {
+        try_files \$uri \$uri/ /index.php?\$args;
+            # https://veerasundar.com/blog/2014/09/setting-expires-header-for-assets-nginx/
+            if (\$request_uri ~* ".(ico|css|js|gif|jpe?g|png)$") {
+                expires 15d;
+                access_log off;
+                add_header Pragma public;
+                add_header Cache-Control "public";
+                break;
+            }
+    }
+    location /.well-known {
+        root /usr/share/nginx/html;
+    }
+    location ~ /\\. {
+        access_log off;
+        log_not_found off; 
+        deny all;
+    }
+    location = /favicon.ico {
+                log_not_found off;
+                access_log off;
+    }
+    location = /robots.txt {
+                allow all;
+                log_not_found off;
+                access_log off;
+    }
+    location ~* \.php$ {
+        location ~ \wp-login.php$ {
+                    allow $GATEWAY/24;
+		    #allow $ADDRESS;
+		    #allow $WAN4IP;
+                    deny all;
+                    include fastcgi.conf;
+                    fastcgi_intercept_errors on;
+                    fastcgi_pass unix:/var/run/php/php7.2-fpm-wordpress.sock; 
+        }
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                try_files \$uri =404;
+                fastcgi_index index.php;
+                include fastcgi.conf;
+                include fastcgi_params;
+                fastcgi_intercept_errors on;
+                fastcgi_pass unix:$PHP_FPM_SOCK;
+                fastcgi_buffers 16 16k;
+                fastcgi_buffer_size 32k;
+                fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+                fastcgi_param SCRIPT_NAME \$fastcgi_script_name;
+     }
+     location ~* \\.(js|css|png|jpg|jpeg|gif|ico)$ {
+                expires max;
+                log_not_found off;
+     }
+}
 TLS_CREATE
 fi
 
