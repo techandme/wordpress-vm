@@ -34,6 +34,7 @@ else
     # Removal
     print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
     fail2ban-client unban --all
+    check_command update-rc.d fail2ban disable
     check_command apt-get purge fail2ban -y
     rm -Rf /etc/fail2ban/
     wp_cli_cmd plugin delete wp-fail2ban
@@ -77,12 +78,12 @@ cat << FCONF > /etc/fail2ban/jail.d/wordpress.conf
 ignoreip = 127.0.0.1/8 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8
 
 # "bantime" is the number of seconds that a host is banned.
-bantime  = "$BANTIME_"
+bantime  = $BANTIME_
 
 # A host is banned if it has generated "maxretry" during the last "findtime"
 # seconds.
-findtime = "$FINDTIME_"
-maxretry = "$MAXRETRY_"
+findtime = $FINDTIME_
+maxretry = $MAXRETRY_
 
 #
 # ACTIONS
@@ -102,7 +103,7 @@ action = %(action_)s
 [sshd]
 
 enabled  = true
-maxretry = "$MAXRETRY_"
+maxretry = $MAXRETRY_
 
 #
 # HTTP servers
@@ -112,10 +113,10 @@ maxretry = "$MAXRETRY_"
 enabled  = true
 port     = http,https
 filter   = wordpress
-logpath  = "$AUTHLOG"
-maxretry = "$MAXRETRY_"
-findtime = "$FINDTIME_"
-bantime  = "$BANTIME_"
+logpath  = $AUTHLOG
+maxretry = $MAXRETRY_
+findtime = $FINDTIME_
+bantime  = $BANTIME_
 FCONF
 
 # Update settings
