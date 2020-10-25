@@ -21,7 +21,7 @@ source /var/scripts/lib.sh
 else
     printf "You don't seem to have a working internet connection, and \
 /var/scripts/lib.sh is missing so you can't run this script."
-    printf "Please report this to https://github.com/nextcloud/vm/issues/"
+    printf "Please report this to https://github.com/techandme/wordpress-vm/issues/"
     exit 1
 fi
 
