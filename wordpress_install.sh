@@ -209,9 +209,12 @@ echo "password='$MARIADB_PASS'"
 chmod 0600 $MYCNF
 chown root:root $MYCNF
 
-# Install MARIADB
+# Install MariDB repos
 install_if_not software-properties-common
 curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash -s -- --mariadb-server-version="mariadb-10.5" --skip-maxscale
+# Avoid i386 since we use x64
+sed -i "s|deb http|deb [arch=amd64] http|g" /etc/apt/sources.list.d/mariadb.list
+# USed debconf to install it
 sudo debconf-set-selections <<< "mariadb-server-10.5 mysql-server/root_password password $MARIADB_PASS"
 sudo debconf-set-selections <<< "mariadb-server-10.5 mysql-server/root_password_again password $MARIADB_PASS"
 apt update -q4 & spinner_loading
@@ -263,7 +266,7 @@ sudo systemctl enable nginx.service
 
 # Download TLSv 1.3 modified nginx.conf
 rm -f /etc/nginx/nginx.conf
-curl_to_dir $STATIC nginx.conf /etc/nginx/
+curl_to_dir "$STATIC" nginx.conf /etc/nginx/
 
 # Install PHP 7.4
 apt install -y \
