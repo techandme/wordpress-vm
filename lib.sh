@@ -79,7 +79,7 @@ MENU_GUIDE="Navigate with the [ARROW] keys and confirm by pressing [ENTER]. Canc
 RUN_LATER_GUIDE="You can view this script later by running 'sudo bash $SCRIPTS/menu.sh'."
 
 # Repo
-GITHUB_REPO="https://raw.githubusercontent.com/techandme/wordpress-vm/20.04_testing"
+GITHUB_REPO="https://raw.githubusercontent.com/techandme/wordpress-vm/master"
 STATIC="$GITHUB_REPO/static"
 LETS_ENC="$GITHUB_REPO/lets-encrypt"
 APP="$GITHUB_REPO/apps"

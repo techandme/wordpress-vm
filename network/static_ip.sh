@@ -9,7 +9,7 @@ then
 true
 SCRIPT_NAME="Static IP"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/20.04_testing/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
  # If we have internet, then use the latest variables from the lib remote file
 elif [ -f /var/scripts/lib.sh ]
 then

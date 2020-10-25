@@ -11,7 +11,7 @@ that provides a flexible, powerful, and convenient set of file and directory ope
 It is capable of running in either a console or an xterm under X11.
 Its basic operation is easily mastered by the novice while providing a rich feature set and extensive customization."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/20.04_testing/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

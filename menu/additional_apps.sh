@@ -6,7 +6,7 @@
 true
 SCRIPT_NAME="Additional Apps Menu"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/20.04_testing/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

@@ -8,7 +8,7 @@ true
 SCRIPT_NAME="DynDNS with ddclient"
 SCRIPT_EXPLAINER="This script lets you setup DynDNS by using the Linux ddclient software."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/20.04_testing/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
