@@ -36,7 +36,7 @@ else
     fail2ban-client unban --all
     check_command apt-get purge fail2ban -y
     rm -Rf /etc/fail2ban/
-    wp_cli_cmd plugin remove wp-fail2ban
+    wp_cli_cmd plugin delete wp-fail2ban
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
