@@ -152,7 +152,7 @@ update-grub
 # Remove update lists
 rm /var/lib/apt/lists/* -r
 
-# Fix bug in nextcloud.sh
+# Fix bug in wordpress.sh
 CURRUSR="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
 if grep -q "6.ifcfg.me" $SCRIPTS/wordpress.sh &>/dev/null
 then

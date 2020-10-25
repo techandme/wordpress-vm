@@ -95,13 +95,10 @@ the server will be rebooted. After the reboot, please login as usual and run thi
             if dpkg-reconfigure tzdata
             then
                 # Change timezone in php and logging if the startup script not exists
-                if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
+                if ! [ -f "$SCRIPTS/wordpress-startup-script.sh" ]
                 then
                     # Change timezone in PHP
                     sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
-
-                    # Change timezone for logging
-                    nextcloud_occ config:system:set logtimezone --value="$(cat /etc/timezone)"
                     msg_box "The timezone was changed successfully." "$SUBTITLE"
                 fi
             fi

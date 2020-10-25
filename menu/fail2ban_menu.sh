@@ -38,7 +38,7 @@ case "$choice" in
     ;;&
     *"Fail2ban-Statuscheck"*)
         SUBTITLE="Fail2ban Statuscheck"
-        if is_this_installed fail2ban && [ -f "/etc/fail2ban/filter.d/nextcloud.conf" ]
+        if is_this_installed fail2ban && [ -f "/etc/fail2ban/filter.d/wordpress.conf" ]
         then
             msg_box "$(fail2ban-client status wordpress && fail2ban-client status sshd && iptables -L -n)" "$SUBTITLE"
         else
