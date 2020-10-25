@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -13,7 +13,7 @@ true
 DEBUG=0
 debug_mode
 
-rm "/home/$UNIXUSER/.profile"
+rm -f "/home/$UNIXUSER/.profile"
 
 cat <<-UNIXUSER-PROFILE > "$UNIXUSER_PROFILE"
 # ~/.profile: executed by the command interpreter for login shells.

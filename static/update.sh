@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -23,6 +23,6 @@ fi
 mkdir -p "$SCRIPTS"
 
 # Delete, download, run
-run_static_script wordpress_update
+run_script STATIC wordpress_update
 
 exit

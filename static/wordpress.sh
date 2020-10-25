@@ -19,9 +19,10 @@ echo "LAN IPv4: $ADDRESS"
 echo
 echo "Wordpress Login:"
 echo "$WPADMINUSER"
-echo "WP PASS: 'grep WP PASS: /var/adminpass.txt'"
+echo "Type this in your CLI to get the password:"
+echo "grep 'WP PASS:' /var/adminpass.txt"
 echo
 echo "MySQL/MariaDB:"
-echo "USER: root"
-echo "PASS: 'cat /root/.my.cnf'"
+echo "Login happens with the OS root account."
+echo "Simply type 'mysql -u root' from your CLI"
 echo

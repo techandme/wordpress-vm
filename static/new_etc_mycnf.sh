@@ -2,7 +2,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/techandme/wordpress-vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -61,6 +61,7 @@ tmpdir  = /tmp
 lc_messages_dir = /usr/share/mysql
 lc_messages = en_US
 skip-external-locking
+skip-name-resolve
 #
 # Instead of skip-networking the default is now to listen only on
 # localhost which is more compatible and is not less secure.
@@ -70,13 +71,13 @@ bind-address		= 127.0.0.1
 #
 max_connections		= 100
 connect_timeout		= 5
-wait_timeout		= 600
+wait_timeout		= 300
 max_allowed_packet	= 16M
 thread_cache_size       = 128
 sort_buffer_size	= 4M
 bulk_insert_buffer_size	= 16M
-tmp_table_size		= 32M
-max_heap_table_size	= 32M
+tmp_table_size		= 64M
+max_heap_table_size	= 64M
 #
 # * MyISAM
 #
@@ -94,8 +95,10 @@ read_rnd_buffer_size	= 1M
 # * Query Cache Configuration
 #
 # Cache only tiny result sets, so we can fit more in the query cache.
-query_cache_limit		= 128K
-query_cache_size		= 64M
+query_cache_type = 1
+query_cache_limit = 256K
+query_cache_min_res_unit = 2k
+query_cache_size = 80M
 # for more write intensive setups, set to DEMAND or OFF
 #query_cache_type		= DEMAND
 #
@@ -115,7 +118,7 @@ log_warnings		= 2
 # Enable the slow query log to see queries with especially long duration
 #slow_query_log[={0|1}]
 slow_query_log_file	= /var/log/mysql/mariadb-slow.log
-long_query_time = 10
+long_query_time		= 10
 #log_slow_rate_limit	= 1000
 log_slow_verbosity	= query_plan
 #log-queries-not-using-indexes
@@ -208,9 +211,7 @@ max_allowed_packet	= 16M
 default-character-set = utf8mb4
 #no-auto-rehash	# faster start of mysql but no tab completion
 [mariadb]
-innodb_use_fallocate = 1
 innodb_use_atomic_writes = 1
-innodb_use_trim = 1
 [isamchk]
 key_buffer		= 16M
 #
