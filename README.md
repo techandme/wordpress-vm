@@ -4,7 +4,7 @@
 ### https://www.techandme.se
 ### https://www.hanssonit.se/wordpress-vm/
 
-- Ubuntu 20.04
+- Ubuntu 20.04 Server
 - MariaDB 10.5
 - NGINX 1.18
 - PHP-FPM 7.4
