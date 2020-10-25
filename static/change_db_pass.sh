@@ -19,7 +19,7 @@ then
     msg_box "Your new MariaDB root password is: $NEWMARIADBPASS
 Please keep it somewhere safe.
 
-To login to MariaDB,, simply type 'mysql -u root' from your CLI.
+To login to MariaDB, simply type 'mysql -u root' from your CLI.
 Authentication happens with the UNIX socket. In other words,
 no password is needed as long as you have access to the root account."
     exit 0

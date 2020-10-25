@@ -112,9 +112,10 @@ then
     sleep 2
     cat << TLS_CREATE > "$tls_conf"
 server {
-        listen 80;
-        server_name $TLSDOMAIN;
-        return 301 https://$TLSDOMAIN\$request_uri;
+    listen 80;
+    listen [::]:80
+    server_name $TLSDOMAIN;
+    return 301 https://$TLSDOMAIN\$request_uri;
 }
 server {
     listen 443 ssl http2;
@@ -140,7 +141,7 @@ server {
     ssl_certificate $CERTFILES/$TLSDOMAIN/fullchain.pem;
     ssl_certificate_key $CERTFILES/$TLSDOMAIN/privkey.pem;
     ssl_session_timeout 1d;
-    ssl_session_cache shared:SSL:50m;
+    ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
     ssl_session_tickets off;
     # Diffie-Hellman parameter for DHE ciphersuites, recommended 4096 bits
     ssl_dhparam $DHPARAMS_TLS;
@@ -148,10 +149,9 @@ server {
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
     ssl_prefer_server_ciphers on;
-    # HSTS (ngx_http_headers_module is required) (15768000 seconds = 6 months)
-    add_header Strict-Transport-Security max-age=15768000;
-    # OCSP Stapling ---
-    # fetch OCSP records from URL in ssl_certificate and cache them
+    # HSTS (ngx_http_headers_module is required) (63072000 seconds)
+    add_header Strict-Transport-Security "max-age=63072000" always;
+    # OCSP stapling
     ssl_stapling on;
     ssl_stapling_verify on;
 
