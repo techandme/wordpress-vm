@@ -94,10 +94,10 @@ install_certbot
 #Fix issue #28
 tls_conf="$SITES_AVAILABLE/$TLSDOMAIN.conf"
 
-# Check if "$TLS.conf" exists, and if, then delete
-if [ -f "$TLS_CONF" ]
+# Check if "$tls.conf" exists, and if, then delete
+if [ -f "$tls_conf" ]
 then
-    rm -f "$TLS_CONF"
+    rm -f "$tls_conf"
 fi
 
 # Check current PHP version --> PHPVER
@@ -105,12 +105,12 @@ fi
 check_php
 
 # Generate wordpress_tls_domain.conf
-if [ ! -f "$TLS_CONF" ]
+if [ ! -f "$tls_conf" ]
 then
-    touch "$TLS_CONF"
-    print_text_in_color "$IGreen" "$TLS_CONF was successfully created."
+    touch "$tls_conf"
+    print_text_in_color "$IGreen" "$tls_conf was successfully created."
     sleep 2
-    cat << TLS_CREATE > "$TLS_CONF"
+    cat << TLS_CREATE > "$tls_conf"
 server {
         listen 80;
         server_name $TLSDOMAIN;
