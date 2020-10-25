@@ -24,7 +24,7 @@
 <h6><a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7jILePiqQz3_Msw/wordpress-vm?currentPageId=W7jILePiqQz3_Ms7" target="_blank" rel="noopener">Login details</a></h6>
 <p><strong>Note:</strong> Webmin is installed when you run the setup script. To access Webmin externally you have to open port 10000 in your router.</p>
 <hr />
-<h3><a href=":81">Access Adminer</a></h3>
+<h3><a href=":444">Access Adminer</a></h3>
 <p><strong>Note:</strong> Please accept the warning in the browser if you connect via HTTPS.<br /><strong>Note:</strong> You have to remove the ending slash (/) for the port number to work.</p>
 <h6><a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7jILePiqQz3_Msw/wordpress-vm?currentPageId=W7jILePiqQz3_Ms8" target="_blank" rel="noopener">Login details</a></h6>
 <p><strong>Note:</strong> Your external IP is set as approved, all other access is forbidden.</p>
