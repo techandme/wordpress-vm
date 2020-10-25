@@ -360,8 +360,11 @@ The script will now exit."
     fi
 fi
 # If everytthing seems OK, then run wp cli
+cd "$WPATH"
 export WP_CLI_CACHE_DIR="$WPATH/.wp-cli/cache"
 check_command sudo -u www-data /usr/local/bin/wp --path="$WPATH" "$@";
+# Go back to user dir
+cd
 }
 
 # Check if process is runnnig: is_process_running dpkg
