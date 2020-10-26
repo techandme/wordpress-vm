@@ -905,6 +905,11 @@ run_main_script() {
 run_script GITHUB_REPO "${1}"
 }
 
+# Backwards compatibility (2020-10-25)
+run_static_script() {
+run_script STATIC "${1}"
+}
+
 version(){
     local h t v
 
