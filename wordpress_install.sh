@@ -602,6 +602,12 @@ server {
                 log_not_found off;
                 access_log off;
     }
+    
+    location = /xmlrpc.php {
+                deny all;
+                access_log off;
+                log_not_found off;
+    }
 
     location ~* \.php$ {
         location ~ \wp-login.php$ {
@@ -613,6 +619,7 @@ server {
                     fastcgi_intercept_errors on;
                     fastcgi_pass unix:$PHP_FPM_SOCK;
         }
+
                 fastcgi_split_path_info ^(.+\.php)(/.+)$;
                 try_files \$uri =404;
                 fastcgi_index index.php;
@@ -680,6 +687,12 @@ server {
                 allow all;
                 log_not_found off;
                 access_log off;
+    }
+    
+     location = /xmlrpc.php {
+                deny all;
+                access_log off;
+                log_not_found off;
     }
 
     location ~* \.php$ {
