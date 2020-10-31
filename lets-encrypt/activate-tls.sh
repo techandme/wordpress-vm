@@ -183,6 +183,11 @@ server {
                 log_not_found off;
                 access_log off;
     }
+    location = /xmlrpc.php {
+                deny all;
+                access_log off;
+                log_not_found off;
+    }
     location ~* \.php$ {
         location ~ \wp-login.php$ {
                     allow $GATEWAY/24;
