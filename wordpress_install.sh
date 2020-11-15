@@ -154,6 +154,9 @@ fi
 # Install needed network
 install_if_not netplan.io
 
+# Needed for MariaDB
+install_if_not apt-transport-https
+
 # Install build-essentials to get make
 install_if_not build-essential
 
