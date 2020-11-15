@@ -542,7 +542,7 @@ restart_webserver() {
 if is_this_installed nginx
 then
     check_command systemctl restart nginx.service
-elif if is_this_installed apache2
+elif is_this_installed apache2
 then
     check_command systemctl restart apache2.service
 fi
