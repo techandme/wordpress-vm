@@ -256,7 +256,7 @@ echo "WP PASS: $NEWWPADMINPASS"
 } > /var/adminpass.txt
 
 # Change servername in Nginx
-server_name=$(echo "$FQDN" | cut -d "/" -f3)
+server_name=$(hostname -f)
 if [ -f "$SITES_ENABLED"/"$HTTP_CONF" ]
 then
     sed -i "s|# server_name .*|server_name $server_name;|g" "$SITES_ENABLED"/"$HTTP_CONF"
