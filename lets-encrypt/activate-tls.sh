@@ -113,7 +113,7 @@ then
     cat << TLS_CREATE > "$tls_conf"
 server {
     listen 80;
-    listen [::]:80
+    listen [::]:80;
     server_name $TLSDOMAIN;
     return 301 https://$TLSDOMAIN\$request_uri;
 }
@@ -183,11 +183,16 @@ server {
                 log_not_found off;
                 access_log off;
     }
+    location = /xmlrpc.php {
+                deny all;
+                access_log off;
+                log_not_found off;
+    }
     location ~* \.php$ {
         location ~ \wp-login.php$ {
                     allow $GATEWAY/24;
-		    allow $ADDRESS;
-		    allow $WAN4IP;
+		    # allow $ADDRESS;
+		    # allow $WAN4IP;
                     deny all;
                     include fastcgi.conf;
                     fastcgi_intercept_errors on;

@@ -539,7 +539,13 @@ fi
 }
 
 restart_webserver() {
-check_command systemctl restart nginx.service
+if is_this_installed nginx
+then
+    check_command systemctl restart nginx.service
+elif is_this_installed apache2
+then
+    check_command systemctl restart apache2.service
+fi
 if is_this_installed php"$PHPVER"-fpm
 then
     check_command systemctl restart php"$PHPVER"-fpm.service
@@ -905,6 +911,11 @@ run_main_script() {
 run_script GITHUB_REPO "${1}"
 }
 
+# Backwards compatibility (2020-10-25)
+run_static_script() {
+run_script STATIC "${1}"
+}
+
 version(){
     local h t v
 
@@ -999,7 +1010,7 @@ send_mail() {
         if [ -n "$RECIPIENT" ]
         then
             print_text_in_color "$ICyan" "Sending '$1' to $RECIPIENT"
-            echo -e "$2" | mail --subject "NcVM - $1" "$RECIPIENT"
+            echo -e "$2" | mail --subject "$(hostname -f) - $1" "$RECIPIENT"
         fi
     fi
 }

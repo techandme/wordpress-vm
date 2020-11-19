@@ -154,6 +154,9 @@ fi
 # Install needed network
 install_if_not netplan.io
 
+# Needed for MariaDB
+install_if_not apt-transport-https
+
 # Install build-essentials to get make
 install_if_not build-essential
 
@@ -579,14 +582,6 @@ server {
     # HSTS (ngx_http_headers_module is required) (63072000 seconds)
     add_header Strict-Transport-Security "max-age=63072000" always;
 
-    # HSTS (ngx_http_headers_module is required) (15768000 seconds = 6 months)
-    add_header Strict-Transport-Security max-age=15768000;
-
-    # OCSP Stapling ---
-    # fetch OCSP records from URL in ssl_certificate and cache them
-    ssl_stapling on;
-    ssl_stapling_verify on;
-
     ## verify chain of trust of OCSP response using Root CA and Intermediate certs
     # ssl_trusted_certificate /path/to/root_CA_cert_plus_intermediates;
 
@@ -610,6 +605,12 @@ server {
                 log_not_found off;
                 access_log off;
     }
+    
+    location = /xmlrpc.php {
+                deny all;
+                access_log off;
+                log_not_found off;
+    }
 
     location ~* \.php$ {
         location ~ \wp-login.php$ {
@@ -621,6 +622,7 @@ server {
                     fastcgi_intercept_errors on;
                     fastcgi_pass unix:$PHP_FPM_SOCK;
         }
+
                 fastcgi_split_path_info ^(.+\.php)(/.+)$;
                 try_files \$uri =404;
                 fastcgi_index index.php;
@@ -688,6 +690,12 @@ server {
                 allow all;
                 log_not_found off;
                 access_log off;
+    }
+    
+     location = /xmlrpc.php {
+                deny all;
+                access_log off;
+                log_not_found off;
     }
 
     location ~* \.php$ {
@@ -765,8 +773,10 @@ http {
 	# SSL Settings
 	##
 
-	ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
-	ssl_prefer_server_ciphers on;
+        # intermediate configuration
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+        ssl_prefer_server_ciphers off;
 
 	##
 	# Logging Settings
