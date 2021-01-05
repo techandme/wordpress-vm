@@ -353,6 +353,9 @@ Login to Wordpress in your browser:
 If you get access 'Forbidden' while accessing wp-login.php, please allow your IP in:
 $SITES_ENABLED/your_active.conf
 
+More information can be found here:
+https://bit.ly/3pWq3bB
+
 ### PLEASE HIT OK TO REBOOT ###"
 
 # Reboot
