@@ -184,6 +184,13 @@ server {
                 access_log off;
     }
     location = /xmlrpc.php {
+                allow 122.248.245.244/32;
+                allow 54.217.201.243/32;
+                allow 54.232.116.4/32;
+                allow 192.0.80.0/20;
+                allow 192.0.96.0/20;
+                allow 192.0.112.0/20;
+                allow 195.234.108.0/22;
                 deny all;
                 access_log off;
                 log_not_found off;
