@@ -206,14 +206,14 @@ done
 
 # Install MariDB repos
 install_if_not software-properties-common
-curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash -s -- --mariadb-server-version="mariadb-10.5" --skip-maxscale
+curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash -s -- --mariadb-server-version="mariadb-10.6" --skip-maxscale
 # Avoid i386 since we use x64
 sed -i "s|deb http|deb [arch=amd64] http|g" /etc/apt/sources.list.d/mariadb.list
 # USed debconf to install it
-sudo debconf-set-selections <<< "mariadb-server-10.5 mysql-server/root_password password $MARIADB_PASS"
-sudo debconf-set-selections <<< "mariadb-server-10.5 mysql-server/root_password_again password $MARIADB_PASS"
+sudo debconf-set-selections <<< "mariadb-server-10.6 mysql-server/root_password password $MARIADB_PASS"
+sudo debconf-set-selections <<< "mariadb-server-10.6 mysql-server/root_password_again password $MARIADB_PASS"
 apt update -q4 & spinner_loading
-install_if_not mariadb-server-10.5
+install_if_not mariadb-server-10.6
 
 # mysql_secure_installation
 install_if_not expect
