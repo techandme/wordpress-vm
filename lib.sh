@@ -580,7 +580,7 @@ fi
 rm -f "$SITES_ENABLED"/default.conf
 rm -f "$SITES_ENABLED"/default
 systemctl reload nginx.service
-default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
+default_le="--key-type ecdsa --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
 #http-01
 local  standalone="certbot certonly --standalone --pre-hook \"systemctl stop nginx.service\" --post-hook \"systemctl start nginx.service\" $default_le"
 #tls-alpn-01
