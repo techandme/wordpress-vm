@@ -5,7 +5,7 @@
 ### https://www.hanssonit.se/wordpress-vm/
 
 - Ubuntu 20.04 Server
-- MariaDB 10.5
+- MariaDB 10.6
 - NGINX 1.18
 - PHP-FPM 7.4
 - Latest Wordpress (updates automatically)
