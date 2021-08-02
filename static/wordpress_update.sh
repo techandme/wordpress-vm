@@ -190,6 +190,10 @@ else
     chmod +x "$SECURE"
 fi
 
+# Create WP-CLI CACHE DIR
+mkdir -p /var/www/.wp-cli/cache/
+chown www-data:www-data -R /var/www/.wp-cli/cache/
+
 # Upgrade WP-CLI
 wp cli update
 
