@@ -38,7 +38,7 @@ REPO=$(grep deb-src /etc/apt/sources.list | grep http | awk '{print $3}' | head 
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 # WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com) # as an alternative
-WANIP4=$(curl -s -k -m 5 https://ipv4bot.whatismyipaddress.com)
+WANIP4=$(curl -s -k -m 5 -4 https://api64.ipify.org)
 INTERFACES="/etc/netplan/01-netcfg.yaml"
 GATEWAY=$(ip route | grep default | awk '{print $3}')
 
