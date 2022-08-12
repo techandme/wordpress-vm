@@ -265,6 +265,7 @@ apt install -y \
 	php"$PHPVER"-mbstring \
 	php"$PHPVER"-xmlrpc \
 	php"$PHPVER"-gd \
+	php"$PHPVER"-intl \
 	php"$PHPVER"-xml \
 	php"$PHPVER"-mysql \
 	php"$PHPVER"-cli \
