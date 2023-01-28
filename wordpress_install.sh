@@ -82,14 +82,8 @@ download_script STATIC adduser
 bash $SCRIPTS/adduser.sh "wordpress_install.sh"
 rm -f $SCRIPTS/adduser.sh
 
-# Check distribution and version
-if ! version 20.04 "$DISTRO" 20.04.6
-then
-    msg_box "This script can only be run on Ubuntu 20.04 (server)."
-    exit 1
-fi
-# Use this when Ubuntu 18.04 is deprecated from the function:
-#check_distro_version
+# Do some checks
+check_distro_version
 check_universe
 check_multiverse
 
@@ -136,6 +130,10 @@ stop_if_installed php7.0-fpm
 stop_if_installed php7.1-fpm
 stop_if_installed php7.2-fpm
 stop_if_installed php7.3-fpm
+stop_if_installed php7.4-fpm
+stop_if_installed php8.0-fpm
+stop_if_installed php8.1-fpm
+stop_if_installed php8.2-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
 
@@ -206,14 +204,13 @@ done
 
 # Install MariDB repos
 install_if_not software-properties-common
-curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash -s -- --mariadb-server-version="mariadb-10.6" --skip-maxscale
+curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash -s -- --mariadb-server-version="mariadb-11.0" --skip-maxscale
 # Avoid i386 since we use x64
 sed -i "s|deb http|deb [arch=amd64] http|g" /etc/apt/sources.list.d/mariadb.list
 # USed debconf to install it
-sudo debconf-set-selections <<< "mariadb-server-10.6 mysql-server/root_password password $MARIADB_PASS"
-sudo debconf-set-selections <<< "mariadb-server-10.6 mysql-server/root_password_again password $MARIADB_PASS"
-apt update -q4 & spinner_loading
-install_if_not mariadb-server-10.6
+sudo debconf-set-selections <<< "mariadb-server-11.0 mysql-server/root_password password $MARIADB_PASS"
+sudo debconf-set-selections <<< "mariadb-server-11.0 mysql-server/root_password_again password $MARIADB_PASS"
+install_if_not mariadb-server-11.0
 
 # mysql_secure_installation
 install_if_not expect
@@ -257,7 +254,7 @@ sudo systemctl enable nginx.service
 rm -f /etc/nginx/nginx.conf
 curl_to_dir "$STATIC" nginx.conf /etc/nginx/
 
-# Install PHP 7.4
+# Install PHP 8.1
 apt install -y \
         php \
 	php"$PHPVER"-fpm \

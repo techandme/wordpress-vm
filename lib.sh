@@ -488,7 +488,7 @@ version(){
 if ! version 20.04 "$DISTRO" 22.04.10
 then
     print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between \
-18.04 - 22.04.4 to run this script."
+20.04 - 22.04.10 to run this script."
     print_text_in_color "$ICyan" "Please contact us to get support for upgrading your server:"
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
@@ -711,8 +711,8 @@ You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
 
-if ! version 20.04 "$DISTRO" 22.04.4; then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.4 to run this script."
+if ! version 20.04 "$DISTRO" 22.04.10; then
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
@@ -828,7 +828,7 @@ then
         fi
     fi
 else
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 22.04.6 to run this script."
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.6 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
@@ -1042,9 +1042,13 @@ then
    export PHPVER=7.4
 elif grep 8.0 <<< "$GETPHP" >/dev/null 2>&1
 then
-#   export PHPVER=8.0
-    msg_box "Sorry, but PHP 8 is not supported yet."
-    exit 1
+   export PHPVER=8.0
+elif grep 8.1 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.1
+elif grep 8.2 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.2
 fi
 
 export PHP_INI=/etc/php/"$PHPVER"/fpm/php.ini
