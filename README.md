@@ -4,10 +4,10 @@
 ### https://www.techandme.se
 ### https://www.hanssonit.se/wordpress-vm/
 
-- Ubuntu 20.04 Server
-- MariaDB 10.6
+- Ubuntu 22.04 Server
+- MariaDB 11.0
 - NGINX 1.18
-- PHP-FPM 7.4
+- PHP-FPM 8.1
 - Latest Wordpress (updates automatically)
 - WP-CLI
 - Redis Cache

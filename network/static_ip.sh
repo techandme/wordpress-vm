@@ -1,11 +1,10 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
 
 # Use local lib file in case there is no internet connection
 if printf "Testing internet connection..." && ping github.com -c 2 >/dev/null 2>&1
 then
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Static IP"
 # shellcheck source=lib.sh
@@ -13,7 +12,6 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
  # If we have internet, then use the latest variables from the lib remote file
 elif [ -f /var/scripts/lib.sh ]
 then
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Static IP"
 # shellcheck source=lib.sh
@@ -167,7 +165,7 @@ Just hit enter to choose the current NS1.\nYour current NS1 is: $DNS1")
         done
     fi
 
-    # Check if DNS is set manaully and set variables accordingly
+    # Check if DNS is set manually and set variables accordingly
     if [ -n "$NSIP1" ]
     then
         DNSs="$NSIP1"
@@ -188,15 +186,18 @@ network:
        $IFACE: #object name
          dhcp4: false # dhcp v4 disable
          dhcp6: false # dhcp v6 disable
-         addresses: [$LANIP] # client IP address
-         gateway4: $GATEWAYIP # gateway address
+         addresses: 
+         - $LANIP
+         routes:
+          - to: default
+            via: $GATEWAYIP
          nameservers:
-           addresses: [$DNSs] #name servers
+           addresses: [$DNSs]
 IPCONFIG
 
         msg_box "These are your settings, please make sure they are correct:
 
-$(cat /etc/netplan/01-netcfg.yaml)"
+$(cat /etc/netplan/wordpress.yaml)"
         netplan try
         set_systemd_resolved_dns "$IFACE"
     else
@@ -207,15 +208,18 @@ network:
        $IFACE2: #object name
          dhcp4: false # dhcp v4 disable
          dhcp6: false # dhcp v6 disable
-         addresses: [$LANIP] # client IP address
-         gateway4: $GATEWAY # gateway address
+         addresses: 
+         - $LANIP
+         routes:
+          - to: default
+            via: $GATEWAYIP
          nameservers:
-           addresses: [$DNSs] #name servers
+           addresses: [$DNSs]
 IPCONFIGnonvmware
 
         msg_box "These are your settings, please make sure they are correct:
 
-$(cat /etc/netplan/01-netcfg.yaml)"
+$(cat /etc/netplan/wordpress.yaml)"
         netplan try
         set_systemd_resolved_dns "$IFACE2"
     fi
@@ -223,7 +227,8 @@ $(cat /etc/netplan/01-netcfg.yaml)"
     if test_connection
     then
         sleep 1
-        msg_box "Static IP sucessfully set!"
+        msg_box "Static IP successfully set!"
+        rm -f /etc/netplan/00-installer-config.yaml
         break
     fi
 
