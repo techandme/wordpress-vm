@@ -130,7 +130,7 @@ NGINX_CONF="/etc/nginx/nginx.conf"
 NGINX_DEF="$SITES_AVAILABLE/default"
 
 # PHP-FPM
-PHPVER=7.4
+PHPVER=8.1
 PHP_FPM_DIR=/etc/php/$PHPVER/fpm
 PHP_INI=$PHP_FPM_DIR/php.ini
 PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
@@ -485,10 +485,10 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if ! version 18.04 "$DISTRO" 20.04.6
+if ! version 20.04 "$DISTRO" 22.04.10
 then
     print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between \
-18.04 - 20.04.4 to run this script."
+18.04 - 22.04.4 to run this script."
     print_text_in_color "$ICyan" "Please contact us to get support for upgrading your server:"
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
@@ -711,8 +711,8 @@ You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
 
-if ! version 18.04 "$DISTRO" 20.04.4; then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.4 to run this script."
+if ! version 20.04 "$DISTRO" 22.04.4; then
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.4 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
@@ -807,7 +807,7 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if version 18.04 "$DISTRO" 20.04.6
+if version 20.04 "$DISTRO" 22.04.10
 then
     print_text_in_color "$ICyan" "Testing if network is OK..."
     if ! netplan apply
@@ -828,7 +828,7 @@ then
         fi
     fi
 else
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.6 to run this script."
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 22.04.6 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
