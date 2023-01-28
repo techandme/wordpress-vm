@@ -931,7 +931,7 @@ done
 # Put IP adress in /etc/issue (shown before the login)
 if [ -f /etc/issue ]
 then
-    echo "\4" >> /etc/issue
+    printf '%s\n' "\4" >> /etc/issue
 fi
 
 # Force MOTD to show correct number of updates
