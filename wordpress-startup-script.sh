@@ -144,7 +144,6 @@ chown root:root -R $SCRIPTS
 # Allow wordpress to run figlet script
 chown "$UNIXUSER":"$UNIXUSER" $SCRIPTS/wordpress.sh
 
-clear
 msg_box"This script will do the final setup for you
 
 - Genereate new server SSH keys
@@ -156,7 +155,6 @@ msg_box"This script will do the final setup for you
 - Set new password to the Linux system (user: wordpress)
 
 ############### T&M Hansson IT AB -  $(date +"%Y") ###############"
-clear
 
 msg_box "PLEASE NOTE:
 [#] Please finish the whole setup. The server will reboot once done.
@@ -272,7 +270,6 @@ echo
 print_text_in_color "$ICyan" "This is the current administrator(s):"
 wp_cli_cmd user list --role=administrator --path="$WPATH"
 any_key "Press any key to continue..."
-clear
 
 # Cleanup 1
 rm -f "$SCRIPTS/change_db_pass.sh"
