@@ -138,13 +138,13 @@ download_script MENU server_configuration
 download_script MENU additional_apps
 
 # Make $SCRIPTS excutable
-chmod +x -R $SCRIPTS
-chown root:root -R $SCRIPTS
+chmod +x -R "$SCRIPTS"
+chown root:root -R "$SCRIPTS"
 
 # Allow wordpress to run figlet script
-chown "$UNIXUSER":"$UNIXUSER" $SCRIPTS/wordpress.sh
+chown "$UNIXUSER":"$UNIXUSER" "$SCRIPTS"/wordpress.sh
 
-msg_box"This script will do the final setup for you
+msg_box "This script will do the final setup for you
 
 - Genereate new server SSH keys
 - Set static IP
@@ -187,10 +187,10 @@ check_command bash "$SCRIPTS/change_db_pass.sh"
 sleep 3
 
 # Server configurations
-bash $SCRIPTS/server_configuration.sh
+bash "$SCRIPTS"/server_configuration.sh
 
 # Install apps
-bash $SCRIPTS/additional_apps.sh
+bash "$SCRIPTS"/additional_apps.sh
 
 
 ### Change passwords
@@ -316,7 +316,7 @@ ROOTNEWPROFILE
 
 # Upgrade system
 print_text_in_color "$ICyan" "System will now upgrade..."
-bash $SCRIPTS/update.sh
+bash "$SCRIPTS"/update.sh
 
 # Cleanup 2
 apt autoremove -y
