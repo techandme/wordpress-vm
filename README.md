@@ -5,7 +5,7 @@
 ### https://www.hanssonit.se/wordpress-vm/
 
 - Ubuntu 22.04 Server
-- MariaDB 11.0
+- MariaDB 10.10
 - NGINX 1.18
 - PHP-FPM 8.1
 - Latest Wordpress (updates automatically)
