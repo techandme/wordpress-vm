@@ -7,7 +7,7 @@ cat << WELCOME
 +-----------------------------------------------------------------------+
 |Thank you for downloading this Wordpress VM made by T&M Hansson IT AB! |
 |                                                                       |
-|This WordPress appliance comes with PHP 7.4, NGINX and Redis Cache for |
+|This WordPress appliance comes with PHP 8.1, NGINX and Redis Cache for |
 |best performance. The site(s) load very fast!                          |
 |                                                                       |
 |In order to configure everything you have to run the  setup script     |
