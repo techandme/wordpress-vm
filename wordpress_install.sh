@@ -525,7 +525,7 @@ mv "$PHP_POOL_DIR"/www.conf "$PHP_POOL_DIR"/www.conf.backup
 restart_webserver
 
 # Force wp-cron.php (updates WooCommerce Services and run Scheluded Tasks)
-if [ -f "$WPATH/wp-cron.php" ] && [ -f $WPATH/wp-cli.yml ]
+if [ -f "$WPATH/wp-cron.php" ] && [ -f "$WPATH/wp-cli.yml" ]
 then
     chmod +x "$WPATH/wp-cron.php"
     crontab -u www-data -l | { cat; echo "14 */1 * * * wp cron event run --due-now --path='/var/www/html/wordpress' > 2>&1"; } | crontab -u www-data -
