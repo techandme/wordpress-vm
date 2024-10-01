@@ -158,6 +158,9 @@ install_if_not apt-transport-https
 # Install build-essentials to get make
 install_if_not build-essential
 
+# Needed for cron(tab)
+install_if_not cron
+
 # Set DNS resolver
 # https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f    
 while :
@@ -522,10 +525,10 @@ mv "$PHP_POOL_DIR"/www.conf "$PHP_POOL_DIR"/www.conf.backup
 restart_webserver
 
 # Force wp-cron.php (updates WooCommerce Services and run Scheluded Tasks)
-if [ -f "$WPATH/wp-cron.php" ]
+if [ -f "$WPATH/wp-cron.php" ] && [ -f $WPATH/wp-cli.yml ]
 then
     chmod +x "$WPATH/wp-cron.php"
-    crontab -u www-data -l | { cat; echo "14 */1 * * * php -f $WPATH/wp-cron.php > /dev/null 2>&1"; } | crontab -u www-data -
+    crontab -u www-data -l | { cat; echo "14 */1 * * * wp cron event run --due-now --path='/var/www/html/wordpress' > 2>&1"; } | crontab -u www-data -
 fi
 
 # Install Figlet
