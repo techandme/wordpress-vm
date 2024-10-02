@@ -161,6 +161,9 @@ install_if_not build-essential
 # Needed for cron(tab)
 install_if_not cron
 
+# For TAB completion
+install_if_not bash-completion
+
 # Set DNS resolver
 # https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f    
 while :
@@ -246,12 +249,15 @@ run_script STATIC new_etc_mycnf
 install_if_not open-vm-tools
 
 # Install Nginx
-check_command yes | add-apt-repository ppa:nginx/stable
+check_command yes | add-apt-repository ppa:ondrej/nginx
 apt update -q4 && spinner_loading
 install_if_not nginx
 sudo systemctl stop nginx.service
 sudo systemctl start nginx.service
 sudo systemctl enable nginx.service
+
+# Enable Brotli
+install_if_not libnginx-mod-brotli
 
 # Download TLSv 1.3 modified nginx.conf
 rm -f /etc/nginx/nginx.conf
@@ -542,8 +548,10 @@ then
     touch "$SITES_AVAILABLE/$TLS_CONF"
     cat << TLS_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
 server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    brotli on;
 
     ## Your website name goes here.
     # server_name example.com;

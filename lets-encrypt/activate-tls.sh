@@ -104,6 +104,12 @@ fi
 # To get the correct version for the Nginx conf file
 check_php
 
+# Check Brotli support
+if is_this_installed libnginx-mod-brotli
+then
+    BROTLI_ON="brotli on;"
+fi
+
 # Generate wordpress_tls_domain.conf
 if [ ! -f "$tls_conf" ]
 then
@@ -118,8 +124,10 @@ server {
     return 301 https://$TLSDOMAIN\$request_uri;
 }
 server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    $BROTLI_ON
 
     ## Your website name goes here.
     server_name $TLSDOMAIN;
