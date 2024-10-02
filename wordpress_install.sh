@@ -257,8 +257,6 @@ sudo systemctl start nginx.service
 sudo systemctl enable nginx.service
 
 # Enable Brotli
-install_if_not libnginx-mod-http-brotli-filter
-install_if_not libnginx-mod-http-brotli-static
 install_if_not libnginx-mod-brotli
 
 # Download TLSv 1.3 modified nginx.conf
