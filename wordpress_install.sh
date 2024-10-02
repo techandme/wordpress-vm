@@ -164,6 +164,9 @@ install_if_not cron
 # For TAB completion
 install_if_not bash-completion
 
+# Text editor
+install_if_not nano
+
 # Set DNS resolver
 # https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f    
 while :
