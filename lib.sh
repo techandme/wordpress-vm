@@ -1049,6 +1049,15 @@ then
 elif grep 8.2 <<< "$GETPHP" >/dev/null 2>&1
 then
    export PHPVER=8.2
+elif grep 8.3 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.3
+elif grep 8.4 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.4
+elif grep 8.5 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.5
 fi
 
 export PHP_INI=/etc/php/"$PHPVER"/fpm/php.ini
