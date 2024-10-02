@@ -118,8 +118,9 @@ server {
     return 301 https://$TLSDOMAIN\$request_uri;
 }
 server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
 
     ## Your website name goes here.
     server_name $TLSDOMAIN;
