@@ -6,7 +6,7 @@
 
 - Ubuntu 22.04 Server
 - MariaDB 10.10
-- NGINX 1.18
+- NGINX 1.26 (with Brotli support)
 - PHP-FPM 8.1
 - Latest Wordpress (updates automatically)
 - WP-CLI
