@@ -34,7 +34,7 @@ https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
     fi
 fi
 
-# Ubuntu 18.04 is deprecated
+# Ubuntu 20.04 is deprecated
 check_distro_version
 
 # Make sure VMLOGS are present
@@ -75,7 +75,7 @@ then
     fi
 fi
 
-# Update Redis PHP extension (20.04 --> 20.04 since 18.04 already is deprecated in the top of this script)
+# Update Redis PHP extension (20.04 --> 20.04 since 20.04 already is deprecated in the top of this script)
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
 
 # Check current PHP version
