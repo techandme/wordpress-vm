@@ -121,6 +121,7 @@ server {
     listen 443 ssl;
     listen [::]:443 ssl;
     http2 on;
+    brotli on;
 
     ## Your website name goes here.
     server_name $TLSDOMAIN;
