@@ -30,7 +30,7 @@ apt-get autoremove -y
 
 # Enable Brotli
 install_if_not libnginx-mod-brotli
-if ! -[ /etc/nginx/modules-enabled/50-mod-http-brotli-filter.conf ]
+if ! [ -f /etc/nginx/modules-enabled/50-mod-http-brotli-filter.conf ]
 then
     echo "load_module modules/ngx_http_brotli_filter_module.so;" > /etc/nginx/modules-enabled/50-mod-http-brotli-filter.conf
 fi
