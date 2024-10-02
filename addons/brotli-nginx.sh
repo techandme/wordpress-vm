@@ -23,7 +23,7 @@ root_check
 install_if_not ppa-purge
 add-apt-repository ppa:ondrej/nginx
 apt update -q4 && spinner_loading
-apt-get update nginx -y
+apt-get upgrade nginx -y
 ppa-purge nginx/stable
 rm -f /etc/apt/sources.list.d/nginx*
 apt-get autoremove -y
