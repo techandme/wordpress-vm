@@ -246,7 +246,7 @@ run_script STATIC new_etc_mycnf
 install_if_not open-vm-tools
 
 # Install Nginx
-check_command yes | add-apt-repository ppa:nginx/stable
+check_command yes | add-apt-repository ppa:ondrej/nginx
 apt update -q4 && spinner_loading
 install_if_not nginx
 sudo systemctl stop nginx.service
@@ -542,8 +542,9 @@ then
     touch "$SITES_AVAILABLE/$TLS_CONF"
     cat << TLS_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
 server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
 
     ## Your website name goes here.
     # server_name example.com;
