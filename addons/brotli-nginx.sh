@@ -29,15 +29,13 @@ rm -f /etc/apt/sources.list.d/nginx*
 apt-get autoremove -y
 
 # Enable Brotli
-install_of_not sponge
 install_if_not libnginx-mod-brotli
-{
-echo "# https://docs.nginx.com/nginx/admin-guide/dynamic-modules/brotli/"
-echo "load_module modules/ngx_http_brotli_filter_module.so; # for compressing responses on-the-fly"
-echo "load_module modules/ngx_http_brotli_static_module.so; # for serving pre-compressed files"
-} | cat - "$NGINX_CONF" | sponge "$NGINX_CONF"
-apt-get purge sponge -y
+if ! -[ /etc/nginx/modules-enabled/50-mod-http-brotli-filter.conf ]
+then
+    echo "load_module modules/ngx_http_brotli_filter_module.so;" > /etc/nginx/modules-enabled/50-mod-http-brotli-filter.conf
+fi
 
+# Restart Nginx
 if nginx -t
 then
     systemctl restart nginx
