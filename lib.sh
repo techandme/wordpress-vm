@@ -130,7 +130,7 @@ NGINX_CONF="/etc/nginx/nginx.conf"
 NGINX_DEF="$SITES_AVAILABLE/default"
 
 # PHP-FPM
-PHPVER=8.4
+PHPVER=8.3
 PHP_FPM_DIR=/etc/php/$PHPVER/fpm
 PHP_INI=$PHP_FPM_DIR/php.ini
 PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
