@@ -23,7 +23,7 @@ root_check
 if [ ! -f /etc/nginx/modules-enabled/50-mod-http-brotli-filter.conf ]
 then
     install_if_not ppa-purge
-    ppa-purge nginx/stable
+    check_command yes | ppa-purge nginx/stable
     rm -f /etc/apt/sources.list.d/nginx*
     check_command yes | add-apt-repository ppa:ondrej/nginx
     apt update -q4 && spinner_loading
