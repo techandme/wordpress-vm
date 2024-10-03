@@ -23,9 +23,12 @@ root_check
 install_if_not ppa-purge
 ppa-purge nginx/stable
 rm -f /etc/apt/sources.list.d/nginx*
-add-apt-repository ppa:ondrej/nginx -y
+check_command yes | add-apt-repository ppa:ondrej/nginx
 apt update -q4 && spinner_loading
 install_if_not nginx
+systemctl stop nginx.service
+systemctl start nginx.service
+systemctl enable nginx.service
 apt-get autoremove -y
 
 # Enable Brotli
@@ -38,6 +41,7 @@ fi
 # Enable Brotli in config
 rm -f /etc/nginx/nginx.conf
 curl_to_dir "$STATIC" nginx.conf /etc/nginx/
+systemctl restart nginx.service
 
 # Restart Nginx
 if nginx -t
