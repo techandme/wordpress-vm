@@ -4,10 +4,10 @@
 ### https://www.techandme.se
 ### https://www.hanssonit.se/wordpress-vm/
 
-- Ubuntu 22.04 Server
-- MariaDB 10.10
+- Ubuntu 24.04 Server
+- MariaDB 11.4
 - NGINX 1.26 (with Brotli support)
-- PHP-FPM 8.1
+- PHP-FPM 8.4
 - Latest Wordpress (updates automatically)
 - WP-CLI
 - Redis Cache

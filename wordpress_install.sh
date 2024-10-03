@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 # Prefer IPv4 for apt
 echo 'Acquire::ForceIPv4 "true";' >> /etc/apt/apt.conf.d/99force-ipv4
@@ -213,13 +213,13 @@ done
 
 # Install MariDB repos
 install_if_not software-properties-common
-curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash -s -- --mariadb-server-version="mariadb-10.10" --skip-maxscale
+curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash -s -- --mariadb-server-version="mariadb-11.4" --skip-maxscale
 # Avoid i386 since we use x64
 sed -i "s|deb http|deb [arch=amd64] http|g" /etc/apt/sources.list.d/mariadb.list
 # USed debconf to install it
-sudo debconf-set-selections <<< "mariadb-server-10.10 mysql-server/root_password password $MARIADB_PASS"
-sudo debconf-set-selections <<< "mariadb-server-10.10 mysql-server/root_password_again password $MARIADB_PASS"
-install_if_not mariadb-server-10.10
+sudo debconf-set-selections <<< "mariadb-server-11.4 mysql-server/root_password password $MARIADB_PASS"
+sudo debconf-set-selections <<< "mariadb-server-11.4 mysql-server/root_password_again password $MARIADB_PASS"
+install_if_not mariadb-server-11.4
 
 # mysql_secure_installation
 install_if_not expect
@@ -255,16 +255,17 @@ install_if_not open-vm-tools
 check_command yes | add-apt-repository ppa:ondrej/nginx
 apt update -q4 && spinner_loading
 install_if_not nginx
-sudo systemctl stop nginx.service
-sudo systemctl start nginx.service
-sudo systemctl enable nginx.service
+systemctl stop nginx.service
+systemctl start nginx.service
+systemctl enable nginx.service
 
 # Enable Brotli
 install_if_not libnginx-mod-brotli
 
-# Download TLSv 1.3 modified nginx.conf
+# Download TLSv 1.3 and Brotli modified nginx.conf
 rm -f /etc/nginx/nginx.conf
 curl_to_dir "$STATIC" nginx.conf /etc/nginx/
+systemctl restart nginx.service
 
 # Install PHP 8.1
 apt install -y \

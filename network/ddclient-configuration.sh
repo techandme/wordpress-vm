@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
-# Copyright © 2023 Simon Lindner (https://github.com/szaimen)
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# Copyright © 2024 Simon Lindner (https://github.com/szaimen)
 
 # shellcheck disable=2034,2059
 true
