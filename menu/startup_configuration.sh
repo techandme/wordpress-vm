@@ -34,6 +34,13 @@ else
 fi
 
 # Get the correct apt-mirror
+# Handle several sources
+FIND_SOURCES="$(find /etc/apt/ -type f -name "*sources*")"
+for source in $FIND_SOURCES
+do
+  REPO=$(grep "URIs:" "$source" | grep http | awk '{print $2}' | head -1)
+done
+# Check if it matches
 if [ "$REPO" = 'http://archive.ubuntu.com/ubuntu' ]
 then
     MIRROR_SWITCH="ON"
@@ -45,7 +52,7 @@ fi
 if [ -f "$SCRIPTS/wordpress-startup-script.sh" ]
 then
     msg_box "Running a server, it's important that certain things are correct.
-In the following menu you will be asked to setup the most basic stuff of your server.
+In the following menu you will be asked to set up the most basic stuff of your server.
 
 The script is smart, and have already pre-selected the values that you'd want to change based on the current settings."
 fi
@@ -56,7 +63,7 @@ choice=$(whiptail --title "$TITLE" --checklist \
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Keyboard Layout" "(Change the keyboard layout from '$KEYBOARD_LAYOUT')" "$KEYBOARD_LAYOUT_SWITCH" \
 "Timezone" "(Change the timezone from $(cat /etc/timezone))" "$TIMEZONE_SWITCH" \
-"Locate Mirror" "(Change the apt-mirror from $REPO)" OFF 3>&1 1>&2 2>&3)
+"Locate Mirror" "(Change the apt repo for better download performance)" "$MIRROR_SWITCH" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Keyboard Layout"*)
