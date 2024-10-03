@@ -19,25 +19,27 @@ debug_mode
 # Check if root
 root_check
 
-# Replace old Nginx with new
-install_if_not ppa-purge
-ppa-purge nginx/stable
-rm -f /etc/apt/sources.list.d/nginx*
-check_command yes | add-apt-repository ppa:ondrej/nginx
-apt update -q4 && spinner_loading
-install_if_not nginx
-systemctl stop nginx
-systemctl start nginx
-systemctl enable nginx
-apt-get purge ppa-purge -y
-apt-get autoremove -y
+# Replace old Nginx with Brotli supported Nginx
+if [ ! -f /etc/nginx/modules-enabled/50-mod-http-brotli-filter.conf ]
+then
+    install_if_not ppa-purge
+    ppa-purge nginx/stable
+    rm -f /etc/apt/sources.list.d/nginx*
+    check_command yes | add-apt-repository ppa:ondrej/nginx
+    apt update -q4 && spinner_loading
+    install_if_not nginx
+    systemctl stop nginx
+    systemctl start nginx
+    systemctl enable nginx
+    apt-get purge ppa-purge -y
+    apt-get autoremove -y
+else
+    exit
+fi
 
 # Enable Brotli
 install_if_not libnginx-mod-brotli
-if ! [ -f /etc/nginx/modules-enabled/50-mod-http-brotli-filter.conf ]
-then
-    echo "load_module modules/ngx_http_brotli_filter_module.so;" > /etc/nginx/modules-enabled/50-mod-http-brotli-filter.conf
-fi
+echo "load_module modules/ngx_http_brotli_filter_module.so;" > /etc/nginx/modules-enabled/50-mod-http-brotli-filter.conf
 
 # Enable Brotli in config
 rm -f /etc/nginx/nginx.conf
