@@ -75,6 +75,9 @@ then
     fi
 fi
 
+# Upgrade Nginx
+run_script "$ADDONS" brotli-nginx
+
 # Update Redis PHP extension (20.04 --> 20.04 since 20.04 already is deprecated in the top of this script)
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
 
