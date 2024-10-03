@@ -21,11 +21,11 @@ root_check
 
 # Replace old Nginx with new
 install_if_not ppa-purge
-add-apt-repository ppa:ondrej/nginx
-apt update -q4 && spinner_loading
-apt-get upgrade nginx -y
 ppa-purge nginx/stable
 rm -f /etc/apt/sources.list.d/nginx*
+add-apt-repository ppa:ondrej/nginx -y
+apt update -q4 && spinner_loading
+install_if_not nginx
 apt-get autoremove -y
 
 # Enable Brotli
@@ -34,6 +34,9 @@ if ! [ -f /etc/nginx/modules-enabled/50-mod-http-brotli-filter.conf ]
 then
     echo "load_module modules/ngx_http_brotli_filter_module.so;" > /etc/nginx/modules-enabled/50-mod-http-brotli-filter.conf
 fi
+
+# Enable Brotli in config
+# TBA
 
 # Restart Nginx
 if nginx -t
