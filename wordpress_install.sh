@@ -412,7 +412,7 @@ wp_cli_cmd --info
 check_command wp_cli_cmd core download --force --debug
 
 # Populate DB
-mysql -uroot -p"$MARIADB_PASS" <<MYSQL_SCRIPT
+mariadb -uroot -p"$MARIADB_PASS" <<MYSQL_SCRIPT
 CREATE DATABASE $WPDBNAME;
 CREATE USER '$WPDBUSER'@'localhost' IDENTIFIED BY '$WPDBPASS';
 GRANT ALL PRIVILEGES ON $WPDBNAME.* TO '$WPDBUSER'@'localhost';
@@ -563,7 +563,6 @@ server {
     listen 443 ssl;
     listen [::]:443 ssl;
     http2 on;
-    brotli on;
 
     ## Your website name goes here.
     # server_name example.com;
