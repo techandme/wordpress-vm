@@ -2,7 +2,6 @@
 
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Netdata"
 SCRIPT_EXPLAINER="Netdata is an open source tool designed to collect real-time metrics, \
@@ -20,18 +19,8 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 DEBUG=0
 debug_mode
 
-# Must be root
+# Must be sudo
 root_check
-
-# Can't be run as pure root user
-if [ -z "$UNIXUSER" ]
-then
-    msg_box "You can't run this script as a pure root user. You need to issue the following command:
-sudo -u regular_user sudo bash $SCRIPTS/menu.sh
-
-Then choose Additional Apps --> Netdata"
-    exit 1
-fi
 
 # Check if netdata is already installed
 if ! [ -d /etc/netdata ]
@@ -42,25 +31,30 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
+    touch /etc/netdata/.environment
     if [ -f /usr/src/netdata.git/netdata-uninstaller.sh ]
     then
-        if ! yes no | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
+        if ! yes no | bash /usr/src/netdata.git/netdata-uninstaller.sh -y -f
         then
             rm -Rf /usr/src/netdata.git
         fi
     elif [ -f /usr/libexec/netdata-uninstaller.sh ]
     then
-        yes no | bash /usr/libexec/netdata-uninstaller.sh --yes
+        yes no | bash /usr/libexec/netdata-uninstaller.sh -y -f
     elif [ -f /usr/libexec/netdata/netdata-uninstaller.sh ]
     then
-        bash /usr/libexec/netdata/netdata-uninstaller.sh --force --yes
+        bash /usr/libexec/netdata/netdata-uninstaller.sh -y -f
     else
-        check_command curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
-        check_command bash $SCRIPTS/netdata-uninstaller.sh --force --yes
+        curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
+        check_command bash $SCRIPTS/netdata-uninstaller.sh -y -f
         rm $SCRIPTS/netdata-uninstaller.sh
         rm -rf /var/lib/netdata
     fi
     rm -rf /etc/netdata
+    apt-get purge netdata -y
+    apt-get autoremove -y
+    rm -rf /var/cache/netdata
+    rm -rf /var/log/netdata
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -68,9 +62,9 @@ fi
 # Install
 is_process_running dpkg
 is_process_running apt
-apt update -q4 & spinner_loading
-curl_to_dir https://my-netdata.io kickstart.sh $SCRIPTS
-sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh all --dont-wait --no-updates --stable-channel
+apt-get update -q4 & spinner_loading
+curl_to_dir https://get.netdata.cloud kickstart.sh $SCRIPTS
+bash $SCRIPTS/kickstart.sh --reinstall-even-if-unsafe --non-interactive --no-updates --stable-channel --disable-cloud
 rm -f $SCRIPTS/kickstart.sh
 
 # Check Netdata instructions after script is done
