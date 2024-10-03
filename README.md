@@ -4,7 +4,7 @@
 ### https://www.techandme.se
 ### https://www.hanssonit.se/wordpress-vm/
 
-- Ubuntu 24.04 Server
+- Ubuntu 24.04 Server (minimal)
 - MariaDB 11.5 (rolling release)
 - NGINX 1.26 (with Brotli support)
 - PHP-FPM 8.3
