@@ -249,7 +249,15 @@ apt -y purge expect
 run_script STATIC new_etc_mycnf
 
 # Install VM-tools
-install_if_not open-vm-tools
+if [ "$SYSVENDOR" == "VMware, Inc." ];
+then
+    install_if_not open-vm-tools
+elif [[ "$SYSVENDOR" == "QEMU" || "$SYSVENDOR" == "Red Hat" ]];
+then
+    install_if_not qemu-guest-agent
+    systemctl enable qemu-guest-agent
+    systemctl start qemu-guest-agent
+fi
 
 # Install Nginx
 check_command yes | add-apt-repository ppa:ondrej/nginx
