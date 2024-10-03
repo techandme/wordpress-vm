@@ -36,7 +36,8 @@ then
 fi
 
 # Enable Brotli in config
-# TBA
+rm -f /etc/nginx/nginx.conf
+curl_to_dir "$STATIC" nginx.conf /etc/nginx/
 
 # Restart Nginx
 if nginx -t
