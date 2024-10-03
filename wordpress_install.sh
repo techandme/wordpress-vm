@@ -255,16 +255,17 @@ install_if_not open-vm-tools
 check_command yes | add-apt-repository ppa:ondrej/nginx
 apt update -q4 && spinner_loading
 install_if_not nginx
-sudo systemctl stop nginx.service
-sudo systemctl start nginx.service
-sudo systemctl enable nginx.service
+systemctl stop nginx.service
+systemctl start nginx.service
+systemctl enable nginx.service
 
 # Enable Brotli
 install_if_not libnginx-mod-brotli
 
-# Download TLSv 1.3 modified nginx.conf
+# Download TLSv 1.3 and Brotli modified nginx.conf
 rm -f /etc/nginx/nginx.conf
 curl_to_dir "$STATIC" nginx.conf /etc/nginx/
+systemctl restart nginx.service
 
 # Install PHP 8.1
 apt install -y \
