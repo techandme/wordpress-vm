@@ -941,12 +941,12 @@ ln -s "$SITES_AVAILABLE"/"$HTTP_CONF" "$SITES_ENABLED"/"$HTTP_CONF"
 restart_webserver
 
 # Enable UTF8mb4 (4-byte support)
-databases=$(mysql -u root -p"$MARIADB_PASS" -e "SHOW DATABASES;" | tr -d "| " | grep -v Database)
+databases=$(mariadb -u root -p"$MARIADB_PASS" -e "SHOW DATABASES;" | tr -d "| " | grep -v Database)
 for db in $databases; do
     if [[ "$db" != "performance_schema" ]] && [[ "$db" != _* ]] && [[ "$db" != "information_schema" ]];
     then
         print_text_in_color "$ICyan" "Changing to UTF8mb4 on: $db"
-        mysql -u root -p"$MARIADB_PASS" -e "ALTER DATABASE $db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+        mariadb -u root -p"$MARIADB_PASS" -e "ALTER DATABASE $db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
     fi
 done
 
