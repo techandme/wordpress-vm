@@ -134,6 +134,8 @@ stop_if_installed php7.4-fpm
 stop_if_installed php8.0-fpm
 stop_if_installed php8.1-fpm
 stop_if_installed php8.2-fpm
+stop_if_installed php8.3-fpm
+stop_if_installed php8.4-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
 
